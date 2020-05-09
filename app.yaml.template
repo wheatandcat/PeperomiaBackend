@@ -1,0 +1,5 @@
+runtime: go111
+
+env_variables:
+  FIREBASE_PROJECT_ID: **************
+    
