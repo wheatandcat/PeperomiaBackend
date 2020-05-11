@@ -21,7 +21,7 @@ func main() {
 	})
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://foo.com"},
+		AllowOrigins: []string{"http://localhost:3000", "https://app.peperomia.info"},
 		AllowMethods: []string{
 			http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions,
 		},
