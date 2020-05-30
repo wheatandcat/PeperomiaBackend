@@ -9,6 +9,7 @@ import (
 
 // CalendarRecord is Calendar data
 type CalendarRecord struct {
+	UserId string
 	ID     string     `json:"id" firestore:"id" binding:"required"`
 	UID    string     `json:"uid" firestore:"uid"`
 	ItemID string     `json:"itemId" firestore:"itemId" binding:"required"`
