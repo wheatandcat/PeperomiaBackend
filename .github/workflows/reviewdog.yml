@@ -18,7 +18,7 @@ jobs:
           echo ::add-path::$HOME/bin
           echo ::add-path::$(go env GOPATH)/bin
       - run: GO111MODULE=off go get -u golang.org/x/lint/golint
-      - name: Run reviewdog
+      - name: Run reviewdog Pull Request
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
