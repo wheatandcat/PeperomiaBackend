@@ -19,7 +19,9 @@ jobs:
           echo ::add-path::$(go env GOPATH)/bin
       - run: GO111MODULE=off go get -u golang.org/x/lint/golint
       - name: Run reviewdog
+        with: # Set the secret as an input
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.REVIEWDOG_GITHUB_API_TOKEN }}
         env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.REVIEWDOG_GITHUB_API_TOKEN }}
         run: |
           reviewdog -reporter=github-pr-review -runners=golint,govet
