@@ -49,8 +49,9 @@ func Execute(hf gin.HandlerFunc, req *http.Request) *httptest.ResponseRecorder {
 }
 
 func NewTestHandler(ctx context.Context) handler.Handler {
-	f, _ := firebase.NewApp(ctx, nil)
-	fc, _ := f.Firestore(ctx)
+	config := &firebase.Config{ProjectID: "my-test-project"}
+	f, _ := firebase.NewApp(ctx, config)
+	//fc, _ := f.Firestore(ctx)
 
 	app := &handler.Application{
 		ItemRepository:       repository.NewItemRepository(),
@@ -64,7 +65,7 @@ func NewTestHandler(ctx context.Context) handler.Handler {
 
 	return handler.Handler{
 		FirebaseApp:     f,
-		FirestoreClient: fc,
+		FirestoreClient: nil,
 		App:             app,
 		Client:          client,
 	}
