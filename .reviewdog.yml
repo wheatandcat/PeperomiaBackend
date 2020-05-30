@@ -1,0 +1,7 @@
+runner:
+  cmd: golint $(go list ./... | grep -v /vendor/)
+  errorformat:
+    - "%f:%l:%c: %m"
+  level: warning
+  govet:
+    cmd: go vet -all .
