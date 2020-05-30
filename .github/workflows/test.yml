@@ -20,4 +20,3 @@ jobs:
           ${{ runner.os }}-go-
     - name: Test
       run: go test -v ./handler
-        

@@ -2,7 +2,6 @@ package handler_test
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"testing"
 	"time"
@@ -56,7 +55,6 @@ func TestCreateCalendar(t *testing.T) {
 
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
-			log.Print("007")
 			res := Execute(h.CreateCalendar, NewRequest(JsonEncode(td.request)))
 			assert.Equal(t, td.statusCode, res.Code)
 		})
