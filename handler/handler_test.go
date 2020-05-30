@@ -3,6 +3,7 @@ package handler_test
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -31,19 +32,34 @@ func NewRequest(body string) *http.Request {
 }
 
 func Execute(hf gin.HandlerFunc, req *http.Request) *httptest.ResponseRecorder {
+	log.Print("0062")
+
 	res := httptest.NewRecorder()
+
+	log.Print("0063")
+
 	c, r := gin.CreateTestContext(res)
+
+	log.Print("0064")
 
 	r.Use(func(gc *gin.Context) {
 		gc.Set("firebaseUID", "test")
 		gc.Next()
 	})
 
+	log.Print("0065")
+
 	r.POST("/", hf)
+
+	log.Print("0066")
 
 	c.Request = req
 
+	log.Print("0067")
+
 	r.ServeHTTP(res, c.Request)
+
+	log.Print("0068")
 
 	return res
 }
