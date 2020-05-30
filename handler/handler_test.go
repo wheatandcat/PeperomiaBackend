@@ -3,6 +3,7 @@ package handler_test
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -51,8 +52,11 @@ func Execute(hf gin.HandlerFunc, req *http.Request) *httptest.ResponseRecorder {
 func NewTestHandler(ctx context.Context) handler.Handler {
 	config := &firebase.Config{ProjectID: "my-test-project"}
 
+	log.Println("0001")
 	f, _ := firebase.NewApp(ctx, config)
+	log.Println("0002")
 	fc, _ := f.Firestore(ctx)
+	log.Println("0003")
 
 	app := &handler.Application{
 		ItemRepository:       repository.NewItemRepository(),
