@@ -42,6 +42,7 @@ func TestCreateCalendar(t *testing.T) {
 	log.Print("006")
 	h := NewTestHandler(ctx)
 	h.App.CalendarRepository = mock
+	log.Print("0061")
 
 	tests := []struct {
 		name       string
