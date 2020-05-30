@@ -2,6 +2,10 @@ runner:
   golint:
     cmd: golint $(go list ./... | grep -v /vendor/)
     format: golint
+    errorformat:
+      - "%f:%l:%c: %m"
   govet:
     cmd: go vet $(go list ./... | grep -v /vendor/)
     format: govet
+    errorformat:
+      - "%f:%l:%c: %m"
