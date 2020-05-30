@@ -32,51 +32,42 @@ func NewRequest(body string) *http.Request {
 }
 
 func Execute(hf gin.HandlerFunc, req *http.Request) *httptest.ResponseRecorder {
-	log.Print("0062")
-
 	res := httptest.NewRecorder()
-
-	log.Print("0063")
-
 	c, r := gin.CreateTestContext(res)
-
-	log.Print("0064")
 
 	r.Use(func(gc *gin.Context) {
 		gc.Set("firebaseUID", "test")
 		gc.Next()
 	})
 
-	log.Print("0065")
-
 	r.POST("/", hf)
-
-	log.Print("0066")
 
 	c.Request = req
 
-	log.Print("0067")
-
 	r.ServeHTTP(res, c.Request)
-
-	log.Print("0068")
 
 	return res
 }
 
 func NewTestHandler(ctx context.Context) handler.Handler {
+	log.Println("00061")
 	f, _ := firebase.NewApp(ctx, nil)
+	log.Println("00062")
 	fc, _ := f.Firestore(ctx)
-
+	log.Println("00063")
 	app := &handler.Application{
 		ItemRepository:       repository.NewItemRepository(),
 		ItemDetailRepository: repository.NewItemDetailRepository(),
 		CalendarRepository:   repository.NewCalendarRepository(),
 	}
 
+	log.Println("00064")
+
 	client := &handler.Client{
 		UUID: &mock_uuidgen.UUID{},
 	}
+
+	log.Println("00065")
 
 	return handler.Handler{
 		FirebaseApp:     f,
