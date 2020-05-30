@@ -20,3 +20,6 @@ jobs:
           ${{ runner.os }}-go-
     - name: Test
       run: go test -v ./handler -run TestCreateCalendar
+      env:
+        FIRESTORE_EMULATOR_HOST: localhost:8812
+        

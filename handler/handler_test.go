@@ -3,7 +3,6 @@ package handler_test
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -50,24 +49,20 @@ func Execute(hf gin.HandlerFunc, req *http.Request) *httptest.ResponseRecorder {
 }
 
 func NewTestHandler(ctx context.Context) handler.Handler {
-	log.Println("00061")
-	f, _ := firebase.NewApp(ctx, nil)
-	log.Println("00062")
+	config := &firebase.Config{ProjectID: "my-test-project"}
+
+	f, _ := firebase.NewApp(ctx, config)
 	fc, _ := f.Firestore(ctx)
-	log.Println("00063")
+
 	app := &handler.Application{
 		ItemRepository:       repository.NewItemRepository(),
 		ItemDetailRepository: repository.NewItemDetailRepository(),
 		CalendarRepository:   repository.NewCalendarRepository(),
 	}
 
-	log.Println("00064")
-
 	client := &handler.Client{
 		UUID: &mock_uuidgen.UUID{},
 	}
-
-	log.Println("00065")
 
 	return handler.Handler{
 		FirebaseApp:     f,

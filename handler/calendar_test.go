@@ -17,17 +17,13 @@ import (
 
 func TestCreateCalendar(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	log.Print("001")
 
 	ctrl := gomock.NewController(t)
-	log.Print("002")
 	defer ctrl.Finish()
 	ctx := context.Background()
 
 	mock := mock_domain.NewMockCalendarRepository(ctrl)
-	log.Print("003")
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
-	log.Print("004")
 
 	i := domain.CalendarRecord{
 		ID:     "sample-uuid-string",
@@ -36,13 +32,10 @@ func TestCreateCalendar(t *testing.T) {
 		Date:   &date,
 	}
 
-	log.Print("005")
 	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i).Return(nil)
 
-	log.Print("006")
 	h := NewTestHandler(ctx)
 	h.App.CalendarRepository = mock
-	log.Print("0061")
 
 	tests := []struct {
 		name       string
