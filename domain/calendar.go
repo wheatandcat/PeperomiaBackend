@@ -15,7 +15,6 @@ type CalendarRecord struct {
 	Date   *time.Time `json:"date" firestore:"date" binding:"required"`
 }
 
-// CalendarRepository is repository interface
 type CalendarRepository interface {
 	Create(ctx context.Context, f *firestore.Client, i CalendarRecord) error
 	Update(ctx context.Context, f *firestore.Client, i CalendarRecord) error
