@@ -2,6 +2,8 @@
 
 [![reviewdog](https://github.com/wheatandcat/PeperomiaBackend/workflows/reviewdog/badge.svg?branch=master&event=push)](https://github.com/wheatandcat/PeperomiaBackend/actions?query=workflow%3Areviewdog+event%3Apush+branch%3Amaster)
 
+[![codecov](https://codecov.io/gh/wheatandcat/PeperomiaBackend/branch/master/graph/badge.svg)](https://codecov.io/gh/wheatandcat/PeperomiaBackend)
+
 ## 準備
 
 ```
