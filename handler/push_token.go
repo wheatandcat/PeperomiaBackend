@@ -33,13 +33,13 @@ func (h *Handler) CreatePushToken(gc *gin.Context) {
 		return
 	}
 
-	p := domain.PushTokenRecord{
+	i := domain.PushTokenRecord{
 		ID:    h.Client.UUID.Get(),
 		UID:   uid,
 		Token: req.PushToken.Token,
 	}
 
-	if err := h.App.PushTokenRepository.Create(ctx, h.FirestoreClient, p); err != nil {
+	if err := h.App.PushTokenRepository.Create(ctx, h.FirestoreClient, i); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}

@@ -65,6 +65,7 @@ func main() {
 
 		app.POST("/SyncItems", h.SyncItems)
 		app.POST("/LoginWithAmazon", h.LoginWithAmazon)
+		app.POST("//CreatePushToken", h.CreatePushToken)
 	}
 
 	am := r.Group("/amazon")

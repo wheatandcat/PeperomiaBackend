@@ -25,7 +25,7 @@ func getPushTokenDocID(uID string, pushTokenID string) string {
 func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, p domain.PushTokenRecord) error {
 	idDoc := getPushTokenDocID(p.UID, p.ID)
 
-	_, err := f.Collection("expoPushToken").Doc(idDoc).Set(ctx, p)
+	_, err := f.Collection("expoPushTokens").Doc(idDoc).Set(ctx, p)
 
 	return err
 }

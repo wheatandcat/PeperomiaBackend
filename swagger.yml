@@ -189,7 +189,7 @@ paths:
   /CreatePushToken:
     post:
       tags:
-        - 未実装
+        - 実装済み
       description: |
         - Expo Push通知トークンの作成
       requestBody:

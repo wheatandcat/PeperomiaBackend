@@ -5,12 +5,11 @@
 package mock_domain
 
 import (
-	context "context"
-	reflect "reflect"
-
 	firestore "cloud.google.com/go/firestore"
+	context "context"
 	gomock "github.com/golang/mock/gomock"
 	domain "github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	reflect "reflect"
 )
 
 // MockCalendarRepository is a mock of CalendarRepository interface

@@ -49,6 +49,7 @@ func newApplication() *Application {
 		ItemRepository:       repository.NewItemRepository(),
 		ItemDetailRepository: repository.NewItemDetailRepository(),
 		CalendarRepository:   repository.NewCalendarRepository(),
+		PushTokenRepository:  repository.NewPushTokenRepository(),
 	}
 }
 
