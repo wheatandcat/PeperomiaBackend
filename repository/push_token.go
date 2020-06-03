@@ -23,7 +23,7 @@ func getPushTokenDocID(uID string, pushTokenID string) string {
 
 // Create カレンダーを作成する
 func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, p domain.PushTokenRecord) error {
-	idDoc := getPushTokenDocID(p.UID, p.ID)
+	idDoc := getPushTokenDocID(p.UID, p.DeviceID)
 
 	_, err := f.Collection("expoPushTokens").Doc(idDoc).Set(ctx, p)
 

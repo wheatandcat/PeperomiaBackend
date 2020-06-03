@@ -571,6 +571,11 @@ components:
           pattern: string
           example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
           description: Expo Push通知トークン
+        deviceId:
+          type: string
+          pattern: string
+          example: xxxxx-xxxxxxxxxxxxxxxxxxxx
+          description: Device ID
 
     AlexaItem:
       type: object

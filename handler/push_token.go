@@ -15,7 +15,8 @@ type CreatePushTokenRequest struct {
 
 // CreatePushToken is CreatePushToken request
 type CreatePushToken struct {
-	Token string `json:"token" binding:"required"`
+	Token    string `json:"token" binding:"required"`
+	DeviceID string `json:"deviceId" binding:"required"`
 }
 
 // CreatePushToken Expo Push通知トークンを作成する
@@ -34,9 +35,10 @@ func (h *Handler) CreatePushToken(gc *gin.Context) {
 	}
 
 	i := domain.PushTokenRecord{
-		ID:    h.Client.UUID.Get(),
-		UID:   uid,
-		Token: req.PushToken.Token,
+		ID:       h.Client.UUID.Get(),
+		UID:      uid,
+		Token:    req.PushToken.Token,
+		DeviceID: req.PushToken.DeviceID,
 	}
 
 	if err := h.App.PushTokenRepository.Create(ctx, h.FirestoreClient, i); err != nil {

@@ -23,9 +23,10 @@ func TestCreatePushToken(t *testing.T) {
 	mock := mock_domain.NewMockPushTokenRepository(ctrl)
 
 	i := domain.PushTokenRecord{
-		ID:    "sample-uuid-string",
-		UID:   "test",
-		Token: "test",
+		ID:       "sample-uuid-string",
+		UID:      "test",
+		Token:    "test-Token",
+		DeviceID: "test-DeviceID",
 	}
 
 	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i).Return(nil)
@@ -42,7 +43,8 @@ func TestCreatePushToken(t *testing.T) {
 			name: "ok",
 			request: handler.CreatePushTokenRequest{
 				PushToken: handler.CreatePushToken{
-					Token: "test",
+					Token:    "test-Token",
+					DeviceID: "test-DeviceID",
 				},
 			},
 			statusCode: http.StatusCreated,
