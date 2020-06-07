@@ -32,6 +32,8 @@ $ go test ./handler
 
 ```
 $ go test -coverprofile=cover.out ./handler
+$ go tool cover -html=cover.out -o cover.html
+$ open cover.html
 ```
 
 ## デプロイ

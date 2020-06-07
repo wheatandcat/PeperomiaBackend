@@ -9,6 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.4.0
 	github.com/golang/mock v1.4.3
 	github.com/google/uuid v1.1.1
+	github.com/oliveroneill/exponent-server-sdk-golang v0.0.0-20190619221248-65582a10ed02
 	github.com/stretchr/testify v1.4.0
 	google.golang.org/api v0.6.0
 	google.golang.org/grpc v1.21.1

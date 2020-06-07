@@ -65,7 +65,19 @@ func main() {
 
 		app.POST("/SyncItems", h.SyncItems)
 		app.POST("/LoginWithAmazon", h.LoginWithAmazon)
-		app.POST("//CreatePushToken", h.CreatePushToken)
+		app.POST("/CreatePushToken", h.CreatePushToken)
+
+	}
+
+	ad := r.Group("/admin")
+	{
+		ad.Use(m.AdminMiddleWare)
+		h, err := handler.NewHandler(ctx, f)
+		if err != nil {
+			panic(err)
+		}
+		// Push通知のテスト
+		ad.POST("/SentPushNotifications", h.SentPushNotifications)
 	}
 
 	am := r.Group("/amazon")

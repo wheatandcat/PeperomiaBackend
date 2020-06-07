@@ -3,23 +3,22 @@ package handler
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
 )
 
 // CreateUser ユーザーを作成する
 func (h *Handler) CreateUser(gc *gin.Context) {
+
 	ctx := context.Background()
-	ur := repository.NewUserRepository()
 	uid, err := GetSelfUID(gc)
 	if err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
 
-	exists, err := ur.ExistsByUID(ctx, h.FirestoreClient, uid)
+	exists, err := h.App.UserRepository.ExistsByUID(ctx, h.FirestoreClient, uid)
 	if err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
@@ -31,12 +30,12 @@ func (h *Handler) CreateUser(gc *gin.Context) {
 		return
 	}
 
-	u := repository.UserRecord{
+	u := domain.UserRecord{
 		UID:       uid,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: h.Client.Time.Now(),
+		UpdatedAt: h.Client.Time.Now(),
 	}
-	if err := ur.Create(ctx, h.FirestoreClient, u); err != nil {
+	if err := h.App.UserRepository.Create(ctx, h.FirestoreClient, u); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
