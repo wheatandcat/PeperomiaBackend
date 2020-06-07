@@ -29,3 +29,21 @@ func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, 
 
 	return err
 }
+
+// FindByUID ユーザーIDから取得する
+func (re *PushTokenRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) ([]domain.PushTokenRecord, error) {
+	var items []domain.PushTokenRecord
+	matchItem := f.Collection("expoPushTokens").Where("uid", "==", uid).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return items, err
+	}
+
+	for _, doc := range docs {
+		var item domain.PushTokenRecord
+		doc.DataTo(&item)
+		items = append(items, item)
+	}
+
+	return items, nil
+}

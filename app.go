@@ -65,7 +65,10 @@ func main() {
 
 		app.POST("/SyncItems", h.SyncItems)
 		app.POST("/LoginWithAmazon", h.LoginWithAmazon)
-		app.POST("//CreatePushToken", h.CreatePushToken)
+		app.POST("/CreatePushToken", h.CreatePushToken)
+
+		// Push通知のテスト
+		app.POST("/SentPushNotifications", h.SentPushNotifications)
 	}
 
 	am := r.Group("/amazon")

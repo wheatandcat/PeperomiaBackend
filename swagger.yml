@@ -199,6 +199,19 @@ paths:
           description: |
             - 作成した
 
+  /admin/SentPushNotifications:
+    post:
+      tags:
+        - 実装済み
+      description: |
+        - Expo Push通知送信（テスト用）
+      requestBody:
+        $ref: '#/components/requestBodies/SentPushNotificationsRequest'
+      responses:
+        '200':
+          description: |
+            - 送信した
+
   /amazon/RegisterItem:
     post:
       tags:
@@ -340,7 +353,15 @@ components:
             properties:
               pushToken:
                 $ref: '#/components/schemas/CreatePushToken'
-
+    SentPushNotificationsRequest:
+      description: Expo Push通知 送信のRequest
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pushToken:
+                $ref: '#/components/schemas/SentPushNotifications'
     AmazonWithLoginRequest:
         description: amazonアカウントに連携する
         content:
@@ -576,7 +597,30 @@ components:
           pattern: string
           example: xxxxx-xxxxxxxxxxxxxxxxxxxx
           description: Device ID
-
+    SentPushNotifications:
+      type: object
+      description: Expo Push通知
+      properties:
+        uid:
+          type: string
+          pattern: string
+          example: xxxxxxxxxxxxxxxxx
+          description: ユーザーID
+        title:
+          type: string
+          pattern: string
+          example: タイトル
+          description: タイトル
+        body:
+          type: string
+          pattern: string
+          example: テイスト
+          description: 内容
+        urlScheme:
+          type: string
+          pattern: string
+          example: schedule/1
+          description: 画面遷移用のパラメータ
     AlexaItem:
       type: object
       description: Alexa経由の予定
