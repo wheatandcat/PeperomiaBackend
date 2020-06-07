@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push"
+	"github.com/wheatandcat/PeperomiaBackend/backend/client/timegen"
 	"github.com/wheatandcat/PeperomiaBackend/backend/client/uuidgen"
 	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
 
@@ -28,6 +29,7 @@ type Application struct {
 type Client struct {
 	UUID     uuidgen.UUIDGenerator
 	ExpoPush expopush.ExpoPushClientGenerator
+	Time     timegen.TimeGenerator
 }
 
 // Handler is Handler type
@@ -74,6 +76,7 @@ func NewHandler(ctx context.Context, f *firebase.App) (*Handler, error) {
 	client := &Client{
 		UUID:     &uuidgen.UUID{},
 		ExpoPush: epc,
+		Time:     &timegen.Time{},
 	}
 
 	app := newApplication()

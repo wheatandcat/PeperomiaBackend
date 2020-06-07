@@ -50,11 +50,12 @@ func (mr *MockUserRepositoryMockRecorder) Create(ctx, f, u interface{}) *gomock.
 }
 
 // FindByUID mocks base method
-func (m *MockUserRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) error {
+func (m *MockUserRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) (domain.UserRecord, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByUID", ctx, f, uid)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(domain.UserRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // FindByUID indicates an expected call of FindByUID
@@ -64,11 +65,12 @@ func (mr *MockUserRepositoryMockRecorder) FindByUID(ctx, f, uid interface{}) *go
 }
 
 // ExistsByUID mocks base method
-func (m *MockUserRepository) ExistsByUID(ctx context.Context, f *firestore.Client, uid string) error {
+func (m *MockUserRepository) ExistsByUID(ctx context.Context, f *firestore.Client, uid string) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExistsByUID", ctx, f, uid)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ExistsByUID indicates an expected call of ExistsByUID

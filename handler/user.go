@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
@@ -11,6 +10,7 @@ import (
 
 // CreateUser ユーザーを作成する
 func (h *Handler) CreateUser(gc *gin.Context) {
+
 	ctx := context.Background()
 	uid, err := GetSelfUID(gc)
 	if err != nil {
@@ -32,8 +32,8 @@ func (h *Handler) CreateUser(gc *gin.Context) {
 
 	u := domain.UserRecord{
 		UID:       uid,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: h.Client.Time.Now(),
+		UpdatedAt: h.Client.Time.Now(),
 	}
 	if err := h.App.UserRepository.Create(ctx, h.FirestoreClient, u); err != nil {
 		NewErrorResponse(err).Render(gc)

@@ -9,6 +9,8 @@ import (
 
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
+	mock_expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push/mocks"
+	mock_timegen "github.com/wheatandcat/PeperomiaBackend/backend/client/timegen/mocks"
 	mock_uuidgen "github.com/wheatandcat/PeperomiaBackend/backend/client/uuidgen/mocks"
 	handler "github.com/wheatandcat/PeperomiaBackend/backend/handler"
 	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
@@ -61,7 +63,9 @@ func NewTestHandler(ctx context.Context) handler.Handler {
 	}
 
 	client := &handler.Client{
-		UUID: &mock_uuidgen.UUID{},
+		UUID:     &mock_uuidgen.UUID{},
+		ExpoPush: &mock_expopush.ExpoPushClient{},
+		Time:     &mock_timegen.Time{},
 	}
 
 	return handler.Handler{

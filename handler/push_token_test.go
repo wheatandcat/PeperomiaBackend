@@ -58,3 +58,49 @@ func TestCreatePushToken(t *testing.T) {
 		})
 	}
 }
+
+func TestSentPushNotifications(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock := mock_domain.NewMockPushTokenRepository(ctrl)
+
+	i := []domain.PushTokenRecord{{
+		ID:       "",
+		UID:      "",
+		Token:    "",
+		DeviceID: "",
+	}}
+
+	mock.EXPECT().FindByUID(gomock.Any(), gomock.Any(), "test").Return(i, nil)
+
+	h := NewTestHandler(ctx)
+	h.App.PushTokenRepository = mock
+
+	tests := []struct {
+		name       string
+		request    handler.SentPushNotificationsRequest
+		statusCode int
+	}{
+		{
+			name: "ok",
+			request: handler.SentPushNotificationsRequest{
+				Title:     "test",
+				UID:       "test",
+				Body:      "test",
+				URLScheme: "test",
+			},
+			statusCode: http.StatusOK,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			res := Execute(h.SentPushNotifications, NewRequest(JsonEncode(td.request)))
+			assert.Equal(t, td.statusCode, res.Code)
+		})
+	}
+}
