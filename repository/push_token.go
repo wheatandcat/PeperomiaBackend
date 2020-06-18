@@ -47,3 +47,21 @@ func (re *PushTokenRepository) FindByUID(ctx context.Context, f *firestore.Clien
 
 	return items, nil
 }
+
+// FindAll 全て取得する
+func (re *PushTokenRepository) FindAll(ctx context.Context, f *firestore.Client) ([]domain.PushTokenRecord, error) {
+	var items []domain.PushTokenRecord
+	matchItem := f.Collection("expoPushTokens").Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return items, err
+	}
+
+	for _, doc := range docs {
+		var item domain.PushTokenRecord
+		doc.DataTo(&item)
+		items = append(items, item)
+	}
+
+	return items, nil
+}

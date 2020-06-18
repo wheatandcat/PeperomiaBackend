@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
@@ -37,6 +38,25 @@ func (re *CalendarRepository) Update(ctx context.Context, f *firestore.Client, i
 	_, err := f.Collection("calendars").Doc(idDoc).Set(ctx, i)
 
 	return err
+}
+
+// FindByDate 日付から取得する
+func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
+	var items []domain.CalendarRecord
+
+	matchItem := f.Collection("calendars").Where("date", "==", date).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return items, err
+	}
+
+	for _, doc := range docs {
+		var item domain.CalendarRecord
+		doc.DataTo(&item)
+		items = append(items, item)
+	}
+
+	return items, nil
 }
 
 // Delete カレンダーを削除する

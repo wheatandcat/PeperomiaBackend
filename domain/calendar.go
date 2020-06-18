@@ -22,4 +22,5 @@ type CalendarRepository interface {
 	Delete(ctx context.Context, f *firestore.Client, i CalendarRecord) error
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
 	DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error
+	FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]CalendarRecord, error)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -100,6 +101,58 @@ func TestSentPushNotifications(t *testing.T) {
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
 			res := Execute(h.SentPushNotifications, NewRequest(JsonEncode(td.request)))
+			assert.Equal(t, td.statusCode, res.Code)
+		})
+	}
+}
+
+func TestSendCalendarPushNotifications(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mockCalendar := mock_domain.NewMockCalendarRepository(ctrl)
+	mockPushToken := mock_domain.NewMockPushTokenRepository(ctrl)
+
+	date := time.Now()
+
+	pts := []domain.PushTokenRecord{{
+		ID:       "",
+		UID:      "test",
+		Token:    "",
+		DeviceID: "",
+	}}
+
+	cs := []domain.CalendarRecord{{
+		ID:     "",
+		UID:    "",
+		ItemID: "",
+	}}
+
+	today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.Local)
+
+	mockPushToken.EXPECT().FindAll(gomock.Any(), gomock.Any()).Return(pts, nil)
+	mockCalendar.EXPECT().FindByDate(gomock.Any(), gomock.Any(), &today).Return(cs, nil)
+
+	h := NewTestHandler(ctx)
+	h.App.PushTokenRepository = mockPushToken
+	h.App.CalendarRepository = mockCalendar
+
+	tests := []struct {
+		name       string
+		statusCode int
+	}{
+		{
+			name:       "ok",
+			statusCode: http.StatusOK,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			res := Execute(h.SendCalendarPushNotifications, NewRequest(JsonEncode(nil)))
 			assert.Equal(t, td.statusCode, res.Code)
 		})
 	}

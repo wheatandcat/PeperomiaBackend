@@ -18,4 +18,5 @@ type PushTokenRecord struct {
 type PushTokenRepository interface {
 	Create(ctx context.Context, f *firestore.Client, i PushTokenRecord) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) ([]PushTokenRecord, error)
+	FindAll(ctx context.Context, f *firestore.Client) ([]PushTokenRecord, error)
 }

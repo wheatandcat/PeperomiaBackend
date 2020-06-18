@@ -63,3 +63,18 @@ func (mr *MockPushTokenRepositoryMockRecorder) FindByUID(ctx, f, uid interface{}
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUID", reflect.TypeOf((*MockPushTokenRepository)(nil).FindByUID), ctx, f, uid)
 }
+
+// FindAll mocks base method
+func (m *MockPushTokenRepository) FindAll(ctx context.Context, f *firestore.Client) ([]domain.PushTokenRecord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAll", ctx, f)
+	ret0, _ := ret[0].([]domain.PushTokenRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAll indicates an expected call of FindAll
+func (mr *MockPushTokenRepositoryMockRecorder) FindAll(ctx, f interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockPushTokenRepository)(nil).FindAll), ctx, f)
+}
