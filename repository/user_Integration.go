@@ -12,8 +12,8 @@ import (
 type UserIntegrationRepository struct {
 }
 
-// UserIntegrationRecode is user integrationdate
-type UserIntegrationRecode struct {
+// UserIntegrationRecord is user integrationdate
+type UserIntegrationRecord struct {
 	UID          string `json:"uid" firestore:"uid"`
 	AmazonUserID string `json:"amazonUserID" firestore:"amazonUserID"`
 }
@@ -24,14 +24,14 @@ func NewUserIntegrationRepository() *UserIntegrationRepository {
 }
 
 // Create ユーザー連携情報を作成する
-func (re *UserIntegrationRepository) Create(ctx context.Context, f *firestore.Client, uir UserIntegrationRecode) error {
+func (re *UserIntegrationRepository) Create(ctx context.Context, f *firestore.Client, uir UserIntegrationRecord) error {
 	_, err := f.Collection("userIntegrations").Doc(uir.UID).Set(ctx, uir)
 
 	return err
 }
 
 // Update ユーザー連携情報を作成する
-func (re *UserIntegrationRepository) Update(ctx context.Context, f *firestore.Client, uir UserIntegrationRecode) error {
+func (re *UserIntegrationRepository) Update(ctx context.Context, f *firestore.Client, uir UserIntegrationRecord) error {
 	v := map[string]interface{}{
 		"uid":          uir.UID,
 		"amazonUserID": uir.AmazonUserID,
@@ -43,8 +43,8 @@ func (re *UserIntegrationRepository) Update(ctx context.Context, f *firestore.Cl
 }
 
 // FindByUID ユーザーIDから取得する
-func (re *UserIntegrationRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) (UserIntegrationRecode, error) {
-	var uir UserIntegrationRecode
+func (re *UserIntegrationRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) (UserIntegrationRecord, error) {
+	var uir UserIntegrationRecord
 	dsnap, err := f.Collection("userIntegrations").Doc(uid).Get(ctx)
 	if err != nil {
 		return uir, err

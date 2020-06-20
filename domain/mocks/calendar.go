@@ -10,6 +10,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	domain "github.com/wheatandcat/PeperomiaBackend/backend/domain"
 	reflect "reflect"
+	time "time"
 )
 
 // MockCalendarRepository is a mock of CalendarRepository interface
@@ -103,4 +104,19 @@ func (m *MockCalendarRepository) DeleteByItemID(ctx context.Context, f *firestor
 func (mr *MockCalendarRepositoryMockRecorder) DeleteByItemID(ctx, f, itemID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByItemID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByItemID), ctx, f, itemID)
+}
+
+// FindByDate mocks base method
+func (m *MockCalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByDate", ctx, f, date)
+	ret0, _ := ret[0].([]domain.CalendarRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByDate indicates an expected call of FindByDate
+func (mr *MockCalendarRepositoryMockRecorder) FindByDate(ctx, f, date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByDate", reflect.TypeOf((*MockCalendarRepository)(nil).FindByDate), ctx, f, date)
 }

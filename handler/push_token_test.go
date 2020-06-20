@@ -104,3 +104,66 @@ func TestSentPushNotifications(t *testing.T) {
 		})
 	}
 }
+
+const location = "Asia/Tokyo"
+
+func TestSendCalendarPushNotifications(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mockCalendar := mock_domain.NewMockCalendarRepository(ctrl)
+	mockPushToken := mock_domain.NewMockPushTokenRepository(ctrl)
+	mockItem := mock_domain.NewMockItemRepository(ctrl)
+
+	date := TimeNow()
+
+	pts := []domain.PushTokenRecord{{
+		ID:       "",
+		UID:      "test",
+		Token:    "",
+		DeviceID: "",
+	}}
+
+	cs := []domain.CalendarRecord{{
+		ID:     "",
+		UID:    "test",
+		ItemID: "",
+	}}
+
+	i := domain.ItemRecord{
+		ID:    "",
+		UID:   "test",
+		Title: "",
+	}
+
+	today := Day(date)
+
+	mockPushToken.EXPECT().FindAll(gomock.Any(), gomock.Any()).Return(pts, nil)
+	mockCalendar.EXPECT().FindByDate(gomock.Any(), gomock.Any(), &today).Return(cs, nil)
+	mockItem.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "").Return(i, nil)
+
+	h := NewTestHandler(ctx)
+	h.App.PushTokenRepository = mockPushToken
+	h.App.CalendarRepository = mockCalendar
+	h.App.ItemRepository = mockItem
+
+	tests := []struct {
+		name       string
+		statusCode int
+	}{
+		{
+			name:       "ok",
+			statusCode: http.StatusOK,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			res := Execute(h.SendCalendarPushNotifications, NewRequest(JsonEncode(nil)))
+			assert.Equal(t, td.statusCode, res.Code)
+		})
+	}
+}

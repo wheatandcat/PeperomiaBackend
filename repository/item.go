@@ -79,6 +79,20 @@ func (re *ItemRepository) FindByUID(ctx context.Context, f *firestore.Client, ui
 	return items, nil
 }
 
+// FindByDoc ドキュメントから取得する
+func (re *ItemRepository) FindByDoc(ctx context.Context, f *firestore.Client, uid string, itemID string) (domain.ItemRecord, error) {
+	var ir domain.ItemRecord
+	iDoc := getItemDocID(uid, itemID)
+
+	dsnap, err := f.Collection("items").Doc(iDoc).Get(ctx)
+	if err != nil {
+		return ir, err
+	}
+
+	dsnap.DataTo(&ir)
+	return ir, nil
+}
+
 // DeleteByUID ユーザーIDから削除する
 func (re *ItemRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
 	matchItem := f.Collection("items").Where("uid", "==", uid).Documents(ctx)

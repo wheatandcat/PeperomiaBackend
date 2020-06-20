@@ -1,0 +1,5 @@
+cron:
+- description: "当日のPush通知"
+  url: /cron/SendCalendarPushNotifications?
+  schedule: every day 08:00
+  timezone: Asia/Tokyo

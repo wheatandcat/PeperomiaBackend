@@ -22,6 +22,7 @@ type ItemRepository interface {
 	Create(ctx context.Context, f *firestore.Client, i ItemRecord) error
 	Update(ctx context.Context, f *firestore.Client, i ItemRecord) error
 	Delete(ctx context.Context, f *firestore.Client, i ItemRecord) error
+	FindByDoc(ctx context.Context, f *firestore.Client, uid string, itemID string) (ItemRecord, error)
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) ([]ItemRecord, error)
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
 }

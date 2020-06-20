@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push"
@@ -88,4 +89,62 @@ func (h *Handler) SentPushNotifications(gc *gin.Context) {
 	}
 
 	gc.JSON(http.StatusOK, nil)
+}
+
+// SendCalendarPushNotifications カレンダーに設定されている
+func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
+	ctx := context.Background()
+	dateQuery := gc.Query("date")
+	date := TimeNow()
+
+	if dateQuery != "" {
+		d, err := time.Parse("2006-01-02T15:04:05", dateQuery)
+		if err != nil {
+			gc.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		date = d
+	}
+
+	today := Day(date)
+	pts, err := h.App.PushTokenRepository.FindAll(ctx, h.FirestoreClient)
+	if err != nil {
+		gc.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	cs, err := h.App.CalendarRepository.FindByDate(ctx, h.FirestoreClient, &today)
+	if err != nil {
+		gc.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	res := []string{}
+
+	title := today.Format("2006年1月2日") + "の予定"
+
+	for _, c := range cs {
+		for _, pt := range pts {
+			if pt.UID == c.UID {
+				ir, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, c.UID, c.ItemID)
+				if err != nil {
+					continue
+				}
+
+				req := expopush.SendRequest{
+					Title: title,
+					Body:  ir.Title,
+					Data:  map[string]string{"urlSchema": "schedule/" + c.ItemID},
+					Token: pt.Token,
+				}
+				err = h.Client.ExpoPush.Send(req)
+				if err == nil {
+					res = append(res, c.UID)
+				}
+
+			}
+		}
+	}
+
+	gc.JSON(http.StatusOK, res)
 }

@@ -91,5 +91,15 @@ func main() {
 		am.POST("/RegisterItem", h.AmazonRegisterItem)
 	}
 
+	cr := r.Group("/cron")
+	{
+		h, err := handler.NewHandler(ctx, f)
+		if err != nil {
+			panic(err)
+		}
+
+		cr.GET("/SendCalendarPushNotifications", h.SendCalendarPushNotifications)
+	}
+
 	r.Run()
 }
