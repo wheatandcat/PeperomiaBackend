@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push"
 	"github.com/wheatandcat/PeperomiaBackend/backend/client/timegen"
@@ -141,4 +142,21 @@ func getErrorCode() string {
 
 func getStatusCode() int {
 	return http.StatusInternalServerError
+}
+
+const location = "Asia/Tokyo"
+
+// TimeNow 現在日時を取得する
+func TimeNow() time.Time {
+	loc, _ := time.LoadLocation(location)
+	date := time.Now().In(loc)
+	return date
+}
+
+// Day 日付データを取得する
+func Day(date time.Time) time.Time {
+	loc, _ := time.LoadLocation(location)
+	day := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, loc)
+
+	return day
 }

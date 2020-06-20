@@ -91,15 +91,11 @@ func (h *Handler) SentPushNotifications(gc *gin.Context) {
 	gc.JSON(http.StatusOK, nil)
 }
 
-const location = "Asia/Tokyo"
-
 // SendCalendarPushNotifications カレンダーに設定されている
 func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
-	loc, _ := time.LoadLocation(location)
-
 	ctx := context.Background()
 	dateQuery := gc.Query("date")
-	date := time.Now().In(loc)
+	date := TimeNow()
 
 	if dateQuery != "" {
 		d, err := time.Parse("2006-01-02T15:04:05", dateQuery)
@@ -110,7 +106,7 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 		date = d
 	}
 
-	today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, loc)
+	today := Day(date)
 	pts, err := h.App.PushTokenRepository.FindAll(ctx, h.FirestoreClient)
 	if err != nil {
 		gc.JSON(http.StatusInternalServerError, err)
@@ -125,16 +121,23 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 
 	res := []string{}
 
+	title := today.Format("2006年1月2日") + "の予定"
+
 	for _, c := range cs {
 		for _, pt := range pts {
 			if pt.UID == c.UID {
+				ir, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, c.UID, c.ItemID)
+				if err != nil {
+					continue
+				}
+
 				req := expopush.SendRequest{
-					Body:  "本文",
-					Title: "タイトル",
+					Title: title,
+					Body:  ir.Title,
 					Data:  map[string]string{"urlSchema": "schedule/" + c.ItemID},
 					Token: pt.Token,
 				}
-				err := h.Client.ExpoPush.Send(req)
+				err = h.Client.ExpoPush.Send(req)
 				if err == nil {
 					res = append(res, c.UID)
 				}

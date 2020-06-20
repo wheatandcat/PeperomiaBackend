@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"time"
 
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
@@ -74,4 +75,19 @@ func NewTestHandler(ctx context.Context) handler.Handler {
 		App:             app,
 		Client:          client,
 	}
+}
+
+// TimeNow 現在日時を取得する
+func TimeNow() time.Time {
+	loc, _ := time.LoadLocation(location)
+	date := time.Now().In(loc)
+	return date
+}
+
+// Day 日付データを取得する
+func Day(date time.Time) time.Time {
+	loc, _ := time.LoadLocation(location)
+	day := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, loc)
+
+	return day
 }

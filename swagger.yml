@@ -225,6 +225,23 @@ paths:
           description: |
             - 連携に成功した
 
+  /cron/SendCalendarPushNotifications:
+    get:
+      tags:
+        - 実装済み
+      description: |
+        - 当日の予定をPush通知で送る
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+          description: デバッグ用の日付を指定する
+      responses:
+        '200':
+          description: |
+            - 送信した
+
 components:
   securitySchemes:
     bearerAuth:

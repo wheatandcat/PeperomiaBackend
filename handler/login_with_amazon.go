@@ -44,7 +44,7 @@ func (h *Handler) LoginWithAmazon(gc *gin.Context) {
 		return
 	}
 
-	ui := repository.UserIntegrationRecode{
+	ui := repository.UserIntegrationRecord{
 		UID:          uid,
 		AmazonUserID: aUID,
 	}
