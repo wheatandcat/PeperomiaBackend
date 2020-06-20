@@ -3,4 +3,3 @@ cron:
   url: /cron/SendCalendarPushNotifications?
   schedule: every day 08:00
   timezone: Asia/Tokyo
-  target: qa-dot-tiger-batch
