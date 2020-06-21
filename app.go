@@ -71,6 +71,7 @@ func main() {
 
 	ad := r.Group("/admin")
 	{
+		ad.Use(m.FirebaseAuthMiddleWare)
 		ad.Use(m.AdminMiddleWare)
 		h, err := handler.NewHandler(ctx, f)
 		if err != nil {
