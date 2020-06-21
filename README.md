@@ -42,6 +42,10 @@ $ open cover.html
 $ gcloud app deploy
 ```
 
+```
+$ gcloud app deploy cron.yaml
+```
+
 # ツール
 
 ## APIドキュメント
