@@ -78,7 +78,7 @@ func (h *Handler) SentPushNotifications(gc *gin.Context) {
 		req := expopush.SendRequest{
 			Body:  req.Body,
 			Title: req.Title,
-			Data:  map[string]string{"urlSchema": req.URLScheme},
+			Data:  map[string]string{"urlScheme": req.URLScheme},
 			Token: pt.Token,
 		}
 
@@ -134,7 +134,7 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 				req := expopush.SendRequest{
 					Title: title,
 					Body:  ir.Title,
-					Data:  map[string]string{"urlSchema": "schedule/" + c.ItemID},
+					Data:  map[string]string{"urlScheme": "schedule/" + c.ItemID},
 					Token: pt.Token,
 				}
 				err = h.Client.ExpoPush.Send(req)
