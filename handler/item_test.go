@@ -105,6 +105,94 @@ func TestUpdateItem(t *testing.T) {
 	}
 }
 
+func TestUpdateItemPublic(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock := mock_domain.NewMockItemRepository(ctrl)
+	i := domain.ItemRecord{
+		ID:     "test",
+		UID:    "test",
+		Title:  "test",
+		Kind:   "test",
+		Public: true,
+	}
+
+	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
+	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
+
+	h := NewTestHandler(ctx)
+	h.App.ItemRepository = mock
+
+	tests := []struct {
+		name       string
+		request    handler.UpdateItemPublicRequest
+		statusCode int
+	}{
+		{
+			name: "ok",
+			request: handler.UpdateItemPublicRequest{
+				ItemID: "test",
+			},
+			statusCode: http.StatusOK,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			res := Execute(h.UpdateItemPublic, NewRequest(JsonEncode(td.request)))
+			assert.Equal(t, td.statusCode, res.Code)
+		})
+	}
+}
+
+func TestUpdateItemPrivate(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock := mock_domain.NewMockItemRepository(ctrl)
+	i := domain.ItemRecord{
+		ID:     "test",
+		UID:    "test",
+		Title:  "test",
+		Kind:   "test",
+		Public: false,
+	}
+
+	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
+	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
+
+	h := NewTestHandler(ctx)
+	h.App.ItemRepository = mock
+
+	tests := []struct {
+		name       string
+		request    handler.UpdateItemPrivateRequest
+		statusCode int
+	}{
+		{
+			name: "ok",
+			request: handler.UpdateItemPrivateRequest{
+				ItemID: "test",
+			},
+			statusCode: http.StatusOK,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			res := Execute(h.UpdateItemPrivate, NewRequest(JsonEncode(td.request)))
+			assert.Equal(t, td.statusCode, res.Code)
+		})
+	}
+}
+
 func TestDeleteItem(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
