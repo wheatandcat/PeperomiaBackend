@@ -91,6 +91,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ItemDetail'
 
+
+  /UpdateItemPublic:
+    post:
+      tags:
+        - 実装済み
+      description: |
+        - 予定を公開状態に更新する
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateItemPublicRequest'
+      responses:
+        '200':
+          description: |
+            - 更新した
+
+  /UpdateItemPrivate:
+    post:
+      tags:
+        - 実装済み
+      description: |
+        - 予定を非公開状態に更新する
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateItemPrivateRequest'
+      responses:
+        '200':
+          description: |
+            - 更新した
+
   /UpdateItemDetail:
     post:
       tags:
@@ -278,6 +305,36 @@ components:
             properties:
               item:
                 $ref: '#/components/schemas/DeleteItem'
+
+    UpdateItemPublicRequest:
+      description: 予定更新のRequest
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              itemID:
+                type: string
+                pattern: string
+                example: "1"
+                description: ID
+                required:
+                  - id
+
+    UpdateItemPrivateRequest:
+      description: 予定更新のRequest
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              itemID:
+                type: string
+                pattern: string
+                example: "1"
+                description: ID
+                required:
+                  - id
 
     CreateItemDetailRequest:
       description: 予定詳細作成のRequest

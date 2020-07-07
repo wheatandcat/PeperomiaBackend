@@ -73,6 +73,7 @@ func TestUpdateItem(t *testing.T) {
 		Kind:  "test",
 	}
 
+	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
 	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
 
 	h := NewTestHandler(ctx)

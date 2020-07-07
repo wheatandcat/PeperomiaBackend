@@ -99,12 +99,14 @@ func (h *Handler) UpdateItem(gc *gin.Context) {
 		return
 	}
 
-	item := domain.ItemRecord{
-		ID:    req.Item.ID,
-		Title: req.Item.Title,
-		Kind:  req.Item.Kind,
-		UID:   uid,
+	item, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, uid, req.Item.ID)
+	if err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
 	}
+
+	item.Title = req.Item.Title
+	item.Kind = req.Item.Kind
 
 	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
 		NewErrorResponse(err).Render(gc)
