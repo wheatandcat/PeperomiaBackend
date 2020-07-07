@@ -13,6 +13,7 @@ type ItemRecord struct {
 	UID       string    `json:"uid" firestore:"uid"`
 	Title     string    `json:"title" firestore:"title" binding:"required"`
 	Kind      string    `json:"kind" firestore:"kind" binding:"required"`
+	Public    bool      `json:"public" firestore:"public"`
 	CreatedAt time.Time `json:"-" firestore:"createdAt"`
 	UpdatedAt time.Time `json:"-" firestore:"updatedAt"`
 }

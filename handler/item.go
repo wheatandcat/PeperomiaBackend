@@ -49,6 +49,16 @@ type DeleteItem struct {
 	ID string `json:"id" binding:"required"`
 }
 
+// UpdateItemPublicRequest is UpdateItemPublic request
+type UpdateItemPublicRequest struct {
+	ItemID string `json:"itemID" binding:"required"`
+}
+
+// UpdateItemPrivateRequest is UpdateItemPrivate request
+type UpdateItemPrivateRequest struct {
+	ItemID string `json:"itemID" binding:"required"`
+}
+
 // CreateItem 予定を作成する
 func (h *Handler) CreateItem(gc *gin.Context) {
 	ctx := context.Background()
@@ -99,12 +109,76 @@ func (h *Handler) UpdateItem(gc *gin.Context) {
 		return
 	}
 
-	item := domain.ItemRecord{
-		ID:    req.Item.ID,
-		Title: req.Item.Title,
-		Kind:  req.Item.Kind,
-		UID:   uid,
+	item, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, uid, req.Item.ID)
+	if err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
 	}
+
+	item.Title = req.Item.Title
+	item.Kind = req.Item.Kind
+
+	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
+	}
+
+	gc.JSON(http.StatusOK, nil)
+}
+
+// UpdateItemPublic 予定を公開する
+func (h *Handler) UpdateItemPublic(gc *gin.Context) {
+	ctx := context.Background()
+	req := &UpdateItemPublicRequest{}
+	if err := gc.Bind(req); err != nil {
+		gc.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	uid, err := GetSelfUID(gc)
+	if err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
+	}
+
+	item, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, uid, req.ItemID)
+	if err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
+	}
+
+	item.Public = true
+
+	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
+	}
+
+	gc.JSON(http.StatusOK, nil)
+}
+
+// UpdateItemPrivate 予定を非公開する
+func (h *Handler) UpdateItemPrivate(gc *gin.Context) {
+	ctx := context.Background()
+	req := &UpdateItemPrivateRequest{}
+	if err := gc.Bind(req); err != nil {
+		gc.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	uid, err := GetSelfUID(gc)
+	if err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
+	}
+
+	item, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, uid, req.ItemID)
+	if err != nil {
+		NewErrorResponse(err).Render(gc)
+		return
+	}
+
+	item.Public = false
 
 	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
 		NewErrorResponse(err).Render(gc)

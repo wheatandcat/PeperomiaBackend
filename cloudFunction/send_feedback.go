@@ -8,6 +8,7 @@ import (
 	"github.com/nlopes/slack"
 )
 
+// SendFeedback フィードバックを送信する
 func SendFeedback(w http.ResponseWriter, r *http.Request) {
 	message, ok := r.URL.Query()["message"]
 

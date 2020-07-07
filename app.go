@@ -55,6 +55,8 @@ func main() {
 		app.POST("/CreateUser", h.CreateUser)
 		app.POST("/CreateItem", h.CreateItem)
 		app.POST("/UpdateItem", h.UpdateItem)
+		app.POST("/UpdateItemPublic", h.UpdateItemPublic)
+		app.POST("/UpdateItemPrivate", h.UpdateItemPrivate)
 		app.POST("/DeleteItem", h.DeleteItem)
 		app.POST("/CreateItemDetail", h.CreateItemDetail)
 		app.POST("/UpdateItemDetail", h.UpdateItemDetail)
