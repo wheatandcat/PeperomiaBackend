@@ -6,7 +6,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 )
 
 // ItemRepository is repository for item
@@ -91,6 +91,20 @@ func (re *ItemRepository) FindByDoc(ctx context.Context, f *firestore.Client, ui
 
 	dsnap.DataTo(&ir)
 	return ir, nil
+}
+
+// FindByPublicAndID 公開中かつIDから取得する
+func (re *ItemRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.ItemRecord, error) {
+	var item domain.ItemRecord
+	matchItem := f.Collection("items").Where("id", "==", id).Where("public", "==", true).Limit(1).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return item, err
+	}
+
+	docs[0].DataTo(&item)
+
+	return item, nil
 }
 
 // DeleteByUID ユーザーIDから削除する

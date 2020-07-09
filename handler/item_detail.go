@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 )
 
 // CreateItemDetailRequest is CreateItemDetail request

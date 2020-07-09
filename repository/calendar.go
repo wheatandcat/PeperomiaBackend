@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 )
 
 // CalendarRepository is repository for calendars

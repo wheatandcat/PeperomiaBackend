@@ -10,11 +10,11 @@ import (
 
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
-	mock_expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push/mocks"
-	mock_timegen "github.com/wheatandcat/PeperomiaBackend/backend/client/timegen/mocks"
-	mock_uuidgen "github.com/wheatandcat/PeperomiaBackend/backend/client/uuidgen/mocks"
-	handler "github.com/wheatandcat/PeperomiaBackend/backend/handler"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	mock_expopush "github.com/wheatandcat/PeperomiaBackend/client/expo_push/mocks"
+	mock_timegen "github.com/wheatandcat/PeperomiaBackend/client/timegen/mocks"
+	mock_uuidgen "github.com/wheatandcat/PeperomiaBackend/client/uuidgen/mocks"
+	handler "github.com/wheatandcat/PeperomiaBackend/handler"
+	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 )
 
 func JsonEncode(v interface{}) string {

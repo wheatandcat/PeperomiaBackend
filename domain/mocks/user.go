@@ -8,7 +8,7 @@ import (
 	firestore "cloud.google.com/go/firestore"
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	domain "github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	domain "github.com/wheatandcat/PeperomiaBackend/domain"
 	reflect "reflect"
 )
 

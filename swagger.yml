@@ -307,7 +307,7 @@ components:
                 $ref: '#/components/schemas/DeleteItem'
 
     UpdateItemPublicRequest:
-      description: 予定更新のRequest
+      description: 予定公開のRequest
       content:
         application/json:
           schema:
@@ -322,7 +322,7 @@ components:
                   - id
 
     UpdateItemPrivateRequest:
-      description: 予定更新のRequest
+      description: 予定非公開のRequest
       content:
         application/json:
           schema:
@@ -374,7 +374,7 @@ components:
             type: object
             properties:
               calendar:
-                $ref: '#/components/schemas/CraeteCalendar'
+                $ref: '#/components/schemas/CreateCalendar'
 
     UpdateCalendarRequest:
       description: Calendar更新のRequest
@@ -612,7 +612,7 @@ components:
           required:
             - id
 
-    CraeteCalendar:
+    CreateCalendar:
       type: object
       description: スケジュールアイテム日付
       properties:
