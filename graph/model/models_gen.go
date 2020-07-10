@@ -3,6 +3,13 @@
 package model
 
 type Item struct {
+	ID          string        `json:"id"`
+	Title       string        `json:"title"`
+	Kind        string        `json:"kind"`
+	ItemDetails []*ItemDetail `json:"itemDetails"`
+}
+
+type ItemDetail struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
 	Kind  string `json:"kind"`

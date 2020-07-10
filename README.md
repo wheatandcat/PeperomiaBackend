@@ -36,6 +36,12 @@ $ go tool cover -html=cover.out -o cover.html
 $ open cover.html
 ```
 
+## GraphQLスキーマ更新
+
+```
+$ go run github.com/99designs/gqlgen generate
+```
+
 ## デプロイ
 
 ```
