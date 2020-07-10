@@ -19,7 +19,18 @@ func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error
 		return item, err
 	}
 
-	return i.ToModel(), nil
+	c, _ := h.App.CalendarRepository.FindByItemID(ctx, h.FirestoreClient, id)
+
+	ids, _ := h.App.ItemDetailRepository.FindByItemID(ctx, h.FirestoreClient, id)
+
+	item = i.ToModel()
+	item.Calendar = c.ToModel()
+
+	for _, id := range ids {
+		item.ItemDetails = append(item.ItemDetails, id.ToModel())
+	}
+
+	return item, nil
 }
 
 // Query returns generated.QueryResolver implementation.

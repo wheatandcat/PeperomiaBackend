@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/wheatandcat/PeperomiaBackend/graph/model"
 )
 
 // CalendarRecord is Calendar data
@@ -23,4 +24,19 @@ type CalendarRepository interface {
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
 	DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error
 	FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]CalendarRecord, error)
+	FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (CalendarRecord, error)
+}
+
+// ToModel Modelに変換する
+func (r *CalendarRecord) ToModel() *model.Calendar {
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+
+	item := &model.Calendar{
+		ID:     r.ID,
+		ItemID: r.ItemID,
+		Date:   r.Date.In(loc).String(),
+	}
+
+	return item
 }

@@ -77,6 +77,21 @@ func (mr *MockItemDetailRepositoryMockRecorder) Delete(ctx, f, i interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockItemDetailRepository)(nil).Delete), ctx, f, i)
 }
 
+// FindByItemID mocks base method
+func (m *MockItemDetailRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]domain.ItemDetailRecord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByItemID", ctx, f, itemID)
+	ret0, _ := ret[0].([]domain.ItemDetailRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByItemID indicates an expected call of FindByItemID
+func (mr *MockItemDetailRepositoryMockRecorder) FindByItemID(ctx, f, itemID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByItemID", reflect.TypeOf((*MockItemDetailRepository)(nil).FindByItemID), ctx, f, itemID)
+}
+
 // DeleteByUID mocks base method
 func (m *MockItemDetailRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
 	m.ctrl.T.Helper()

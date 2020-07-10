@@ -40,6 +40,24 @@ func (re *ItemDetailRepository) Update(ctx context.Context, f *firestore.Client,
 	return err
 }
 
+// FindByItemID ItemIDから取得する
+func (re *ItemDetailRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]domain.ItemDetailRecord, error) {
+	var ids []domain.ItemDetailRecord
+	matchItem := f.Collection("itemDetails").Where("itemId", "==", itemID).OrderBy("priority", firestore.Asc).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return ids, err
+	}
+
+	for _, doc := range docs {
+		var id domain.ItemDetailRecord
+		doc.DataTo(&id)
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
+
 // Delete アイテム詳細を削除する
 func (re *ItemDetailRepository) Delete(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord) error {
 	idDoc := getItemDetailDocID(i.UID, i.ItemID, i.ID)

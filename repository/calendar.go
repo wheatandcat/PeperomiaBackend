@@ -40,6 +40,20 @@ func (re *CalendarRepository) Update(ctx context.Context, f *firestore.Client, i
 	return err
 }
 
+// FindByItemID ItemIDから取得する
+func (re *CalendarRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (domain.CalendarRecord, error) {
+	var item domain.CalendarRecord
+	matchItem := f.Collection("calendars").Where("itemId", "==", itemID).Limit(1).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return item, err
+	}
+
+	docs[0].DataTo(&item)
+
+	return item, nil
+}
+
 // FindByDate 日付から取得する
 func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
 	var items []domain.CalendarRecord
