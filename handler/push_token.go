@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	expopush "github.com/wheatandcat/PeperomiaBackend/client/expo_push"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 )
 
 // CreatePushTokenRequest is CreatePushToke request

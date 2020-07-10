@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	amazonclient "github.com/wheatandcat/PeperomiaBackend/backend/client/amazon"
+	amazonclient "github.com/wheatandcat/PeperomiaBackend/client/amazon"
 )
 
 // AmazonAuthMiddleWare Amazon Auth Middleware

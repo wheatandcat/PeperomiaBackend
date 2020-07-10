@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	amazonclient "github.com/wheatandcat/PeperomiaBackend/backend/client/amazon"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	amazonclient "github.com/wheatandcat/PeperomiaBackend/client/amazon"
+	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 )
 
 // LoginWithAmazonRequest is LoginWithAmazonRequest request

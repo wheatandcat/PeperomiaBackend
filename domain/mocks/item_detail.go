@@ -8,7 +8,7 @@ import (
 	firestore "cloud.google.com/go/firestore"
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	domain "github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	domain "github.com/wheatandcat/PeperomiaBackend/domain"
 	reflect "reflect"
 )
 
@@ -75,6 +75,21 @@ func (m *MockItemDetailRepository) Delete(ctx context.Context, f *firestore.Clie
 func (mr *MockItemDetailRepositoryMockRecorder) Delete(ctx, f, i interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockItemDetailRepository)(nil).Delete), ctx, f, i)
+}
+
+// FindByItemID mocks base method
+func (m *MockItemDetailRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]domain.ItemDetailRecord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByItemID", ctx, f, itemID)
+	ret0, _ := ret[0].([]domain.ItemDetailRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByItemID indicates an expected call of FindByItemID
+func (mr *MockItemDetailRepositoryMockRecorder) FindByItemID(ctx, f, itemID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByItemID", reflect.TypeOf((*MockItemDetailRepository)(nil).FindByItemID), ctx, f, itemID)
 }
 
 // DeleteByUID mocks base method

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 )
 
 // CalendarRepository is repository for calendars
@@ -38,6 +38,20 @@ func (re *CalendarRepository) Update(ctx context.Context, f *firestore.Client, i
 	_, err := f.Collection("calendars").Doc(idDoc).Set(ctx, i)
 
 	return err
+}
+
+// FindByItemID ItemIDから取得する
+func (re *CalendarRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (domain.CalendarRecord, error) {
+	var item domain.CalendarRecord
+	matchItem := f.Collection("calendars").Where("itemId", "==", itemID).Limit(1).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return item, err
+	}
+
+	docs[0].DataTo(&item)
+
+	return item, nil
 }
 
 // FindByDate 日付から取得する

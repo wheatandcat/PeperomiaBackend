@@ -1,0 +1,34 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Item {
+  id: ID!
+  title: String!
+  kind: String!
+  itemDetails: [ItemDetail]!
+  calendar: Calendar!
+}
+
+type Calendar {
+  id: ID!
+  itemId: String!
+  date: String!
+}
+
+type ItemDetail {
+  id: ID!
+  title: String!
+  itemId: String!
+  kind: String
+  moveMinutes: Int
+  place: String
+  url: String
+  memo: String
+  priority: Int!
+}
+
+type Query {
+  item(id: ID!): Item!
+}
+

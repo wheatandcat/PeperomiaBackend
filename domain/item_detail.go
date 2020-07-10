@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
+	"github.com/wheatandcat/PeperomiaBackend/graph/model"
 )
 
 // ItemDetailRecord is itemDetail data
@@ -25,6 +26,24 @@ type ItemDetailRepository interface {
 	Create(ctx context.Context, f *firestore.Client, i ItemDetailRecord) error
 	Update(ctx context.Context, f *firestore.Client, i ItemDetailRecord) error
 	Delete(ctx context.Context, f *firestore.Client, i ItemDetailRecord) error
+	FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]ItemDetailRecord, error)
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
 	DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error
+}
+
+// ToModel Modelに変換する
+func (r *ItemDetailRecord) ToModel() *model.ItemDetail {
+	item := &model.ItemDetail{
+		ID:          r.ID,
+		ItemID:      r.ItemID,
+		Title:       r.Title,
+		Kind:        &r.Kind,
+		MoveMinutes: &r.MoveMinutes,
+		Place:       &r.Place,
+		URL:         &r.URL,
+		Memo:        &r.Memo,
+		Priority:    r.Priority,
+	}
+
+	return item
 }

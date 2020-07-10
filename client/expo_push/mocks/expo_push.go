@@ -2,7 +2,7 @@
 package mock_expopush
 
 import (
-	expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push"
+	expopush "github.com/wheatandcat/PeperomiaBackend/client/expo_push"
 )
 
 type ExpoPushClient struct{}

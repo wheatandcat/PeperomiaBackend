@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	domain "github.com/wheatandcat/PeperomiaBackend/backend/domain"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	domain "github.com/wheatandcat/PeperomiaBackend/domain"
+	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 )
 
 // SyncItemsRequest is SyncItemsRequest request

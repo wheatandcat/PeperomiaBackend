@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 )
 
 // AmazonRegisterItemRequest is AmazonRegisterItem request

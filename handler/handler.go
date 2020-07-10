@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"time"
 
-	expopush "github.com/wheatandcat/PeperomiaBackend/backend/client/expo_push"
-	"github.com/wheatandcat/PeperomiaBackend/backend/client/timegen"
-	"github.com/wheatandcat/PeperomiaBackend/backend/client/uuidgen"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	expopush "github.com/wheatandcat/PeperomiaBackend/client/expo_push"
+	"github.com/wheatandcat/PeperomiaBackend/client/timegen"
+	"github.com/wheatandcat/PeperomiaBackend/client/uuidgen"
+	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 )
 
 // Application is app interface
@@ -60,7 +60,7 @@ func newApplication() *Application {
 	}
 }
 
-// NewHandler is Craeate Handler
+// NewHandler is Create Handler
 func NewHandler(ctx context.Context, f *firebase.App) (*Handler, error) {
 	fc, err := f.Firestore(ctx)
 	if err != nil {

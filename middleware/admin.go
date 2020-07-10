@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
-	repository "github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
+	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 )
 
 // AdminMiddleWare Admin Middleware

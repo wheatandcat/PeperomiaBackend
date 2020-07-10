@@ -4,12 +4,28 @@ import (
 	"context"
 	"net/http"
 
+	gqlHandler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/wheatandcat/PeperomiaBackend/backend/handler"
-	"github.com/wheatandcat/PeperomiaBackend/backend/middleware"
-	"github.com/wheatandcat/PeperomiaBackend/backend/repository"
+	graph "github.com/wheatandcat/PeperomiaBackend/graph"
+	"github.com/wheatandcat/PeperomiaBackend/graph/generated"
+	"github.com/wheatandcat/PeperomiaBackend/handler"
+	"github.com/wheatandcat/PeperomiaBackend/middleware"
+	"github.com/wheatandcat/PeperomiaBackend/repository"
 )
+
+// Defining the Graphql handler
+func graphqlHandler(h *handler.Handler) gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	gh := gqlHandler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
+		Handler: h,
+	}}))
+
+	return func(c *gin.Context) {
+		gh.ServeHTTP(c.Writer, c.Request)
+	}
+}
 
 func main() {
 	r := gin.Default()
@@ -102,6 +118,15 @@ func main() {
 		}
 
 		cr.GET("/SendCalendarPushNotifications", h.SendCalendarPushNotifications)
+	}
+
+	gqr := r.Group("/graphql")
+	{
+		h, err := handler.NewHandler(ctx, f)
+		if err != nil {
+			panic(err)
+		}
+		gqr.POST("", graphqlHandler(h))
 	}
 
 	r.Run()

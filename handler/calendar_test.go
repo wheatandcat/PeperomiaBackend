@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
-	mock_domain "github.com/wheatandcat/PeperomiaBackend/backend/domain/mocks"
-	handler "github.com/wheatandcat/PeperomiaBackend/backend/handler"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
+	mock_domain "github.com/wheatandcat/PeperomiaBackend/domain/mocks"
+	handler "github.com/wheatandcat/PeperomiaBackend/handler"
 )
 
 func TestCreateCalendar(t *testing.T) {

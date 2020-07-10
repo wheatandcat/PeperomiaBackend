@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/wheatandcat/PeperomiaBackend/backend/domain"
-	mock_domain "github.com/wheatandcat/PeperomiaBackend/backend/domain/mocks"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
+	mock_domain "github.com/wheatandcat/PeperomiaBackend/domain/mocks"
 )
 
 func TestCreateUser(t *testing.T) {
