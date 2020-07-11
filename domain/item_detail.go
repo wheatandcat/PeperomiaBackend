@@ -37,11 +37,11 @@ func (r *ItemDetailRecord) ToModel() *model.ItemDetail {
 		ID:          r.ID,
 		ItemID:      r.ItemID,
 		Title:       r.Title,
-		Kind:        &r.Kind,
-		MoveMinutes: &r.MoveMinutes,
-		Place:       &r.Place,
-		URL:         &r.URL,
-		Memo:        &r.Memo,
+		Kind:        r.Kind,
+		MoveMinutes: r.MoveMinutes,
+		Place:       r.Place,
+		URL:         r.URL,
+		Memo:        r.Memo,
 		Priority:    r.Priority,
 	}
 

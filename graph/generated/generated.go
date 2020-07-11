@@ -295,11 +295,11 @@ type ItemDetail {
   id: ID!
   title: String!
   itemId: String!
-  kind: String
-  moveMinutes: Int
-  place: String
-  url: String
-  memo: String
+  kind: String!
+  moveMinutes: Int!
+  place: String!
+  url: String!
+  memo: String!
   priority: Int!
 }
 
@@ -777,11 +777,14 @@ func (ec *executionContext) _ItemDetail_kind(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ItemDetail_moveMinutes(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
@@ -808,11 +811,14 @@ func (ec *executionContext) _ItemDetail_moveMinutes(ctx context.Context, field g
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ItemDetail_place(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
@@ -839,11 +845,14 @@ func (ec *executionContext) _ItemDetail_place(ctx context.Context, field graphql
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ItemDetail_url(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
@@ -870,11 +879,14 @@ func (ec *executionContext) _ItemDetail_url(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ItemDetail_memo(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
@@ -901,11 +913,14 @@ func (ec *executionContext) _ItemDetail_memo(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ItemDetail_priority(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
@@ -2227,14 +2242,29 @@ func (ec *executionContext) _ItemDetail(ctx context.Context, sel ast.SelectionSe
 			}
 		case "kind":
 			out.Values[i] = ec._ItemDetail_kind(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "moveMinutes":
 			out.Values[i] = ec._ItemDetail_moveMinutes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "place":
 			out.Values[i] = ec._ItemDetail_place(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "url":
 			out.Values[i] = ec._ItemDetail_url(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "memo":
 			out.Values[i] = ec._ItemDetail_memo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "priority":
 			out.Values[i] = ec._ItemDetail_priority(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -2908,29 +2938,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
-}
-
-func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
-	return graphql.UnmarshalInt(v)
-}
-
-func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	return graphql.MarshalInt(v)
-}
-
-func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalOInt2int(ctx, v)
-	return &res, err
-}
-
-func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec.marshalOInt2int(ctx, sel, *v)
 }
 
 func (ec *executionContext) marshalOItemDetail2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐItemDetail(ctx context.Context, sel ast.SelectionSet, v model.ItemDetail) graphql.Marshaler {

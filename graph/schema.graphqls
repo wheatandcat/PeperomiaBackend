@@ -20,11 +20,11 @@ type ItemDetail {
   id: ID!
   title: String!
   itemId: String!
-  kind: String
-  moveMinutes: Int
-  place: String
-  url: String
-  memo: String
+  kind: String!
+  moveMinutes: Int!
+  place: String!
+  url: String!
+  memo: String!
   priority: Int!
 }
 

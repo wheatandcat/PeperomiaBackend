@@ -17,13 +17,13 @@ type Item struct {
 }
 
 type ItemDetail struct {
-	ID          string  `json:"id"`
-	Title       string  `json:"title"`
-	ItemID      string  `json:"itemId"`
-	Kind        *string `json:"kind"`
-	MoveMinutes *int    `json:"moveMinutes"`
-	Place       *string `json:"place"`
-	URL         *string `json:"url"`
-	Memo        *string `json:"memo"`
-	Priority    int     `json:"priority"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	ItemID      string `json:"itemId"`
+	Kind        string `json:"kind"`
+	MoveMinutes int    `json:"moveMinutes"`
+	Place       string `json:"place"`
+	URL         string `json:"url"`
+	Memo        string `json:"memo"`
+	Priority    int    `json:"priority"`
 }
