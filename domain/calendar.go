@@ -35,7 +35,7 @@ func (r *CalendarRecord) ToModel() *model.Calendar {
 	item := &model.Calendar{
 		ID:     r.ID,
 		ItemID: r.ItemID,
-		Date:   r.Date.In(loc).String(),
+		Date:   r.Date.In(loc).Format("2006-01-02 15:04:05"),
 	}
 
 	return item
