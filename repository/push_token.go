@@ -16,14 +16,14 @@ func NewPushTokenRepository() domain.PushTokenRepository {
 	return &PushTokenRepository{}
 }
 
-func getPushTokenDocID(uID string, pushTokenID string) string {
-	doc := uID + "_" + pushTokenID
+func getPushTokenDocID(uID string, DeviceID string, pushTokenID string) string {
+	doc := uID + "_" + DeviceID + "_" + pushTokenID
 	return doc
 }
 
 // Create カレンダーを作成する
 func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, p domain.PushTokenRecord) error {
-	idDoc := getPushTokenDocID(p.UID, p.DeviceID)
+	idDoc := getPushTokenDocID(p.UID, p.DeviceID, p.Token)
 
 	_, err := f.Collection("expoPushTokens").Doc(idDoc).Set(ctx, p)
 
