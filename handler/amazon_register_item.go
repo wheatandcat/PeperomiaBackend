@@ -21,7 +21,7 @@ func (h *Handler) AmazonRegisterItem(gc *gin.Context) {
 	ctx := context.Background()
 	req := &AmazonRegisterItemRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 

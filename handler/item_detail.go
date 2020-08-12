@@ -59,7 +59,7 @@ func (h *Handler) CreateItemDetail(gc *gin.Context) {
 	ctx := context.Background()
 	req := &CreateItemDetailRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -95,7 +95,7 @@ func (h *Handler) UpdateItemDetail(gc *gin.Context) {
 	ctx := context.Background()
 	req := &UpdateItemDetailRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -131,7 +131,7 @@ func (h *Handler) DeleteItemDetail(gc *gin.Context) {
 	ctx := context.Background()
 	req := &DeleteItemDetailRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 

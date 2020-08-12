@@ -48,7 +48,7 @@ func (h *Handler) CreateCalendar(gc *gin.Context) {
 	ctx := context.Background()
 	req := &CreateCalendarRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -78,7 +78,7 @@ func (h *Handler) UpdateCalendar(gc *gin.Context) {
 	ctx := context.Background()
 	req := &UpdateCalendarRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (h *Handler) DeleteCalendar(gc *gin.Context) {
 	ctx := context.Background()
 	req := &DeleteCalendarRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 

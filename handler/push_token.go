@@ -34,7 +34,7 @@ func (h *Handler) CreatePushToken(gc *gin.Context) {
 	ctx := context.Background()
 	req := &CreatePushTokenRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -64,13 +64,13 @@ func (h *Handler) SentPushNotifications(gc *gin.Context) {
 	ctx := context.Background()
 	req := &SentPushNotificationsRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
 	pts, err := h.App.PushTokenRepository.FindByUID(ctx, h.FirestoreClient, req.UID)
 	if err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -83,7 +83,7 @@ func (h *Handler) SentPushNotifications(gc *gin.Context) {
 		}
 
 		if err != h.Client.ExpoPush.Send(req) {
-			gc.JSON(http.StatusInternalServerError, err)
+			NewErrorResponse(err).Render(gc)
 			return
 		}
 	}
@@ -100,7 +100,7 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 	if dateQuery != "" {
 		d, err := time.Parse("2006-01-02T15:04:05", dateQuery)
 		if err != nil {
-			gc.JSON(http.StatusInternalServerError, err)
+			NewErrorResponse(err).Render(gc)
 			return
 		}
 		date = d
@@ -109,13 +109,13 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 	today := Day(date)
 	pts, err := h.App.PushTokenRepository.FindAll(ctx, h.FirestoreClient)
 	if err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
 	cs, err := h.App.CalendarRepository.FindByDate(ctx, h.FirestoreClient, &today)
 	if err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 

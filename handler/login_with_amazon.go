@@ -19,7 +19,7 @@ func (h *Handler) LoginWithAmazon(gc *gin.Context) {
 	ctx := context.Background()
 	req := &LoginWithAmazonRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 

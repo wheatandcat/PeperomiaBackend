@@ -2,9 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	gqlHandler "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	graph "github.com/wheatandcat/PeperomiaBackend/graph"
@@ -28,7 +33,30 @@ func graphqlHandler(h *handler.Handler) gin.HandlerFunc {
 }
 
 func main() {
+
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: os.Getenv("SENTRY_DNS"),
+		BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+			if hint.Context != nil {
+				if req, ok := hint.Context.Value(sentry.RequestContextKey).(*http.Request); ok {
+					fmt.Println(req)
+				}
+			}
+			fmt.Println(event)
+			return event
+		},
+		Debug:            true,
+		AttachStacktrace: true,
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
+
 	r := gin.Default()
+
+	r.Use(sentrygin.New(sentrygin.Options{
+		Repanic: true,
+	}))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -61,6 +89,11 @@ func main() {
 
 	app := r.Group("")
 	{
+		app.Use(func(ctx *gin.Context) {
+			ctx.Set("role", handler.RoleApp)
+			ctx.Next()
+		})
+
 		app.Use(m.FirebaseAuthMiddleWare)
 
 		h, err := handler.NewHandler(ctx, f)
@@ -89,6 +122,11 @@ func main() {
 
 	ad := r.Group("/admin")
 	{
+		app.Use(func(ctx *gin.Context) {
+			ctx.Set("role", handler.RoleAdmin)
+			ctx.Next()
+		})
+
 		ad.Use(m.FirebaseAuthMiddleWare)
 		ad.Use(m.AdminMiddleWare)
 		h, err := handler.NewHandler(ctx, f)
@@ -112,6 +150,11 @@ func main() {
 
 	cr := r.Group("/cron")
 	{
+		app.Use(func(ctx *gin.Context) {
+			ctx.Set("role", handler.RoleCron)
+			ctx.Next()
+		})
+
 		h, err := handler.NewHandler(ctx, f)
 		if err != nil {
 			panic(err)
@@ -122,6 +165,11 @@ func main() {
 
 	gqr := r.Group("/graphql")
 	{
+		app.Use(func(ctx *gin.Context) {
+			ctx.Set("role", handler.RoleGraphql)
+			ctx.Next()
+		})
+
 		h, err := handler.NewHandler(ctx, f)
 		if err != nil {
 			panic(err)
