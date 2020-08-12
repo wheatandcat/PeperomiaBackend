@@ -13,8 +13,18 @@ import (
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/wheatandcat/PeperomiaBackend/domain"
+)
+
+// Role 役割
+const (
+	RoleApp     = "app"
+	RoleAdmin   = "admin"
+	RoleCron    = "cron"
+	RoleGraphql = "graphql"
 )
 
 // Application is app interface
@@ -103,6 +113,18 @@ func GetSelfUID(gc *gin.Context) (string, error) {
 	return "", errors.New("not uid")
 }
 
+func getRole(gc *gin.Context) string {
+	r, ok := gc.Get("role")
+	if ok {
+		role, ok := r.(string)
+		if ok {
+			return role
+		}
+	}
+
+	return ""
+}
+
 // GetSelfAmazonUID 自身のAmazonUIDを取得する
 func GetSelfAmazonUID(gc *gin.Context) (string, error) {
 	fuid, ok := gc.Get("amazonUID")
@@ -118,6 +140,7 @@ func GetSelfAmazonUID(gc *gin.Context) (string, error) {
 
 // NewErrorResponse エラーレスポンス作成する
 func NewErrorResponse(err error) *ErrorResponse {
+
 	e := &ErrorResponse{
 		ErrorCode:  getErrorCode(),
 		StatusCode: getStatusCode(),
@@ -133,6 +156,19 @@ func NewErrorResponse(err error) *ErrorResponse {
 
 // Render 書き込み
 func (e *ErrorResponse) Render(gc *gin.Context) {
+	if hub := sentrygin.GetHubFromContext(gc); hub != nil {
+		hub.WithScope(func(scope *sentry.Scope) {
+			r := getRole(gc)
+			if r == RoleApp || r == RoleGraphql || r == RoleAdmin {
+				// アプリの場合はユーザーIDを追加
+				uid, _ := GetSelfUID(gc)
+				scope.SetUser(sentry.User{ID: uid})
+			}
+			hub.Scope().SetTag("role", r)
+			hub.CaptureException(e.Error)
+		})
+	}
+
 	gc.JSON(e.StatusCode, e)
 }
 

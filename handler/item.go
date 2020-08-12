@@ -64,7 +64,7 @@ func (h *Handler) CreateItem(gc *gin.Context) {
 	ctx := context.Background()
 	req := &CreateItemRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (h *Handler) UpdateItem(gc *gin.Context) {
 	ctx := context.Background()
 	req := &UpdateItemRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -131,7 +131,7 @@ func (h *Handler) UpdateItemPublic(gc *gin.Context) {
 	ctx := context.Background()
 	req := &UpdateItemPublicRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -162,7 +162,7 @@ func (h *Handler) UpdateItemPrivate(gc *gin.Context) {
 	ctx := context.Background()
 	req := &UpdateItemPrivateRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -193,7 +193,7 @@ func (h *Handler) DeleteItem(gc *gin.Context) {
 	ctx := context.Background()
 	req := &DeleteItemRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
@@ -231,7 +231,7 @@ func (h *Handler) SyncItems(gc *gin.Context) {
 	ctx := context.Background()
 	req := &SyncItemsRequest{}
 	if err := gc.Bind(req); err != nil {
-		gc.JSON(http.StatusInternalServerError, err)
+		NewErrorResponse(err).Render(gc)
 		return
 	}
 
