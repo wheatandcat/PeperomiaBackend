@@ -45,7 +45,7 @@ func main() {
 			fmt.Println(event)
 			return event
 		},
-		Debug:            true,
+		Debug:            false,
 		AttachStacktrace: true,
 	})
 	if err != nil {
