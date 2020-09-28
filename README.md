@@ -23,6 +23,15 @@ $ dev_appserver.py app.yaml
 
 ## テスト
 
+### mock作成
+
+```
+$ sh mock_gen.sh
+```
+
+
+### 実行
+
 ```
 $ go test ./handler
 ```

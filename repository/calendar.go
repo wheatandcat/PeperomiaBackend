@@ -54,6 +54,29 @@ func (re *CalendarRepository) FindByItemID(ctx context.Context, f *firestore.Cli
 	return item, nil
 }
 
+// FindByPublicAndID IDかつPublicから取得する
+func (re *CalendarRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.CalendarRecord, error) {
+	var item domain.CalendarRecord
+	matchItem := f.CollectionGroup("calendars").Where("id", "==", id).Where("public", "==", true).Limit(1).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return item, err
+	}
+
+	doc := docs[0]
+
+	doc.DataTo(&item)
+	matchItems := doc.Ref.Collection("items").Documents(ctx)
+	docItems, err := matchItems.GetAll()
+	if err != nil {
+		return item, err
+	}
+	docItem := docItems[0]
+	docItem.DataTo(&item.Item)
+
+	return item, nil
+}
+
 // FindByDate 日付から取得する
 func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
 	var items []domain.CalendarRecord

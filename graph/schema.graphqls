@@ -2,18 +2,24 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Item {
+type User {
   id: ID!
-  title: String!
-  kind: String!
-  itemDetails: [ItemDetail]!
-  calendar: Calendar!
+  uid: String!
+  role: Int!
 }
 
 type Calendar {
   id: ID!
-  itemId: String!
   date: String!
+  public: Boolean!
+  item: Item!
+}
+
+type Item {
+  id: ID!
+  title: String!
+  kind: String!
+  itemDetails: [ItemDetail]
 }
 
 type ItemDetail {
@@ -28,7 +34,26 @@ type ItemDetail {
   priority: Int!
 }
 
+type ExpoPushToken {
+  id: ID!
+  uid: String!
+  deviceId: String!
+  token: String!
+}
+
+type ShareItem {
+  id: ID!
+  itemId: String!
+  date: String!
+  item: Item!
+}
+
 type Query {
-  item(id: ID!): Item!
+  ShareItem(id: ID!): ShareItem
+  User: User
+  Calendars(startDate: String!, endDate: String!): [Calendar]
+  Item(itemID: ID!): Item
+  ItemDetail(itemDetailID: ID!): ItemDetail
+  ExpoPushToken: ExpoPushToken
 }
 

@@ -5,32 +5,44 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/wheatandcat/PeperomiaBackend/graph/generated"
 	"github.com/wheatandcat/PeperomiaBackend/graph/model"
 )
 
-func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
+func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareItem, error) {
 	h := r.Handler
-	item := &model.Item{}
+	item := &model.ShareItem{}
 
-	i, err := h.App.ItemRepository.FindByPublicAndID(ctx, h.FirestoreClient, id)
+	i, err := h.App.CalendarRepository.FindByPublicAndID(ctx, h.FirestoreClient, id)
 	if err != nil {
 		return item, err
 	}
 
-	c, _ := h.App.CalendarRepository.FindByItemID(ctx, h.FirestoreClient, id)
-
-	ids, _ := h.App.ItemDetailRepository.FindByItemID(ctx, h.FirestoreClient, id)
-
-	item = i.ToModel()
-	item.Calendar = c.ToModel()
-
-	for _, id := range ids {
-		item.ItemDetails = append(item.ItemDetails, id.ToModel())
-	}
+	item = i.ToShareItemModel()
 
 	return item, nil
+}
+
+func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Item(ctx context.Context, itemID string) (*model.Item, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) ItemDetail(ctx context.Context, itemDetailID string) (*model.ItemDetail, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) ExpoPushToken(ctx context.Context) (*model.ExpoPushToken, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Query returns generated.QueryResolver implementation.

@@ -135,3 +135,18 @@ func (mr *MockCalendarRepositoryMockRecorder) FindByItemID(ctx, f, itemID interf
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByItemID", reflect.TypeOf((*MockCalendarRepository)(nil).FindByItemID), ctx, f, itemID)
 }
+
+// FindByPublicAndID mocks base method
+func (m *MockCalendarRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.CalendarRecord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByPublicAndID", ctx, f, id)
+	ret0, _ := ret[0].(domain.CalendarRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByPublicAndID indicates an expected call of FindByPublicAndID
+func (mr *MockCalendarRepositoryMockRecorder) FindByPublicAndID(ctx, f, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPublicAndID", reflect.TypeOf((*MockCalendarRepository)(nil).FindByPublicAndID), ctx, f, id)
+}

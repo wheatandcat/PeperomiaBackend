@@ -10,10 +10,12 @@ import (
 
 // CalendarRecord is Calendar data
 type CalendarRecord struct {
-	ID     string     `json:"id" firestore:"id" binding:"required"`
-	UID    string     `json:"uid" firestore:"uid"`
-	ItemID string     `json:"itemId" firestore:"itemId" binding:"required"`
-	Date   *time.Time `json:"date" firestore:"date" binding:"required"`
+	ID     string      `json:"id" firestore:"id" binding:"required"`
+	UID    string      `json:"uid" firestore:"uid"`
+	ItemID string      `json:"itemId" firestore:"itemId" binding:"required"`
+	Public bool        `json:"public" firestore:"public"`
+	Date   *time.Time  `json:"date" firestore:"date" binding:"required"`
+	Item   *ItemRecord `json:"item" firestore:"item"`
 }
 
 // CalendarRepository is repository interface
@@ -25,17 +27,18 @@ type CalendarRepository interface {
 	DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error
 	FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]CalendarRecord, error)
 	FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (CalendarRecord, error)
+	FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (CalendarRecord, error)
 }
 
-// ToModel Modelに変換する
-func (r *CalendarRecord) ToModel() *model.Calendar {
+// ToShareItemModel Modelに変換する
+func (r *CalendarRecord) ToShareItemModel() *model.ShareItem {
 	const location = "Asia/Tokyo"
 	loc, _ := time.LoadLocation(location)
 
-	item := &model.Calendar{
-		ID:     r.ID,
-		ItemID: r.ItemID,
-		Date:   r.Date.In(loc).Format("2006-01-02 15:04:05"),
+	item := &model.ShareItem{
+		ID:   r.ID,
+		Date: r.Date.In(loc).Format("2006-01-02 15:04:05"),
+		Item: r.Item.ToModel(),
 	}
 
 	return item
