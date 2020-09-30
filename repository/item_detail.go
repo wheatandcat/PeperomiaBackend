@@ -100,3 +100,31 @@ func (re *ItemDetailRepository) DeleteByItemID(ctx context.Context, f *firestore
 
 	return nil
 }
+
+// GetItemDetailsDoc DocumentからItemDetailsDocを取得する
+func GetItemDetailsDoc(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*firestore.DocumentSnapshot, error) {
+	matchItems := doc.Ref.Collection("itemDetails").OrderBy("priority", firestore.Asc).Documents(ctx)
+	docs, err := matchItems.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return docs, nil
+}
+
+// GetItemDetailsByDocument DocumentからItemDetailsを取得する
+func GetItemDetailsByDocument(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*domain.ItemDetailRecord, error) {
+	docs, err := GetItemDetailsDoc(ctx, doc)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []*domain.ItemDetailRecord
+	for _, did := range docs {
+		var id *domain.ItemDetailRecord
+		did.DataTo(&id)
+		items = append(items, id)
+	}
+
+	return items, nil
+}

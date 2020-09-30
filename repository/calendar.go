@@ -66,13 +66,19 @@ func (re *CalendarRepository) FindByPublicAndID(ctx context.Context, f *firestor
 	doc := docs[0]
 
 	doc.DataTo(&item)
-	matchItems := doc.Ref.Collection("items").Documents(ctx)
-	docItems, err := matchItems.GetAll()
+	docItem, err := GetItemDoc(ctx, doc)
 	if err != nil {
 		return item, err
 	}
-	docItem := docItems[0]
+
 	docItem.DataTo(&item.Item)
+
+	ids, err := GetItemDetailsByDocument(ctx, docItem)
+	if err != nil {
+		return item, err
+	}
+
+	item.Item.ItemDetails = ids
 
 	return item, nil
 }

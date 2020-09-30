@@ -123,3 +123,14 @@ func (re *ItemRepository) DeleteByUID(ctx context.Context, f *firestore.Client, 
 
 	return nil
 }
+
+// GetItemDoc DocumentからItemDocを取得する
+func GetItemDoc(ctx context.Context, doc *firestore.DocumentSnapshot) (*firestore.DocumentSnapshot, error) {
+	matchItems := doc.Ref.Collection("items").Documents(ctx)
+	docs, err := matchItems.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return docs[0], nil
+}

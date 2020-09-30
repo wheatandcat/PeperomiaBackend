@@ -10,14 +10,14 @@ import (
 
 // ItemRecord is item data
 type ItemRecord struct {
-	ID          string        `json:"id" firestore:"id" binding:"required"`
-	UID         string        `json:"uid" firestore:"uid"`
-	Title       string        `json:"title" firestore:"title" binding:"required"`
-	Kind        string        `json:"kind" firestore:"kind" binding:"required"`
-	Public      bool          `json:"public" firestore:"public"`
-	CreatedAt   time.Time     `json:"-" firestore:"createdAt"`
-	UpdatedAt   time.Time     `json:"-" firestore:"updatedAt"`
-	ItemDetails []*ItemRecord `json:"itemDetails" firestore:"itemDetails"`
+	ID          string              `json:"id" firestore:"id" binding:"required"`
+	UID         string              `json:"uid" firestore:"uid"`
+	Title       string              `json:"title" firestore:"title" binding:"required"`
+	Kind        string              `json:"kind" firestore:"kind" binding:"required"`
+	Public      bool                `json:"public" firestore:"public"`
+	CreatedAt   time.Time           `json:"-" firestore:"createdAt"`
+	UpdatedAt   time.Time           `json:"-" firestore:"updatedAt"`
+	ItemDetails []*ItemDetailRecord `json:"itemDetails" firestore:"itemDetails"`
 }
 
 // ItemRepository is repository interface
@@ -33,10 +33,17 @@ type ItemRepository interface {
 
 // ToModel Modelに変換する
 func (r *ItemRecord) ToModel() *model.Item {
+	var ids []*model.ItemDetail
+
+	for _, id := range r.ItemDetails {
+		ids = append(ids, id.ToModel())
+	}
+
 	item := &model.Item{
-		ID:    r.ID,
-		Kind:  r.Kind,
-		Title: r.Title,
+		ID:          r.ID,
+		Kind:        r.Kind,
+		Title:       r.Title,
+		ItemDetails: ids,
 	}
 
 	return item
