@@ -15,6 +15,10 @@ func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareI
 	h := r.Handler
 	item := &model.ShareItem{}
 
+	if isPublic(ctx) {
+		return item, fmt.Errorf("not public")
+	}
+
 	i, err := h.App.CalendarRepository.FindByPublicAndID(ctx, h.FirestoreClient, id)
 	if err != nil {
 		return item, err

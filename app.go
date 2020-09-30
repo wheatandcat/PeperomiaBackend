@@ -12,6 +12,7 @@ import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 	graph "github.com/wheatandcat/PeperomiaBackend/graph"
 	"github.com/wheatandcat/PeperomiaBackend/graph/generated"
 	"github.com/wheatandcat/PeperomiaBackend/handler"
@@ -29,6 +30,14 @@ func graphqlHandler(h *handler.Handler) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		gh.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func ginContextToContextMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := context.WithValue(c.Request.Context(), domain.GinContextKey, c)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
 	}
 }
 
@@ -165,6 +174,7 @@ func main() {
 
 	gqr := r.Group("/graphql")
 	{
+		gqr.Use(ginContextToContextMiddleware())
 		app.Use(func(ctx *gin.Context) {
 			ctx.Set("role", handler.RoleGraphql)
 			ctx.Next()
@@ -175,6 +185,22 @@ func main() {
 			panic(err)
 		}
 		gqr.POST("", graphqlHandler(h))
+	}
+
+	gqrApp := r.Group("/app/graphql")
+	{
+		gqrApp.Use(ginContextToContextMiddleware())
+		gqrApp.Use(m.FirebaseAuthMiddleWare)
+		app.Use(func(ctx *gin.Context) {
+			ctx.Set("role", handler.RoleAppGraphql)
+			ctx.Next()
+		})
+
+		h, err := handler.NewHandler(ctx, f)
+		if err != nil {
+			panic(err)
+		}
+		gqrApp.POST("", graphqlHandler(h))
 	}
 
 	r.Run()
