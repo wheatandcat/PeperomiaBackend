@@ -92,20 +92,6 @@ func (mr *MockCalendarRepositoryMockRecorder) DeleteByUID(ctx, f, uid interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByUID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByUID), ctx, f, uid)
 }
 
-// DeleteByItemID mocks base method
-func (m *MockCalendarRepository) DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByItemID", ctx, f, itemID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteByItemID indicates an expected call of DeleteByItemID
-func (mr *MockCalendarRepositoryMockRecorder) DeleteByItemID(ctx, f, itemID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByItemID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByItemID), ctx, f, itemID)
-}
-
 // FindByDate mocks base method
 func (m *MockCalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
 	m.ctrl.T.Helper()
@@ -119,21 +105,6 @@ func (m *MockCalendarRepository) FindByDate(ctx context.Context, f *firestore.Cl
 func (mr *MockCalendarRepositoryMockRecorder) FindByDate(ctx, f, date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByDate", reflect.TypeOf((*MockCalendarRepository)(nil).FindByDate), ctx, f, date)
-}
-
-// FindByItemID mocks base method
-func (m *MockCalendarRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (domain.CalendarRecord, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByItemID", ctx, f, itemID)
-	ret0, _ := ret[0].(domain.CalendarRecord)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByItemID indicates an expected call of FindByItemID
-func (mr *MockCalendarRepositoryMockRecorder) FindByItemID(ctx, f, itemID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByItemID", reflect.TypeOf((*MockCalendarRepository)(nil).FindByItemID), ctx, f, itemID)
 }
 
 // FindByPublicAndID mocks base method

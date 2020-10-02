@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	domain "github.com/wheatandcat/PeperomiaBackend/domain"
-	repository "github.com/wheatandcat/PeperomiaBackend/repository"
 )
 
 // SyncItemsRequest is SyncItemsRequest request
@@ -19,6 +19,7 @@ type SyncItemsRequest struct {
 // CreateItemRequest is CreateItem request
 type CreateItemRequest struct {
 	Item CreateItem `json:"item" binding:"required"`
+	Date *time.Time `json:"date" binding:"required"`
 }
 
 // CreateItem is CreateItem request
@@ -30,6 +31,7 @@ type CreateItem struct {
 // UpdateItemRequest is UpdateItem request
 type UpdateItemRequest struct {
 	Item UpdateItem `json:"item" binding:"required"`
+	Date *time.Time `json:"date" binding:"required"`
 }
 
 // UpdateItem is UpdateItem request
@@ -37,26 +39,6 @@ type UpdateItem struct {
 	ID    string `json:"id" binding:"required"`
 	Title string `json:"title" binding:"required"`
 	Kind  string `json:"kind" binding:"required"`
-}
-
-// DeleteItemRequest is DeleteItem request
-type DeleteItemRequest struct {
-	Item DeleteItem `json:"item" binding:"required"`
-}
-
-// DeleteItem is DeleteItem request
-type DeleteItem struct {
-	ID string `json:"id" binding:"required"`
-}
-
-// UpdateItemPublicRequest is UpdateItemPublic request
-type UpdateItemPublicRequest struct {
-	ItemID string `json:"itemID" binding:"required"`
-}
-
-// UpdateItemPrivateRequest is UpdateItemPrivate request
-type UpdateItemPrivateRequest struct {
-	ItemID string `json:"itemID" binding:"required"`
 }
 
 // CreateItem 予定を作成する
@@ -86,7 +68,12 @@ func (h *Handler) CreateItem(gc *gin.Context) {
 		UID:   uid,
 	}
 
-	if err := h.App.ItemRepository.Create(ctx, h.FirestoreClient, item); err != nil {
+	key := domain.ItemKey{
+		UID:  uid,
+		Date: req.Date,
+	}
+
+	if err := h.App.ItemRepository.Create(ctx, h.FirestoreClient, item, key); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
@@ -118,98 +105,12 @@ func (h *Handler) UpdateItem(gc *gin.Context) {
 	item.Title = req.Item.Title
 	item.Kind = req.Item.Kind
 
-	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
+	key := domain.ItemKey{
+		UID:  uid,
+		Date: req.Date,
 	}
 
-	gc.JSON(http.StatusOK, nil)
-}
-
-// UpdateItemPublic 予定を公開する
-func (h *Handler) UpdateItemPublic(gc *gin.Context) {
-	ctx := context.Background()
-	req := &UpdateItemPublicRequest{}
-	if err := gc.Bind(req); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	uid, err := GetSelfUID(gc)
-	if err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	item, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, uid, req.ItemID)
-	if err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	gc.JSON(http.StatusOK, nil)
-}
-
-// UpdateItemPrivate 予定を非公開する
-func (h *Handler) UpdateItemPrivate(gc *gin.Context) {
-	ctx := context.Background()
-	req := &UpdateItemPrivateRequest{}
-	if err := gc.Bind(req); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	uid, err := GetSelfUID(gc)
-	if err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	item, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, uid, req.ItemID)
-	if err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	gc.JSON(http.StatusOK, nil)
-}
-
-// DeleteItem 予定を削除する
-func (h *Handler) DeleteItem(gc *gin.Context) {
-	ctx := context.Background()
-	req := &DeleteItemRequest{}
-	if err := gc.Bind(req); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	uid, err := GetSelfUID(gc)
-	if err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	item := domain.ItemRecord{
-		ID:  req.Item.ID,
-		UID: uid,
-	}
-
-	if err := h.App.ItemRepository.Delete(ctx, h.FirestoreClient, item); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	if err := h.App.ItemDetailRepository.DeleteByItemID(ctx, h.FirestoreClient, item.ID); err != nil {
+	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item, key); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
@@ -219,60 +120,5 @@ func (h *Handler) DeleteItem(gc *gin.Context) {
 
 // SyncItems アイテムを同期させる
 func (h *Handler) SyncItems(gc *gin.Context) {
-	ctx := context.Background()
-	req := &SyncItemsRequest{}
-	if err := gc.Bind(req); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	uid, err := GetSelfUID(gc)
-	if err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-	ir := repository.NewItemRepository()
-	idr := repository.NewItemDetailRepository()
-	cr := repository.NewCalendarRepository()
-
-	// データ削除
-	if err := ir.DeleteByUID(ctx, h.FirestoreClient, uid); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-	if err := idr.DeleteByUID(ctx, h.FirestoreClient, uid); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-	if err := cr.DeleteByUID(ctx, h.FirestoreClient, uid); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	// データ同期
-	for _, item := range req.Items {
-		item.UID = uid
-		if err := ir.Create(ctx, h.FirestoreClient, item); err != nil {
-			NewErrorResponse(err).Render(gc)
-			return
-		}
-	}
-
-	for _, itemDetail := range req.ItemDetails {
-		itemDetail.UID = uid
-		if err := idr.Create(ctx, h.FirestoreClient, itemDetail); err != nil {
-			NewErrorResponse(err).Render(gc)
-			return
-		}
-	}
-
-	for _, calendar := range req.Calendars {
-		calendar.UID = uid
-		if err := cr.Create(ctx, h.FirestoreClient, calendar); err != nil {
-			NewErrorResponse(err).Render(gc)
-			return
-		}
-	}
-
 	gc.JSON(http.StatusCreated, nil)
 }

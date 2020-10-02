@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/PeperomiaBackend/graph/model"
@@ -21,14 +22,19 @@ type ItemDetailRecord struct {
 	Priority    int    `json:"priority" firestore:"priority"`
 }
 
+// ItemDetailKey is item_detail key
+type ItemDetailKey struct {
+	UID    string
+	Date   *time.Time
+	ItemID string
+}
+
 // ItemDetailRepository is repository interface
 type ItemDetailRepository interface {
-	Create(ctx context.Context, f *firestore.Client, i ItemDetailRecord) error
-	Update(ctx context.Context, f *firestore.Client, i ItemDetailRecord) error
-	Delete(ctx context.Context, f *firestore.Client, i ItemDetailRecord) error
+	Create(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
+	Update(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
+	Delete(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
 	FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]ItemDetailRecord, error)
-	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
-	DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error
 }
 
 // ToModel Modelに変換する

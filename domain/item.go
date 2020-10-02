@@ -19,14 +19,18 @@ type ItemRecord struct {
 	ItemDetails []*ItemDetailRecord `json:"itemDetails" firestore:"itemDetails"`
 }
 
+// ItemKey is item key
+type ItemKey struct {
+	UID  string
+	Date *time.Time
+}
+
 // ItemRepository is repository interface
 type ItemRepository interface {
-	Create(ctx context.Context, f *firestore.Client, i ItemRecord) error
-	Update(ctx context.Context, f *firestore.Client, i ItemRecord) error
-	Delete(ctx context.Context, f *firestore.Client, i ItemRecord) error
+	Create(ctx context.Context, f *firestore.Client, i ItemRecord, key ItemKey) error
+	Update(ctx context.Context, f *firestore.Client, i ItemRecord, key ItemKey) error
 	FindByDoc(ctx context.Context, f *firestore.Client, uid string, itemID string) (ItemRecord, error)
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) ([]ItemRecord, error)
-	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
 }
 
 // ToModel Modelに変換する

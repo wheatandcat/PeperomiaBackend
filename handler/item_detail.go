@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wheatandcat/PeperomiaBackend/domain"
@@ -11,6 +12,7 @@ import (
 // CreateItemDetailRequest is CreateItemDetail request
 type CreateItemDetailRequest struct {
 	ItemDetail CreateItemDetail `json:"itemDetail" binding:"required"`
+	Date       *time.Time       `json:"date" binding:"required"`
 }
 
 // CreateItemDetail is CreateItemDetail request
@@ -28,6 +30,7 @@ type CreateItemDetail struct {
 // UpdateItemDetailRequest is UpdateItemDetail request
 type UpdateItemDetailRequest struct {
 	ItemDetail UpdateItemDetail `json:"itemDetail" binding:"required"`
+	Date       *time.Time       `json:"date" binding:"required"`
 }
 
 // UpdateItemDetail is UpdateItemDetail request
@@ -46,6 +49,7 @@ type UpdateItemDetail struct {
 // DeleteItemDetailRequest is DeleteItemDetail request
 type DeleteItemDetailRequest struct {
 	ItemDetail DeleteItemDetail `json:"itemDetail" binding:"required"`
+	Date       *time.Time       `json:"date" binding:"required"`
 }
 
 // DeleteItemDetail is DeleteItemDetail request
@@ -82,7 +86,13 @@ func (h *Handler) CreateItemDetail(gc *gin.Context) {
 		Priority:    req.ItemDetail.Priority,
 	}
 
-	if err := h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, item); err != nil {
+	key := domain.ItemDetailKey{
+		UID:    uid,
+		Date:   req.Date,
+		ItemID: item.ItemID,
+	}
+
+	if err := h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, item, key); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
@@ -118,7 +128,13 @@ func (h *Handler) UpdateItemDetail(gc *gin.Context) {
 		Priority:    req.ItemDetail.Priority,
 	}
 
-	if err := h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, item); err != nil {
+	key := domain.ItemDetailKey{
+		UID:    uid,
+		Date:   req.Date,
+		ItemID: item.ItemID,
+	}
+
+	if err := h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, item, key); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
@@ -147,7 +163,13 @@ func (h *Handler) DeleteItemDetail(gc *gin.Context) {
 		UID:    uid,
 	}
 
-	if err := h.App.ItemDetailRepository.Delete(ctx, h.FirestoreClient, item); err != nil {
+	key := domain.ItemDetailKey{
+		UID:    uid,
+		Date:   req.Date,
+		ItemID: item.ItemID,
+	}
+
+	if err := h.App.ItemDetailRepository.Delete(ctx, h.FirestoreClient, item, key); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
