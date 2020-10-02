@@ -93,20 +93,6 @@ func (re *ItemRepository) FindByDoc(ctx context.Context, f *firestore.Client, ui
 	return ir, nil
 }
 
-// FindByPublicAndID 公開中かつIDから取得する
-func (re *ItemRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.ItemRecord, error) {
-	var item domain.ItemRecord
-	matchItem := f.Collection("items").Where("id", "==", id).Where("public", "==", true).Limit(1).Documents(ctx)
-	docs, err := matchItem.GetAll()
-	if err != nil {
-		return item, err
-	}
-
-	docs[0].DataTo(&item)
-
-	return item, nil
-}
-
 // DeleteByUID ユーザーIDから削除する
 func (re *ItemRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
 	matchItem := f.Collection("items").Where("uid", "==", uid).Documents(ctx)
@@ -133,4 +119,24 @@ func GetItemDoc(ctx context.Context, doc *firestore.DocumentSnapshot) (*firestor
 	}
 
 	return docs[0], nil
+}
+
+// DeleteItemDoc DocumentからItemDocを削除する
+func DeleteItemDoc(ctx context.Context, doc *firestore.DocumentSnapshot) error {
+	idoc, err := GetItemDoc(ctx, doc)
+	if err != nil {
+		return err
+	}
+
+	err = DeleteItemDetailsDoc(ctx, idoc)
+	if err != nil {
+		return err
+	}
+
+	_, err = idoc.Ref.Delete(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

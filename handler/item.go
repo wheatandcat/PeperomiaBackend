@@ -147,8 +147,6 @@ func (h *Handler) UpdateItemPublic(gc *gin.Context) {
 		return
 	}
 
-	item.Public = true
-
 	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
@@ -177,8 +175,6 @@ func (h *Handler) UpdateItemPrivate(gc *gin.Context) {
 		NewErrorResponse(err).Render(gc)
 		return
 	}
-
-	item.Public = false
 
 	if err := h.App.ItemRepository.Update(ctx, h.FirestoreClient, item); err != nil {
 		NewErrorResponse(err).Render(gc)
@@ -214,11 +210,6 @@ func (h *Handler) DeleteItem(gc *gin.Context) {
 	}
 
 	if err := h.App.ItemDetailRepository.DeleteByItemID(ctx, h.FirestoreClient, item.ID); err != nil {
-		NewErrorResponse(err).Render(gc)
-		return
-	}
-
-	if err := h.App.CalendarRepository.DeleteByItemID(ctx, h.FirestoreClient, item.ID); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}

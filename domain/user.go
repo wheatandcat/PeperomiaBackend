@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/wheatandcat/PeperomiaBackend/graph/model"
 )
 
 // UserRoleAdmin 管理者
@@ -23,4 +24,14 @@ type UserRepository interface {
 	Create(ctx context.Context, f *firestore.Client, u UserRecord) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (UserRecord, error)
 	ExistsByUID(ctx context.Context, f *firestore.Client, uid string) (bool, error)
+}
+
+// ToModel Modelに変換する
+func (r *UserRecord) ToModel() *model.User {
+	u := &model.User{
+		UID:  r.UID,
+		Role: r.Role,
+	}
+
+	return u
 }

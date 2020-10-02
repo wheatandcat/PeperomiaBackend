@@ -12,13 +12,13 @@ import (
 )
 
 func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareItem, error) {
-	h := r.Handler
 	item := &model.ShareItem{}
 
-	if isPublic(ctx) {
-		return item, fmt.Errorf("not public")
+	if !isPublic(ctx) {
+		return item, fmt.Errorf("public")
 	}
 
+	h := r.Handler
 	i, err := h.App.CalendarRepository.FindByPublicAndID(ctx, h.FirestoreClient, id)
 	if err != nil {
 		return item, err
@@ -30,7 +30,26 @@ func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareI
 }
 
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := &model.User{}
+
+	if isPublic(ctx) {
+		return user, fmt.Errorf("not public")
+	}
+
+	h := r.Handler
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return user, err
+	}
+
+	u, err := h.App.UserRepository.FindByUID(ctx, h.FirestoreClient, uid)
+	if err != nil {
+		return user, err
+	}
+
+	user = u.ToModel()
+
+	return user, nil
 }
 
 func (r *queryResolver) Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error) {

@@ -128,3 +128,21 @@ func GetItemDetailsByDocument(ctx context.Context, doc *firestore.DocumentSnapsh
 
 	return items, nil
 }
+
+// DeleteItemDetailsDoc DocumentからItemDetailsDocを削除する
+func DeleteItemDetailsDoc(ctx context.Context, doc *firestore.DocumentSnapshot) error {
+	iddocs, err := GetItemDetailsDoc(ctx, doc)
+	if err != nil {
+		return err
+	}
+
+	for _, iddoc := range iddocs {
+		_, err := iddoc.Ref.Delete(ctx)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}

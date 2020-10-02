@@ -33,8 +33,18 @@ func graphqlHandler(h *handler.Handler) gin.HandlerFunc {
 	}
 }
 
-func ginContextToContextMiddleware() gin.HandlerFunc {
+func ginContextToContextMiddlewareByPublic() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.Set("public", true)
+		ctx := context.WithValue(c.Request.Context(), domain.GinContextKey, c)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
+
+func ginContextToContextMiddlewareByAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("public", false)
 		ctx := context.WithValue(c.Request.Context(), domain.GinContextKey, c)
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
@@ -174,11 +184,7 @@ func main() {
 
 	gqr := r.Group("/graphql")
 	{
-		gqr.Use(ginContextToContextMiddleware())
-		app.Use(func(ctx *gin.Context) {
-			ctx.Set("role", handler.RoleGraphql)
-			ctx.Next()
-		})
+		gqr.Use(ginContextToContextMiddlewareByPublic())
 
 		h, err := handler.NewHandler(ctx, f)
 		if err != nil {
@@ -189,12 +195,8 @@ func main() {
 
 	gqrApp := r.Group("/app/graphql")
 	{
-		gqrApp.Use(ginContextToContextMiddleware())
 		gqrApp.Use(m.FirebaseAuthMiddleWare)
-		app.Use(func(ctx *gin.Context) {
-			ctx.Set("role", handler.RoleAppGraphql)
-			ctx.Next()
-		})
+		gqrApp.Use(ginContextToContextMiddlewareByAuth())
 
 		h, err := handler.NewHandler(ctx, f)
 		if err != nil {

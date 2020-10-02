@@ -17,41 +17,29 @@ func NewCalendarRepository() domain.CalendarRepository {
 	return &CalendarRepository{}
 }
 
-func getCalendarDocID(uID string, itemID string, calendarID string) string {
-	doc := uID + "_" + calendarID + "_" + itemID
+func getCalendarDocID(date *time.Time) string {
+	doc := date.Format("2006-01-02")
 	return doc
+}
+
+func calendarCollection(f *firestore.Client, i domain.CalendarRecord) *firestore.DocumentRef {
+	idDoc := getCalendarDocID(i.Date)
+
+	return f.Collection("version/1/" + i.UID + "/calendars").Doc(idDoc)
 }
 
 // Create カレンダーを作成する
 func (re *CalendarRepository) Create(ctx context.Context, f *firestore.Client, i domain.CalendarRecord) error {
-	idDoc := getCalendarDocID(i.UID, i.ItemID, i.ID)
-
-	_, err := f.Collection("calendars").Doc(idDoc).Set(ctx, i)
+	_, err := calendarCollection(f, i).Set(ctx, i)
 
 	return err
 }
 
 // Update カレンダーを更新する
 func (re *CalendarRepository) Update(ctx context.Context, f *firestore.Client, i domain.CalendarRecord) error {
-	idDoc := getCalendarDocID(i.UID, i.ItemID, i.ID)
-
-	_, err := f.Collection("calendars").Doc(idDoc).Set(ctx, i)
+	_, err := calendarCollection(f, i).Set(ctx, i)
 
 	return err
-}
-
-// FindByItemID ItemIDから取得する
-func (re *CalendarRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (domain.CalendarRecord, error) {
-	var item domain.CalendarRecord
-	matchItem := f.Collection("calendars").Where("itemId", "==", itemID).Limit(1).Documents(ctx)
-	docs, err := matchItem.GetAll()
-	if err != nil {
-		return item, err
-	}
-
-	docs[0].DataTo(&item)
-
-	return item, nil
 }
 
 // FindByPublicAndID IDかつPublicから取得する
@@ -87,7 +75,7 @@ func (re *CalendarRepository) FindByPublicAndID(ctx context.Context, f *firestor
 func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
 	var items []domain.CalendarRecord
 
-	matchItem := f.Collection("calendars").Where("date", "==", date).Documents(ctx)
+	matchItem := f.CollectionGroup("calendars").Where("date", "==", date).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return items, err
@@ -96,6 +84,12 @@ func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Clien
 	for _, doc := range docs {
 		var item domain.CalendarRecord
 		doc.DataTo(&item)
+		docItem, err := GetItemDoc(ctx, doc)
+		if err != nil {
+			return items, err
+		}
+		docItem.DataTo(&item.Item)
+
 		items = append(items, item)
 	}
 
@@ -104,39 +98,25 @@ func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Clien
 
 // Delete カレンダーを削除する
 func (re *CalendarRepository) Delete(ctx context.Context, f *firestore.Client, i domain.CalendarRecord) error {
-	idDoc := getCalendarDocID(i.UID, i.ItemID, i.ID)
-
-	_, err := f.Collection("calendars").Doc(idDoc).Delete(ctx)
+	_, err := calendarCollection(f, i).Delete(ctx)
 
 	return err
 }
 
 // DeleteByUID ユーザーIDから削除する
 func (re *CalendarRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
-	matchItem := f.Collection("calendars").Where("uid", "==", uid).Documents(ctx)
+	matchItem := f.Collection("version/1/" + uid + "/calendars").Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return err
 	}
 
 	for _, doc := range docs {
-		if _, err := doc.Ref.Delete(ctx); err != nil {
+		err := DeleteItemDoc(ctx, doc)
+		if err != nil {
 			return err
 		}
-	}
 
-	return nil
-}
-
-// DeleteByItemID ItemIDから削除する
-func (re *CalendarRepository) DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error {
-	matchItem := f.Collection("calendars").Where("itemId", "==", itemID).Documents(ctx)
-	docs, err := matchItem.GetAll()
-	if err != nil {
-		return err
-	}
-
-	for _, doc := range docs {
 		if _, err := doc.Ref.Delete(ctx); err != nil {
 			return err
 		}

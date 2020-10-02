@@ -14,7 +14,6 @@ type ItemRecord struct {
 	UID         string              `json:"uid" firestore:"uid"`
 	Title       string              `json:"title" firestore:"title" binding:"required"`
 	Kind        string              `json:"kind" firestore:"kind" binding:"required"`
-	Public      bool                `json:"public" firestore:"public"`
 	CreatedAt   time.Time           `json:"-" firestore:"createdAt"`
 	UpdatedAt   time.Time           `json:"-" firestore:"updatedAt"`
 	ItemDetails []*ItemDetailRecord `json:"itemDetails" firestore:"itemDetails"`
@@ -27,7 +26,6 @@ type ItemRepository interface {
 	Delete(ctx context.Context, f *firestore.Client, i ItemRecord) error
 	FindByDoc(ctx context.Context, f *firestore.Client, uid string, itemID string) (ItemRecord, error)
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) ([]ItemRecord, error)
-	FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (ItemRecord, error)
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
 }
 

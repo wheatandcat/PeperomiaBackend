@@ -114,11 +114,10 @@ func TestUpdateItemPublic(t *testing.T) {
 
 	mock := mock_domain.NewMockItemRepository(ctrl)
 	i := domain.ItemRecord{
-		ID:     "test",
-		UID:    "test",
-		Title:  "test",
-		Kind:   "test",
-		Public: true,
+		ID:    "test",
+		UID:   "test",
+		Title: "test",
+		Kind:  "test",
 	}
 
 	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
@@ -158,11 +157,10 @@ func TestUpdateItemPrivate(t *testing.T) {
 
 	mock := mock_domain.NewMockItemRepository(ctrl)
 	i := domain.ItemRecord{
-		ID:     "test",
-		UID:    "test",
-		Title:  "test",
-		Kind:   "test",
-		Public: false,
+		ID:    "test",
+		UID:   "test",
+		Title: "test",
+		Kind:  "test",
 	}
 
 	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)

@@ -10,7 +10,12 @@ import (
 )
 
 // GetSelfUID 自身のUIDを取得する
-func GetSelfUID(gc *gin.Context) (string, error) {
+func GetSelfUID(ctx context.Context) (string, error) {
+	gc, err := ginContextFromContext(ctx)
+	if err != nil {
+		return "", err
+	}
+
 	fuid, ok := gc.Get("firebaseUID")
 	if ok {
 		uid, ok := fuid.(string)
@@ -37,16 +42,16 @@ func ginContextFromContext(ctx context.Context) (*gin.Context, error) {
 	return gc, nil
 }
 
-func getRole(gc *gin.Context) string {
-	r, ok := gc.Get("role")
+func getPublic(gc *gin.Context) bool {
+	r, ok := gc.Get("public")
 	if ok {
-		role, ok := r.(string)
+		role, ok := r.(bool)
 		if ok {
 			return role
 		}
 	}
 
-	return ""
+	return false
 }
 
 // IsPublic Publicか判定する
@@ -56,8 +61,6 @@ func isPublic(ctx context.Context) bool {
 		return false
 	}
 
-	ok := getRole(gc) == "graphql"
-
-	return ok
+	return getPublic(gc)
 
 }
