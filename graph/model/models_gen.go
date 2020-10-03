@@ -4,7 +4,6 @@ package model
 
 type Calendar struct {
 	ID     string `json:"id"`
-	ItemID string `json:"itemId"`
 	Date   string `json:"date"`
 	Public bool   `json:"public"`
 	Item   *Item  `json:"item"`
@@ -44,7 +43,8 @@ type ShareItem struct {
 }
 
 type User struct {
-	ID   string `json:"id"`
-	UID  string `json:"uid"`
-	Role int    `json:"role"`
+	ID             string           `json:"id"`
+	UID            string           `json:"uid"`
+	Role           int              `json:"role"`
+	ExpoPushTokens []*ExpoPushToken `json:"expoPushTokens"`
 }

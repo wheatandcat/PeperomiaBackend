@@ -13,10 +13,11 @@ const UserRoleAdmin = 1
 
 // UserRecord is user data
 type UserRecord struct {
-	UID       string    `json:"uid" firestore:"uid"`
-	Role      int       `json:"role" firestore:"role"`
-	CreatedAt time.Time `json:"createdAt" firestore:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt" firestore:"updatedAt"`
+	UID        string             `json:"uid" firestore:"uid"`
+	Role       int                `json:"role" firestore:"role"`
+	CreatedAt  time.Time          `json:"createdAt" firestore:"createdAt"`
+	UpdatedAt  time.Time          `json:"updatedAt" firestore:"updatedAt"`
+	PushTokens []*PushTokenRecord `json:"pushTokens" firestore:"pushTokens"`
 }
 
 // UserRepository is repository interface
@@ -28,9 +29,16 @@ type UserRepository interface {
 
 // ToModel Modelに変換する
 func (r *UserRecord) ToModel() *model.User {
+	var epts []*model.ExpoPushToken
+
+	for _, pt := range r.PushTokens {
+		epts = append(epts, pt.ToModel())
+	}
+
 	u := &model.User{
-		UID:  r.UID,
-		Role: r.Role,
+		UID:            r.UID,
+		Role:           r.Role,
+		ExpoPushTokens: epts,
 	}
 
 	return u

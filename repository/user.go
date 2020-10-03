@@ -35,6 +35,14 @@ func (re *UserRepository) FindByUID(ctx context.Context, f *firestore.Client, ui
 	}
 
 	dsnap.DataTo(&u)
+
+	pts, err := GetPushTokensByDocument(ctx, dsnap)
+	if err != nil {
+		return u, err
+	}
+
+	u.PushTokens = pts
+
 	return u, nil
 }
 

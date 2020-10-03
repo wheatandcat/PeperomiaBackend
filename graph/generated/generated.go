@@ -45,7 +45,6 @@ type ComplexityRoot struct {
 		Date   func(childComplexity int) int
 		ID     func(childComplexity int) int
 		Item   func(childComplexity int) int
-		ItemID func(childComplexity int) int
 		Public func(childComplexity int) int
 	}
 
@@ -76,12 +75,12 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Calendars     func(childComplexity int, startDate string, endDate string) int
-		ExpoPushToken func(childComplexity int) int
-		Item          func(childComplexity int, itemID string) int
-		ItemDetail    func(childComplexity int, itemDetailID string) int
-		ShareItem     func(childComplexity int, id string) int
-		User          func(childComplexity int) int
+		Calendar   func(childComplexity int, date string) int
+		Calendars  func(childComplexity int, startDate string, endDate string) int
+		Item       func(childComplexity int, date string, itemID string) int
+		ItemDetail func(childComplexity int, date string, itemDetailID string) int
+		ShareItem  func(childComplexity int, id string) int
+		User       func(childComplexity int) int
 	}
 
 	ShareItem struct {
@@ -92,9 +91,10 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		ID   func(childComplexity int) int
-		Role func(childComplexity int) int
-		UID  func(childComplexity int) int
+		ExpoPushTokens func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Role           func(childComplexity int) int
+		UID            func(childComplexity int) int
 	}
 }
 
@@ -102,9 +102,9 @@ type QueryResolver interface {
 	ShareItem(ctx context.Context, id string) (*model.ShareItem, error)
 	User(ctx context.Context) (*model.User, error)
 	Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error)
-	Item(ctx context.Context, itemID string) (*model.Item, error)
-	ItemDetail(ctx context.Context, itemDetailID string) (*model.ItemDetail, error)
-	ExpoPushToken(ctx context.Context) (*model.ExpoPushToken, error)
+	Calendar(ctx context.Context, date string) (*model.Calendar, error)
+	Item(ctx context.Context, date string, itemID string) (*model.Item, error)
+	ItemDetail(ctx context.Context, date string, itemDetailID string) (*model.ItemDetail, error)
 }
 
 type executableSchema struct {
@@ -142,13 +142,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Calendar.Item(childComplexity), true
-
-	case "Calendar.itemId":
-		if e.complexity.Calendar.ItemID == nil {
-			break
-		}
-
-		return e.complexity.Calendar.ItemID(childComplexity), true
 
 	case "Calendar.public":
 		if e.complexity.Calendar.Public == nil {
@@ -276,6 +269,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ItemDetail.URL(childComplexity), true
 
+	case "Query.Calendar":
+		if e.complexity.Query.Calendar == nil {
+			break
+		}
+
+		args, err := ec.field_Query_Calendar_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Calendar(childComplexity, args["date"].(string)), true
+
 	case "Query.Calendars":
 		if e.complexity.Query.Calendars == nil {
 			break
@@ -288,13 +293,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Calendars(childComplexity, args["startDate"].(string), args["endDate"].(string)), true
 
-	case "Query.ExpoPushToken":
-		if e.complexity.Query.ExpoPushToken == nil {
-			break
-		}
-
-		return e.complexity.Query.ExpoPushToken(childComplexity), true
-
 	case "Query.Item":
 		if e.complexity.Query.Item == nil {
 			break
@@ -305,7 +303,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Item(childComplexity, args["itemID"].(string)), true
+		return e.complexity.Query.Item(childComplexity, args["date"].(string), args["itemID"].(string)), true
 
 	case "Query.ItemDetail":
 		if e.complexity.Query.ItemDetail == nil {
@@ -317,7 +315,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ItemDetail(childComplexity, args["itemDetailID"].(string)), true
+		return e.complexity.Query.ItemDetail(childComplexity, args["date"].(string), args["itemDetailID"].(string)), true
 
 	case "Query.ShareItem":
 		if e.complexity.Query.ShareItem == nil {
@@ -365,6 +363,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ShareItem.ItemID(childComplexity), true
+
+	case "User.expoPushTokens":
+		if e.complexity.User.ExpoPushTokens == nil {
+			break
+		}
+
+		return e.complexity.User.ExpoPushTokens(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -445,11 +450,11 @@ type User {
   id: ID!
   uid: String!
   role: Int!
+  expoPushTokens: [ExpoPushToken]
 }
 
 type Calendar {
   id: ID!
-  itemId: String!
   date: String!
   public: Boolean!
   item: Item!
@@ -492,9 +497,9 @@ type Query {
   ShareItem(id: ID!): ShareItem
   User: User
   Calendars(startDate: String!, endDate: String!): [Calendar]
-  Item(itemID: ID!): Item
-  ItemDetail(itemDetailID: ID!): ItemDetail
-  ExpoPushToken: ExpoPushToken
+  Calendar(date: String!): Calendar
+  Item(date: String!, itemID: ID!): Item
+  ItemDetail(date: String!, itemDetailID: ID!): ItemDetail
 }
 
 `, BuiltIn: false},
@@ -504,6 +509,20 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Query_Calendar_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["date"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["date"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Query_Calendars_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -531,13 +550,21 @@ func (ec *executionContext) field_Query_ItemDetail_args(ctx context.Context, raw
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["itemDetailID"]; ok {
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+	if tmp, ok := rawArgs["date"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["itemDetailID"] = arg0
+	args["date"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["itemDetailID"]; ok {
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemDetailID"] = arg1
 	return args, nil
 }
 
@@ -545,13 +572,21 @@ func (ec *executionContext) field_Query_Item_args(ctx context.Context, rawArgs m
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+	if tmp, ok := rawArgs["date"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["itemID"] = arg0
+	args["date"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["itemID"]; ok {
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemID"] = arg1
 	return args, nil
 }
 
@@ -651,40 +686,6 @@ func (ec *executionContext) _Calendar_id(ctx context.Context, field graphql.Coll
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Calendar_itemId(ctx context.Context, field graphql.CollectedField, obj *model.Calendar) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Calendar",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ItemID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Calendar_date(ctx context.Context, field graphql.CollectedField, obj *model.Calendar) (ret graphql.Marshaler) {
@@ -1471,6 +1472,44 @@ func (ec *executionContext) _Query_Calendars(ctx context.Context, field graphql.
 	return ec.marshalOCalendar2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐCalendar(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_Calendar(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_Calendar_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Calendar(rctx, args["date"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Calendar)
+	fc.Result = res
+	return ec.marshalOCalendar2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐCalendar(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_Item(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1495,7 +1534,7 @@ func (ec *executionContext) _Query_Item(ctx context.Context, field graphql.Colle
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Item(rctx, args["itemID"].(string))
+		return ec.resolvers.Query().Item(rctx, args["date"].(string), args["itemID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1533,7 +1572,7 @@ func (ec *executionContext) _Query_ItemDetail(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ItemDetail(rctx, args["itemDetailID"].(string))
+		return ec.resolvers.Query().ItemDetail(rctx, args["date"].(string), args["itemDetailID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1545,37 +1584,6 @@ func (ec *executionContext) _Query_ItemDetail(ctx context.Context, field graphql
 	res := resTmp.(*model.ItemDetail)
 	fc.Result = res
 	return ec.marshalOItemDetail2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐItemDetail(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_ExpoPushToken(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ExpoPushToken(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.ExpoPushToken)
-	fc.Result = res
-	return ec.marshalOExpoPushToken2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐExpoPushToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1883,6 +1891,37 @@ func (ec *executionContext) _User_role(ctx context.Context, field graphql.Collec
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_expoPushTokens(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpoPushTokens, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ExpoPushToken)
+	fc.Result = res
+	return ec.marshalOExpoPushToken2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐExpoPushToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -2964,11 +3003,6 @@ func (ec *executionContext) _Calendar(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "itemId":
-			out.Values[i] = ec._Calendar_itemId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "date":
 			out.Values[i] = ec._Calendar_date(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3191,6 +3225,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_Calendars(ctx, field)
 				return res
 			})
+		case "Calendar":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Calendar(ctx, field)
+				return res
+			})
 		case "Item":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -3211,17 +3256,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_ItemDetail(ctx, field)
-				return res
-			})
-		case "ExpoPushToken":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_ExpoPushToken(ctx, field)
 				return res
 			})
 		case "__type":
@@ -3307,6 +3341,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "expoPushTokens":
+			out.Values[i] = ec._User_expoPushTokens(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3935,6 +3971,46 @@ func (ec *executionContext) marshalOCalendar2ᚖgithubᚗcomᚋwheatandcatᚋPep
 
 func (ec *executionContext) marshalOExpoPushToken2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐExpoPushToken(ctx context.Context, sel ast.SelectionSet, v model.ExpoPushToken) graphql.Marshaler {
 	return ec._ExpoPushToken(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOExpoPushToken2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐExpoPushToken(ctx context.Context, sel ast.SelectionSet, v []*model.ExpoPushToken) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOExpoPushToken2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐExpoPushToken(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOExpoPushToken2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐExpoPushToken(ctx context.Context, sel ast.SelectionSet, v *model.ExpoPushToken) graphql.Marshaler {

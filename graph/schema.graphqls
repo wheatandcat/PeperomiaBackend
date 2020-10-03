@@ -6,6 +6,7 @@ type User {
   id: ID!
   uid: String!
   role: Int!
+  expoPushTokens: [ExpoPushToken]
 }
 
 type Calendar {
@@ -52,8 +53,8 @@ type Query {
   ShareItem(id: ID!): ShareItem
   User: User
   Calendars(startDate: String!, endDate: String!): [Calendar]
-  Item(itemID: ID!): Item
-  ItemDetail(itemDetailID: ID!): ItemDetail
-  ExpoPushToken: ExpoPushToken
+  Calendar(date: String!): Calendar
+  Item(date: String!, itemID: ID!): Item
+  ItemDetail(date: String!, itemDetailID: ID!): ItemDetail
 }
 

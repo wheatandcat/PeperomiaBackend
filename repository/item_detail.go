@@ -69,8 +69,8 @@ func (re *ItemDetailRepository) FindByItemID(ctx context.Context, f *firestore.C
 	return ids, nil
 }
 
-// GetItemDetailsDoc DocumentからItemDetailsDocを取得する
-func GetItemDetailsDoc(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*firestore.DocumentSnapshot, error) {
+// GetItemDetailDocs DocumentからItemDetailsDocを取得する
+func GetItemDetailDocs(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*firestore.DocumentSnapshot, error) {
 	matchItems := doc.Ref.Collection("itemDetails").OrderBy("priority", firestore.Asc).Documents(ctx)
 	docs, err := matchItems.GetAll()
 	if err != nil {
@@ -82,7 +82,7 @@ func GetItemDetailsDoc(ctx context.Context, doc *firestore.DocumentSnapshot) ([]
 
 // GetItemDetailsByDocument DocumentからItemDetailsを取得する
 func GetItemDetailsByDocument(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*domain.ItemDetailRecord, error) {
-	docs, err := GetItemDetailsDoc(ctx, doc)
+	docs, err := GetItemDetailDocs(ctx, doc)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func GetItemDetailsByDocument(ctx context.Context, doc *firestore.DocumentSnapsh
 
 // DeleteItemDetailsDoc DocumentからItemDetailsDocを削除する
 func DeleteItemDetailsDoc(ctx context.Context, doc *firestore.DocumentSnapshot) error {
-	iddocs, err := GetItemDetailsDoc(ctx, doc)
+	iddocs, err := GetItemDetailDocs(ctx, doc)
 	if err != nil {
 		return err
 	}
