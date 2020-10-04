@@ -6,10 +6,60 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 	"github.com/wheatandcat/PeperomiaBackend/graph/generated"
 	"github.com/wheatandcat/PeperomiaBackend/graph/model"
 )
+
+const location = "Asia/Tokyo"
+
+func (r *mutationResolver) CreateCalendar(ctx context.Context, calendar model.NewCalendar) (*model.Calendar, error) {
+
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	h := r.Handler
+	loc, _ := time.LoadLocation(location)
+	date, err := time.ParseInLocation("2006-01-02T15:04:05", calendar.Date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	cr := &domain.CalendarRecord{
+		ID:   h.Client.UUID.Get(),
+		UID:  uid,
+		Date: &date,
+	}
+	err = h.App.CalendarRepository.Create(ctx, h.FirestoreClient, *cr)
+	if err != nil {
+		return nil, err
+	}
+	item := domain.ItemRecord{
+		ID:    h.Client.UUID.Get(),
+		UID:   uid,
+		Title: calendar.Item.Title,
+		Kind:  calendar.Item.Kind,
+	}
+	itemKey := domain.ItemKey{
+		UID:  uid,
+		Date: &date,
+	}
+
+	err = h.App.ItemRepository.Create(ctx, h.FirestoreClient, item, itemKey)
+	if err != nil {
+		return nil, err
+	}
+	cr.Item = &item
+
+	result := cr.ToModel()
+
+	return result, nil
+
+}
 
 func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareItem, error) {
 	item := &model.ShareItem{}
@@ -32,16 +82,12 @@ func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareI
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	user := &model.User{}
 
-	if isPublic(ctx) {
-		return user, fmt.Errorf("not public")
-	}
-
-	h := r.Handler
 	uid, err := GetSelfUID(ctx)
 	if err != nil {
 		return user, err
 	}
 
+	h := r.Handler
 	u, err := h.App.UserRepository.FindByUID(ctx, h.FirestoreClient, uid)
 	if err != nil {
 		return user, err
@@ -53,7 +99,34 @@ func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 }
 
 func (r *queryResolver) Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error) {
-	panic(fmt.Errorf("not implemented"))
+	item := []*model.Calendar{}
+
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return item, err
+	}
+
+	loc, _ := time.LoadLocation(location)
+	sd, err := time.ParseInLocation("2006-01-02T15:04:05", startDate, loc)
+	if err != nil {
+		return item, err
+	}
+	ed, err := time.ParseInLocation("2006-01-02T15:04:05", endDate, loc)
+	if err != nil {
+		return item, err
+	}
+
+	h := r.Handler
+	crs, err := h.App.CalendarRepository.FindBetweenDateAndUID(ctx, h.FirestoreClient, uid, &sd, &ed)
+	if err != nil {
+		return item, err
+	}
+
+	for _, cr := range crs {
+		item = append(item, cr.ToModel())
+	}
+
+	return item, nil
 }
 
 func (r *queryResolver) Calendar(ctx context.Context, date string) (*model.Calendar, error) {
@@ -68,9 +141,13 @@ func (r *queryResolver) ItemDetail(ctx context.Context, date string, itemDetailI
 	panic(fmt.Errorf("not implemented"))
 }
 
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
 // !!! WARNING !!!

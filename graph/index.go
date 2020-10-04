@@ -11,6 +11,10 @@ import (
 
 // GetSelfUID 自身のUIDを取得する
 func GetSelfUID(ctx context.Context) (string, error) {
+	if isPublic(ctx) {
+		return "", fmt.Errorf("not public")
+	}
+
 	gc, err := ginContextFromContext(ctx)
 	if err != nil {
 		return "", err

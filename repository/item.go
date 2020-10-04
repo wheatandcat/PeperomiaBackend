@@ -22,7 +22,7 @@ func getItemCollection(f *firestore.Client, itemID string, key domain.ItemKey) *
 	iDoc := getItemDocID(itemID)
 	date := key.Date.Format("2006-01-02")
 
-	return f.Collection("version/1/" + key.UID + "/calendars/" + date + "/items").Doc(iDoc)
+	return f.Collection("version/1/users/" + key.UID + "/calendars/" + date + "/items").Doc(iDoc)
 }
 
 func getItemDocID(itemID string) string {

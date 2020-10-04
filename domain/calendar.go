@@ -24,6 +24,8 @@ type CalendarRepository interface {
 	Update(ctx context.Context, f *firestore.Client, i CalendarRecord) error
 	Delete(ctx context.Context, f *firestore.Client, i CalendarRecord) error
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
+	FindBetweenDateAndUID(ctx context.Context, f *firestore.Client, uid string, startDate *time.Time, endDate *time.Time) ([]CalendarRecord, error)
+	FindByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) (CalendarRecord, error)
 	FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]CalendarRecord, error)
 	FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (CalendarRecord, error)
 }
@@ -34,6 +36,20 @@ func (r *CalendarRecord) ToShareItemModel() *model.ShareItem {
 	loc, _ := time.LoadLocation(location)
 
 	item := &model.ShareItem{
+		ID:   r.ID,
+		Date: r.Date.In(loc).Format("2006-01-02 15:04:05"),
+		Item: r.Item.ToModel(),
+	}
+
+	return item
+}
+
+// ToModel Modelに変換する
+func (r *CalendarRecord) ToModel() *model.Calendar {
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+
+	item := &model.Calendar{
 		ID:   r.ID,
 		Date: r.Date.In(loc).Format("2006-01-02 15:04:05"),
 		Item: r.Item.ToModel(),

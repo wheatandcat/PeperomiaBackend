@@ -22,7 +22,7 @@ func getPushTokenDocID(uID string, deviceID string) string {
 }
 
 func pushTokenCollectionRef(f *firestore.Client, uid string) *firestore.CollectionRef {
-	return f.Collection("version/1/" + uid + "/expoPushTokens")
+	return f.Collection("version/1/users/" + uid + "/expoPushTokens")
 }
 
 func pushTokenCollection(f *firestore.Client, uid string, deviceID string) *firestore.DocumentRef {

@@ -58,3 +58,16 @@ type Query {
   ItemDetail(date: String!, itemDetailID: ID!): ItemDetail
 }
 
+input NewItem {
+  title: String!
+  kind: String!
+}
+
+input NewCalendar {
+  date: String!
+  item: NewItem!
+}
+
+type Mutation {
+  CreateCalendar(calendar: NewCalendar!): Calendar!
+}

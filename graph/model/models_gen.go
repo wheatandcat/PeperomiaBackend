@@ -35,6 +35,16 @@ type ItemDetail struct {
 	Priority    int    `json:"priority"`
 }
 
+type NewCalendar struct {
+	Date string   `json:"date"`
+	Item *NewItem `json:"item"`
+}
+
+type NewItem struct {
+	Title string `json:"title"`
+	Kind  string `json:"kind"`
+}
+
 type ShareItem struct {
 	ID     string `json:"id"`
 	ItemID string `json:"itemId"`

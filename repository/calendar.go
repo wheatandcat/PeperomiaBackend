@@ -22,10 +22,14 @@ func getCalendarDocID(date *time.Time) string {
 	return doc
 }
 
+func calendarCollectionRef(f *firestore.Client, uid string) *firestore.CollectionRef {
+	return f.Collection("version/1/users/" + uid + "/calendars")
+}
+
 func calendarCollection(f *firestore.Client, i domain.CalendarRecord) *firestore.DocumentRef {
 	idDoc := getCalendarDocID(i.Date)
 
-	return f.Collection("version/1/" + i.UID + "/calendars").Doc(idDoc)
+	return calendarCollectionRef(f, i.UID).Doc(idDoc)
 }
 
 // Create カレンダーを作成する
@@ -94,6 +98,55 @@ func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Clien
 	}
 
 	return items, nil
+}
+
+// FindBetweenDateAndUID 開始日から終了日まで取得する
+func (re *CalendarRepository) FindBetweenDateAndUID(ctx context.Context, f *firestore.Client, uid string, startDate *time.Time, endDate *time.Time) ([]domain.CalendarRecord, error) {
+	var items []domain.CalendarRecord
+
+	matchItem := calendarCollectionRef(f, uid).Where("date", ">=", startDate).Where("date", "<=", endDate).OrderBy("date", firestore.Asc).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return items, err
+	}
+
+	for _, doc := range docs {
+		var item domain.CalendarRecord
+		doc.DataTo(&item)
+
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
+// FindByDateAndUID 日付から取得する
+func (re *CalendarRepository) FindByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) (domain.CalendarRecord, error) {
+	cr := domain.CalendarRecord{
+		UID:  uid,
+		Date: date,
+	}
+
+	doc, err := calendarCollection(f, cr).Get(ctx)
+	if err != nil {
+		return cr, err
+	}
+
+	doc.DataTo(&cr)
+
+	docItem, err := GetItemDoc(ctx, doc)
+	if err != nil {
+		return cr, err
+	}
+	docItem.DataTo(&cr.Item)
+	ids, err := GetItemDetailsByDocument(ctx, docItem)
+	if err != nil {
+		return cr, err
+	}
+
+	cr.Item.ItemDetails = ids
+
+	return cr, nil
 }
 
 // Delete カレンダーを削除する
