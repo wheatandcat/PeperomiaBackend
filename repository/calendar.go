@@ -107,14 +107,21 @@ func (re *CalendarRepository) FindBetweenDateAndUID(ctx context.Context, f *fire
 	matchItem := calendarCollectionRef(f, uid).Where("date", ">=", startDate).Where("date", "<=", endDate).OrderBy("date", firestore.Asc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
+
 		return items, err
 	}
 
 	for _, doc := range docs {
 		var item domain.CalendarRecord
 		doc.DataTo(&item)
+		docItem, err := GetItemDoc(ctx, doc)
+		if err != nil {
+			return items, err
+		}
+		docItem.DataTo(&item.Item)
 
 		items = append(items, item)
+
 	}
 
 	return items, nil

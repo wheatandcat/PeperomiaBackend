@@ -12,10 +12,10 @@ import (
 type CalendarRecord struct {
 	ID     string      `json:"id" firestore:"id" binding:"required"`
 	UID    string      `json:"uid" firestore:"uid"`
-	ItemID string      `json:"itemId" firestore:"itemId" binding:"required"`
+	ItemID string      `json:"itemId" firestore:"omitempty"`
 	Public bool        `json:"public" firestore:"public"`
 	Date   *time.Time  `json:"date" firestore:"date" binding:"required"`
-	Item   *ItemRecord `json:"item" firestore:"item"`
+	Item   *ItemRecord `json:"item" firestore:"omitempty"`
 }
 
 // CalendarRepository is repository interface
@@ -52,7 +52,9 @@ func (r *CalendarRecord) ToModel() *model.Calendar {
 	item := &model.Calendar{
 		ID:   r.ID,
 		Date: r.Date.In(loc).Format("2006-01-02 15:04:05"),
-		Item: r.Item.ToModel(),
+	}
+	if r.Item != nil {
+		item.Item = r.Item.ToModel()
 	}
 
 	return item
