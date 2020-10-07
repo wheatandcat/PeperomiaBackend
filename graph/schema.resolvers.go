@@ -19,13 +19,13 @@ func (r *mutationResolver) CreateCalendar(ctx context.Context, calendar model.Ne
 		return nil, err
 	}
 
-	h := r.Handler
 	loc, _ := time.LoadLocation(location)
 	date, err := time.ParseInLocation("2006-01-02T15:04:05", calendar.Date, loc)
 	if err != nil {
 		return nil, err
 	}
 
+	h := r.Handler
 	cr := &domain.CalendarRecord{
 		ID:   h.Client.UUID.Get(),
 		UID:  uid,

@@ -4,10 +4,33 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wheatandcat/PeperomiaBackend/domain"
+	"github.com/wheatandcat/PeperomiaBackend/handler"
 )
+
+// Graph Graph struct
+type Graph struct {
+	Handler *handler.Handler
+	UID     string
+}
+
+// NewGraph Graphを作成
+func NewGraph(h *handler.Handler, uid string) *Graph {
+	return &Graph{
+		Handler: h,
+		UID:     uid,
+	}
+}
+
+// GetLoadLocation ロケーションを取得する
+func GetLoadLocation() *time.Location {
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+	return loc
+}
 
 // GetSelfUID 自身のUIDを取得する
 func GetSelfUID(ctx context.Context) (string, error) {
