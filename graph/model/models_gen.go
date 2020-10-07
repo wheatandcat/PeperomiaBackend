@@ -45,6 +45,18 @@ type NewItem struct {
 	Kind  string `json:"kind"`
 }
 
+type NewItemDetail struct {
+	Date        string `json:"date"`
+	Title       string `json:"title"`
+	ItemID      string `json:"itemId"`
+	Kind        string `json:"kind"`
+	MoveMinutes int    `json:"moveMinutes"`
+	Place       string `json:"place"`
+	URL         string `json:"url"`
+	Memo        string `json:"memo"`
+	Priority    int    `json:"priority"`
+}
+
 type ShareItem struct {
 	ID     string `json:"id"`
 	ItemID string `json:"itemId"`
