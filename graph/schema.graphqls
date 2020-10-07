@@ -54,7 +54,7 @@ type Query {
   User: User
   Calendars(startDate: String!, endDate: String!): [Calendar]
   Calendar(date: String!): Calendar
-  ItemDetail(date: String!, itemDetailID: ID!): ItemDetail
+  ItemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
 }
 
 input NewItem {

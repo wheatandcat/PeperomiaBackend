@@ -192,8 +192,37 @@ func (r *queryResolver) Calendar(ctx context.Context, date string) (*model.Calen
 	return item, nil
 }
 
-func (r *queryResolver) ItemDetail(ctx context.Context, date string, itemDetailID string) (*model.ItemDetail, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) ItemDetail(ctx context.Context, date string, itemID string, itemDetailID string) (*model.ItemDetail, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	h := r.Handler
+	loc, _ := time.LoadLocation(location)
+	d, err := time.ParseInLocation("2006-01-02T15:04:05", date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	item := domain.ItemDetailRecord{
+		ID: itemDetailID,
+	}
+
+	itemKey := domain.ItemDetailKey{
+		UID:    uid,
+		Date:   &d,
+		ItemID: itemID,
+	}
+
+	item, err = h.App.ItemDetailRepository.Get(ctx, h.FirestoreClient, item, itemKey)
+	if err != nil {
+		return nil, err
+	}
+
+	result := item.ToModel()
+
+	return result, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
@@ -212,10 +241,3 @@ type queryResolver struct{ *Resolver }
 //    it when you're done.
 //  - You have helper methods in this file. Move them out to keep these resolver files clean.
 const location = "Asia/Tokyo"
-
-func (r *queryResolver) Item(ctx context.Context, date string, itemID string) (*model.Item, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) ExpoPushToken(ctx context.Context) (*model.ExpoPushToken, error) {
-	panic(fmt.Errorf("not implemented"))
-}

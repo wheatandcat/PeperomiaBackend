@@ -34,6 +34,7 @@ type ItemDetailRepository interface {
 	Create(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
 	Update(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
 	Delete(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
+	Get(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) (ItemDetailRecord, error)
 	FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]ItemDetailRecord, error)
 }
 

@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Calendar   func(childComplexity int, date string) int
 		Calendars  func(childComplexity int, startDate string, endDate string) int
-		ItemDetail func(childComplexity int, date string, itemDetailID string) int
+		ItemDetail func(childComplexity int, date string, itemID string, itemDetailID string) int
 		ShareItem  func(childComplexity int, id string) int
 		User       func(childComplexity int) int
 	}
@@ -112,7 +112,7 @@ type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
 	Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error)
 	Calendar(ctx context.Context, date string) (*model.Calendar, error)
-	ItemDetail(ctx context.Context, date string, itemDetailID string) (*model.ItemDetail, error)
+	ItemDetail(ctx context.Context, date string, itemID string, itemDetailID string) (*model.ItemDetail, error)
 }
 
 type executableSchema struct {
@@ -335,7 +335,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ItemDetail(childComplexity, args["date"].(string), args["itemDetailID"].(string)), true
+		return e.complexity.Query.ItemDetail(childComplexity, args["date"].(string), args["itemId"].(string), args["itemDetailID"].(string)), true
 
 	case "Query.ShareItem":
 		if e.complexity.Query.ShareItem == nil {
@@ -532,7 +532,7 @@ type Query {
   User: User
   Calendars(startDate: String!, endDate: String!): [Calendar]
   Calendar(date: String!): Calendar
-  ItemDetail(date: String!, itemDetailID: ID!): ItemDetail
+  ItemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
 }
 
 input NewItem {
@@ -645,13 +645,21 @@ func (ec *executionContext) field_Query_ItemDetail_args(ctx context.Context, raw
 	}
 	args["date"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["itemDetailID"]; ok {
+	if tmp, ok := rawArgs["itemId"]; ok {
 		arg1, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["itemDetailID"] = arg1
+	args["itemId"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["itemDetailID"]; ok {
+		arg2, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemDetailID"] = arg2
 	return args, nil
 }
 
@@ -1681,7 +1689,7 @@ func (ec *executionContext) _Query_ItemDetail(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ItemDetail(rctx, args["date"].(string), args["itemDetailID"].(string))
+		return ec.resolvers.Query().ItemDetail(rctx, args["date"].(string), args["itemId"].(string), args["itemDetailID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

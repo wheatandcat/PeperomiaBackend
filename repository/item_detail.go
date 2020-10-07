@@ -51,6 +51,19 @@ func (re *ItemDetailRepository) Delete(ctx context.Context, f *firestore.Client,
 	return err
 }
 
+// Get アイテム詳細を取得する
+func (re *ItemDetailRepository) Get(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) (domain.ItemDetailRecord, error) {
+	var idr domain.ItemDetailRecord
+
+	snap, err := getItemDetailCollection(f, key).Get(ctx)
+	if err != nil {
+		return idr, err
+	}
+
+	snap.DataTo(&idr)
+	return idr, nil
+}
+
 // FindByItemID ItemIDから取得する
 func (re *ItemDetailRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]domain.ItemDetailRecord, error) {
 	var ids []domain.ItemDetailRecord
