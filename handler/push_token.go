@@ -126,7 +126,7 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 	for _, c := range cs {
 		for _, pt := range pts {
 			if pt.UID == c.UID {
-				ir, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, c.UID, c.ItemID)
+				ir, err := h.App.ItemRepository.FindByDoc(ctx, h.FirestoreClient, c.UID, "test")
 				if err != nil {
 					continue
 				}
@@ -134,7 +134,7 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 				req := expopush.SendRequest{
 					Title: title,
 					Body:  ir.Title,
-					Data:  map[string]string{"urlScheme": "Schedule/" + c.ItemID},
+					Data:  map[string]string{"urlScheme": "Schedule/" + "test"},
 					Token: pt.Token,
 				}
 				err = h.Client.ExpoPush.Send(req)

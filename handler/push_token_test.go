@@ -128,9 +128,8 @@ func TestSendCalendarPushNotifications(t *testing.T) {
 	}}
 
 	cs := []domain.CalendarRecord{{
-		ID:     "",
-		UID:    "test",
-		ItemID: "",
+		ID:  "",
+		UID: "test",
 	}}
 
 	i := domain.ItemRecord{

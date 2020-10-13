@@ -34,6 +34,7 @@ $ sh mock_gen.sh
 
 ```
 $ go test ./handler
+$ go test ./graph
 ```
 
 

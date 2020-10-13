@@ -59,10 +59,9 @@ func (h *Handler) CreateCalendar(gc *gin.Context) {
 	}
 
 	item := domain.CalendarRecord{
-		ID:     h.Client.UUID.Get(),
-		ItemID: req.Calendar.ItemID,
-		UID:    uid,
-		Date:   req.Calendar.Date,
+		ID:   h.Client.UUID.Get(),
+		UID:  uid,
+		Date: req.Calendar.Date,
 	}
 
 	if err := h.App.CalendarRepository.Create(ctx, h.FirestoreClient, item); err != nil {
@@ -89,10 +88,9 @@ func (h *Handler) UpdateCalendar(gc *gin.Context) {
 	}
 
 	item := domain.CalendarRecord{
-		ID:     req.Calendar.ID,
-		ItemID: req.Calendar.ItemID,
-		Date:   req.Calendar.Date,
-		UID:    uid,
+		ID:   req.Calendar.ID,
+		Date: req.Calendar.Date,
+		UID:  uid,
 	}
 
 	if err := h.App.CalendarRepository.Update(ctx, h.FirestoreClient, item); err != nil {
@@ -119,9 +117,8 @@ func (h *Handler) DeleteCalendar(gc *gin.Context) {
 	}
 
 	item := domain.CalendarRecord{
-		ID:     req.Calendar.ID,
-		ItemID: req.Calendar.ItemID,
-		UID:    uid,
+		ID:  req.Calendar.ID,
+		UID: uid,
 	}
 
 	if err := h.App.CalendarRepository.Delete(ctx, h.FirestoreClient, item); err != nil {

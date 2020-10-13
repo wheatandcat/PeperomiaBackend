@@ -12,7 +12,6 @@ import (
 type CalendarRecord struct {
 	ID     string      `json:"id" firestore:"id" binding:"required"`
 	UID    string      `json:"uid" firestore:"uid"`
-	ItemID string      `json:"itemId" firestore:"omitempty"`
 	Public bool        `json:"public" firestore:"public"`
 	Date   *time.Time  `json:"date" firestore:"date" binding:"required"`
 	Item   *ItemRecord `json:"item" firestore:"omitempty"`

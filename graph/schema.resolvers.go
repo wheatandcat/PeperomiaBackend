@@ -19,42 +19,14 @@ func (r *mutationResolver) CreateCalendar(ctx context.Context, calendar model.Ne
 		return nil, err
 	}
 
-	loc, _ := time.LoadLocation(location)
-	date, err := time.ParseInLocation("2006-01-02T15:04:05", calendar.Date, loc)
+	g := NewGraph(r.Handler, uid)
+
+	cr, err := g.CreateCalendar(ctx, calendar)
 	if err != nil {
 		return nil, err
 	}
 
-	h := r.Handler
-	cr := &domain.CalendarRecord{
-		ID:   h.Client.UUID.Get(),
-		UID:  uid,
-		Date: &date,
-	}
-	err = h.App.CalendarRepository.Create(ctx, h.FirestoreClient, *cr)
-	if err != nil {
-		return nil, err
-	}
-	item := domain.ItemRecord{
-		ID:    h.Client.UUID.Get(),
-		UID:   uid,
-		Title: calendar.Item.Title,
-		Kind:  calendar.Item.Kind,
-	}
-	itemKey := domain.ItemKey{
-		UID:  uid,
-		Date: &date,
-	}
-
-	err = h.App.ItemRepository.Create(ctx, h.FirestoreClient, item, itemKey)
-	if err != nil {
-		return nil, err
-	}
-	cr.Item = &item
-
-	result := cr.ToModel()
-
-	return result, nil
+	return cr, nil
 }
 
 func (r *mutationResolver) CreateItemDetail(ctx context.Context, itemDetail model.NewItemDetail) (*model.ItemDetail, error) {
