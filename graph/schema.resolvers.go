@@ -21,12 +21,12 @@ func (r *mutationResolver) CreateCalendar(ctx context.Context, calendar model.Ne
 
 	g := NewGraph(r.Handler, uid)
 
-	cr, err := g.CreateCalendar(ctx, calendar)
+	result, err := g.CreateCalendar(ctx, calendar)
 	if err != nil {
 		return nil, err
 	}
 
-	return cr, nil
+	return result, nil
 }
 
 func (r *mutationResolver) CreateItemDetail(ctx context.Context, itemDetail model.NewItemDetail) (*model.ItemDetail, error) {
@@ -35,38 +35,12 @@ func (r *mutationResolver) CreateItemDetail(ctx context.Context, itemDetail mode
 		return nil, err
 	}
 
-	h := r.Handler
-	loc, _ := time.LoadLocation(location)
-	date, err := time.ParseInLocation("2006-01-02T15:04:05", itemDetail.Date, loc)
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.CreateItemDetail(ctx, itemDetail)
 	if err != nil {
 		return nil, err
 	}
-
-	item := domain.ItemDetailRecord{
-		ID:          h.Client.UUID.Get(),
-		UID:         uid,
-		ItemID:      itemDetail.ItemID,
-		Title:       itemDetail.Title,
-		Kind:        itemDetail.Kind,
-		MoveMinutes: itemDetail.MoveMinutes,
-		Place:       itemDetail.Place,
-		URL:         itemDetail.URL,
-		Memo:        itemDetail.Memo,
-		Priority:    itemDetail.Priority,
-	}
-
-	itemKey := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   &date,
-		ItemID: itemDetail.ItemID,
-	}
-
-	err = h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, item, itemKey)
-	if err != nil {
-		return nil, err
-	}
-
-	result := item.ToModel()
 
 	return result, nil
 }
@@ -109,34 +83,19 @@ func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 }
 
 func (r *queryResolver) Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error) {
-	item := []*model.Calendar{}
-
 	uid, err := GetSelfUID(ctx)
 	if err != nil {
-		return item, err
+		return nil, err
 	}
 
-	loc, _ := time.LoadLocation(location)
-	sd, err := time.ParseInLocation("2006-01-02T15:04:05", startDate, loc)
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.GetCalendar(ctx, startDate, endDate)
 	if err != nil {
-		return item, err
-	}
-	ed, err := time.ParseInLocation("2006-01-02T15:04:05", endDate, loc)
-	if err != nil {
-		return item, err
+		return nil, err
 	}
 
-	h := r.Handler
-	crs, err := h.App.CalendarRepository.FindBetweenDateAndUID(ctx, h.FirestoreClient, uid, &sd, &ed)
-	if err != nil {
-		return item, err
-	}
-
-	for _, cr := range crs {
-		item = append(item, cr.ToModel())
-	}
-
-	return item, nil
+	return result, nil
 }
 
 func (r *queryResolver) Calendar(ctx context.Context, date string) (*model.Calendar, error) {

@@ -64,9 +64,84 @@ func TestCreateCalendar(t *testing.T) {
 		Item: &item,
 	}
 
-	t.Run("カレンダーを作成する", func(t *testing.T) {
-		r, _ := g.CreateCalendar(ctx, cm)
-		assert.Equal(t, r.ID, "sample-uuid-string")
-	})
+	tests := []struct {
+		name   string
+		param  model.NewCalendar
+		result *model.Calendar
+	}{
+		{
+			name:  "カレンダー作成",
+			param: cm,
+			result: &model.Calendar{
+				ID: "sample-uuid-string",
+			},
+		},
+	}
 
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.CreateCalendar(ctx, td.param)
+			assert.Equal(t, td.result.ID, r.ID)
+		})
+	}
+}
+
+func TestGetCalendar(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockCalendarRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	startDate, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-01T00:00:00", loc)
+	endDate, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-02T00:00:00", loc)
+
+	crs := []domain.CalendarRecord{{
+		ID:   "uuid-string",
+		Date: &startDate,
+		Item: &domain.ItemRecord{
+			ID: "uuid-string",
+		},
+	}}
+
+	mock1.EXPECT().FindBetweenDateAndUID(gomock.Any(), gomock.Any(), "test", &startDate, &endDate).Return(crs, nil)
+
+	h := NewTestHandler(ctx)
+	h.App.CalendarRepository = mock1
+
+	g := graph.NewGraph(&h, "test")
+
+	cms := []*model.Calendar{{
+		Date: "2019-01-01T00:00:00",
+	}}
+
+	type paramType struct {
+		startDate string
+		endDate   string
+	}
+
+	tests := []struct {
+		name   string
+		param  paramType
+		result []*model.Calendar
+	}{
+		{
+			name: "期間でカレンダーを取得",
+			param: paramType{
+				startDate: "2019-01-01T00:00:00",
+				endDate:   "2019-01-02T00:00:00",
+			},
+			result: cms,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.GetCalendar(ctx, td.param.startDate, td.param.endDate)
+			assert.Equal(t, len(r), 1)
+		})
+	}
 }

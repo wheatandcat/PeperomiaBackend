@@ -50,3 +50,31 @@ func (g *Graph) CreateCalendar(ctx context.Context, calendar model.NewCalendar) 
 
 	return result, nil
 }
+
+// GetCalendar カレンダーを取得する
+func (g *Graph) GetCalendar(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error) {
+	h := g.Handler
+	uid := g.UID
+	loc := GetLoadLocation()
+
+	item := []*model.Calendar{}
+	sd, err := time.ParseInLocation("2006-01-02T15:04:05", startDate, loc)
+	if err != nil {
+		return item, err
+	}
+	ed, err := time.ParseInLocation("2006-01-02T15:04:05", endDate, loc)
+	if err != nil {
+		return item, err
+	}
+
+	crs, err := h.App.CalendarRepository.FindBetweenDateAndUID(ctx, h.FirestoreClient, uid, &sd, &ed)
+	if err != nil {
+		return item, err
+	}
+
+	for _, cr := range crs {
+		item = append(item, cr.ToModel())
+	}
+
+	return item, nil
+}
