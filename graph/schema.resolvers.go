@@ -90,7 +90,7 @@ func (r *queryResolver) Calendars(ctx context.Context, startDate string, endDate
 
 	g := NewGraph(r.Handler, uid)
 
-	result, err := g.GetCalendar(ctx, startDate, endDate)
+	result, err := g.GetCalendars(ctx, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
@@ -99,28 +99,19 @@ func (r *queryResolver) Calendars(ctx context.Context, startDate string, endDate
 }
 
 func (r *queryResolver) Calendar(ctx context.Context, date string) (*model.Calendar, error) {
-	var item *model.Calendar
-
 	uid, err := GetSelfUID(ctx)
 	if err != nil {
-		return item, err
+		return nil, err
 	}
 
-	loc, _ := time.LoadLocation(location)
-	d, err := time.ParseInLocation("2006-01-02T15:04:05", date, loc)
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.GetCalendar(ctx, date)
 	if err != nil {
-		return item, err
+		return nil, err
 	}
 
-	h := r.Handler
-	cr, err := h.App.CalendarRepository.FindByDateAndUID(ctx, h.FirestoreClient, uid, &d)
-	if err != nil {
-		return item, err
-	}
-
-	item = cr.ToModel()
-
-	return item, nil
+	return result, nil
 }
 
 func (r *queryResolver) ItemDetail(ctx context.Context, date string, itemID string, itemDetailID string) (*model.ItemDetail, error) {

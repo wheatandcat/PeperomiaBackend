@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	"github.com/wheatandcat/PeperomiaBackend/domain"
 	mock_domain "github.com/wheatandcat/PeperomiaBackend/domain/mocks"
 	graph "github.com/wheatandcat/PeperomiaBackend/graph"
@@ -73,7 +74,9 @@ func TestCreateCalendar(t *testing.T) {
 			name:  "カレンダー作成",
 			param: cm,
 			result: &model.Calendar{
-				ID: "sample-uuid-string",
+				ID:   "sample-uuid-string",
+				Date: "2019-01-01 00:00:00",
+				Item: &model.Item{ID: "sample-uuid-string", Title: "test", Kind: "test"},
 			},
 		},
 	}
@@ -81,12 +84,17 @@ func TestCreateCalendar(t *testing.T) {
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
 			r, _ := g.CreateCalendar(ctx, td.param)
-			assert.Equal(t, td.result.ID, r.ID)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
 		})
 	}
 }
 
-func TestGetCalendar(t *testing.T) {
+func TestGetCalendars(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	ctrl := gomock.NewController(t)
@@ -115,7 +123,9 @@ func TestGetCalendar(t *testing.T) {
 	g := graph.NewGraph(&h, "test")
 
 	cms := []*model.Calendar{{
-		Date: "2019-01-01T00:00:00",
+		ID:   "uuid-string",
+		Date: "2019-01-01 00:00:00",
+		Item: &model.Item{ID: "uuid-string"},
 	}}
 
 	type paramType struct {
@@ -140,8 +150,77 @@ func TestGetCalendar(t *testing.T) {
 
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.GetCalendar(ctx, td.param.startDate, td.param.endDate)
-			assert.Equal(t, len(r), 1)
+			r, _ := g.GetCalendars(ctx, td.param.startDate, td.param.endDate)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}
+
+func TestGetCalendar(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockCalendarRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	date, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-01T00:00:00", loc)
+
+	cr := domain.CalendarRecord{
+		ID:   "uuid-string",
+		Date: &date,
+		Item: &domain.ItemRecord{
+			ID: "uuid-string",
+		},
+	}
+
+	mock1.EXPECT().FindByDateAndUID(gomock.Any(), gomock.Any(), "test", &date).Return(cr, nil)
+
+	h := NewTestHandler(ctx)
+	h.App.CalendarRepository = mock1
+
+	g := graph.NewGraph(&h, "test")
+
+	cm := &model.Calendar{
+		ID:   "uuid-string",
+		Date: "2019-01-01 00:00:00",
+		Item: &model.Item{ID: "uuid-string"},
+	}
+
+	type paramType struct {
+		date string
+	}
+
+	tests := []struct {
+		name   string
+		param  paramType
+		result *model.Calendar
+	}{
+		{
+			name: "カレンダーを取得",
+			param: paramType{
+				date: "2019-01-01T00:00:00",
+			},
+			result: cm,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.GetCalendar(ctx, td.param.date)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
 		})
 	}
 }

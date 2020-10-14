@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	"github.com/wheatandcat/PeperomiaBackend/domain"
 	mock_domain "github.com/wheatandcat/PeperomiaBackend/domain/mocks"
 	graph "github.com/wheatandcat/PeperomiaBackend/graph"
@@ -72,7 +73,15 @@ func TestCreateItemDetail(t *testing.T) {
 			name:  "アイテム詳細を作成",
 			param: nid,
 			result: &model.ItemDetail{
-				ID: "sample-uuid-string",
+				ID:          "sample-uuid-string",
+				ItemID:      "ItemID",
+				Title:       "Title",
+				Kind:        "Kind",
+				MoveMinutes: 0,
+				Place:       "Place",
+				URL:         "URL",
+				Memo:        "Memo",
+				Priority:    1,
 			},
 		},
 	}
@@ -80,7 +89,12 @@ func TestCreateItemDetail(t *testing.T) {
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
 			r, _ := g.CreateItemDetail(ctx, td.param)
-			assert.Equal(t, td.result.ID, r.ID)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
 		})
 	}
 
