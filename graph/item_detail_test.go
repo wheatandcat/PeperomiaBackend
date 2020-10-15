@@ -99,3 +99,92 @@ func TestCreateItemDetail(t *testing.T) {
 	}
 
 }
+
+func TestGetItemDetail(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockItemDetailRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	date, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-01T00:00:00", loc)
+
+	tidr := domain.ItemDetailRecord{
+		ID: "itemDetailID",
+	}
+
+	itemKey := domain.ItemDetailKey{
+		UID:    "test",
+		Date:   &date,
+		ItemID: "ItemID",
+	}
+
+	idr := domain.ItemDetailRecord{
+		ID:          "itemDetailID",
+		UID:         "test",
+		ItemID:      "ItemID",
+		Title:       "Title",
+		Kind:        "Kind",
+		MoveMinutes: 0,
+		Place:       "Place",
+		URL:         "URL",
+		Memo:        "Memo",
+		Priority:    1,
+	}
+
+	mock1.EXPECT().Get(gomock.Any(), gomock.Any(), tidr, itemKey).Return(idr, nil)
+
+	h := NewTestHandler(ctx)
+	h.App.ItemDetailRepository = mock1
+
+	g := graph.NewGraph(&h, "test")
+
+	mid := &model.ItemDetail{
+		ID:          "itemDetailID",
+		ItemID:      "ItemID",
+		Title:       "Title",
+		Kind:        "Kind",
+		MoveMinutes: 0,
+		Place:       "Place",
+		URL:         "URL",
+		Memo:        "Memo",
+		Priority:    1,
+	}
+
+	type paramType struct {
+		date         string
+		itemID       string
+		itemDetailID string
+	}
+
+	tests := []struct {
+		name   string
+		param  paramType
+		result *model.ItemDetail
+	}{
+		{
+			name: "アイテム詳細を取得",
+			param: paramType{
+				date:         "2019-01-01T00:00:00",
+				itemID:       "ItemID",
+				itemDetailID: "itemDetailID",
+			},
+			result: mid,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.GetItemDetail(ctx, td.param.date, td.param.itemID, td.param.itemDetailID)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}

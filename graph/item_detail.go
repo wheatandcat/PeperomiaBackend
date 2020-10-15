@@ -47,3 +47,34 @@ func (g *Graph) CreateItemDetail(ctx context.Context, itemDetail model.NewItemDe
 
 	return result, nil
 }
+
+// GetItemDetail アイテム詳細を取得する
+func (g *Graph) GetItemDetail(ctx context.Context, date string, itemID string, itemDetailID string) (*model.ItemDetail, error) {
+	h := g.Handler
+	uid := g.UID
+	loc := GetLoadLocation()
+
+	d, err := time.ParseInLocation("2006-01-02T15:04:05", date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	idr := domain.ItemDetailRecord{
+		ID: itemDetailID,
+	}
+
+	itemKey := domain.ItemDetailKey{
+		UID:    uid,
+		Date:   &d,
+		ItemID: itemID,
+	}
+
+	item, err := h.App.ItemDetailRepository.Get(ctx, h.FirestoreClient, idr, itemKey)
+	if err != nil {
+		return nil, err
+	}
+
+	result := item.ToModel()
+
+	return result, nil
+}

@@ -6,9 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
-	"time"
 
-	"github.com/wheatandcat/PeperomiaBackend/domain"
 	"github.com/wheatandcat/PeperomiaBackend/graph/generated"
 	"github.com/wheatandcat/PeperomiaBackend/graph/model"
 )
@@ -120,29 +118,12 @@ func (r *queryResolver) ItemDetail(ctx context.Context, date string, itemID stri
 		return nil, err
 	}
 
-	h := r.Handler
-	loc, _ := time.LoadLocation(location)
-	d, err := time.ParseInLocation("2006-01-02T15:04:05", date, loc)
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.GetItemDetail(ctx, date, itemID, itemDetailID)
 	if err != nil {
 		return nil, err
 	}
-
-	item := domain.ItemDetailRecord{
-		ID: itemDetailID,
-	}
-
-	itemKey := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   &d,
-		ItemID: itemID,
-	}
-
-	item, err = h.App.ItemDetailRepository.Get(ctx, h.FirestoreClient, item, itemKey)
-	if err != nil {
-		return nil, err
-	}
-
-	result := item.ToModel()
 
 	return result, nil
 }
