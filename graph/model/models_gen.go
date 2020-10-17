@@ -3,50 +3,69 @@
 package model
 
 type Calendar struct {
-	ID     string `json:"id"`
-	Date   string `json:"date"`
-	Public bool   `json:"public"`
-	Item   *Item  `json:"item"`
+	ID string `json:"id"`
+	// 日付
+	Date string `json:"date"`
+	// true: パブリック、false: プライベート
+	Public bool `json:"public"`
+	// スケジュール
+	Item *Item `json:"item"`
 }
 
 type ExpoPushToken struct {
-	ID       string `json:"id"`
-	UID      string `json:"uid"`
+	ID  string `json:"id"`
+	UID string `json:"uid"`
+	// デバイスID
 	DeviceID string `json:"deviceId"`
-	Token    string `json:"token"`
+	// トークン
+	Token string `json:"token"`
 }
 
 type Item struct {
-	ID          string        `json:"id"`
-	Title       string        `json:"title"`
-	Kind        string        `json:"kind"`
+	ID string `json:"id"`
+	// タイトル
+	Title string `json:"title"`
+	// 種別
+	Kind string `json:"kind"`
+	// スケジュール詳細
 	ItemDetails []*ItemDetail `json:"itemDetails"`
 }
 
 type ItemDetail struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	ItemID      string `json:"itemId"`
+	ID string `json:"id"`
+	// タイトル
+	Title  string `json:"title"`
+	ItemID string `json:"itemId"`
+	// 種類
 	Kind        string `json:"kind"`
 	MoveMinutes int    `json:"moveMinutes"`
 	Place       string `json:"place"`
-	URL         string `json:"url"`
-	Memo        string `json:"memo"`
-	Priority    int    `json:"priority"`
+	// URL
+	URL string `json:"url"`
+	// メモ
+	Memo string `json:"memo"`
+	// 表示順
+	Priority int `json:"priority"`
 }
 
 type NewCalendar struct {
-	Date string   `json:"date"`
+	// 日付
+	Date string `json:"date"`
+	// スケジュール
 	Item *NewItem `json:"item"`
 }
 
 type NewItem struct {
+	// タイトル
 	Title string `json:"title"`
-	Kind  string `json:"kind"`
+	// 種類
+	Kind string `json:"kind"`
 }
 
 type NewItemDetail struct {
-	Date        string `json:"date"`
+	// 日付
+	Date string `json:"date"`
+	// タイトル
 	Title       string `json:"title"`
 	ItemID      string `json:"itemId"`
 	Kind        string `json:"kind"`
@@ -60,13 +79,18 @@ type NewItemDetail struct {
 type ShareItem struct {
 	ID     string `json:"id"`
 	ItemID string `json:"itemId"`
-	Date   string `json:"date"`
-	Item   *Item  `json:"item"`
+	// 日付
+	Date string `json:"date"`
+	// スケジュール
+	Item *Item `json:"item"`
 }
 
 type User struct {
-	ID             string           `json:"id"`
-	UID            string           `json:"uid"`
-	Role           int              `json:"role"`
+	ID string `json:"id"`
+	// ユーザーID
+	UID string `json:"uid"`
+	// 役割:(管理権限: admin)
+	Role int `json:"role"`
+	// PUSH通知設定
 	ExpoPushTokens []*ExpoPushToken `json:"expoPushTokens"`
 }

@@ -21,6 +21,13 @@ $ go mod tidy
 $ dev_appserver.py app.yaml
 ```
 
+### GraphQL スキーマドキュメント
+
+```
+$ npx graphql-markdown http://localhost:8080/graphql > schema.md
+```
+
+
 ## テスト
 
 ### mock作成

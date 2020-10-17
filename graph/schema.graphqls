@@ -4,71 +4,100 @@
 
 type User {
   id: ID!
+  "ユーザーID"
   uid: String!
+  "役割:(管理権限: admin)"
   role: Int!
+  "PUSH通知設定"
   expoPushTokens: [ExpoPushToken]
 }
 
 type Calendar {
   id: ID!
+  "日付"
   date: String!
+  "true: パブリック、false: プライベート"
   public: Boolean!
+  "スケジュール"
   item: Item!
 }
 
 type Item {
   id: ID!
+  "タイトル"
   title: String!
+  "種別"
   kind: String!
+  "スケジュール詳細"
   itemDetails: [ItemDetail]
 }
 
 type ItemDetail {
   id: ID!
+  "タイトル"
   title: String!
   itemId: String!
+  "種類"
   kind: String!
   moveMinutes: Int!
   place: String!
+  "URL"
   url: String!
+  "メモ"
   memo: String!
+  "表示順"
   priority: Int!
 }
 
 type ExpoPushToken {
   id: ID!
   uid: String!
+  "デバイスID"
   deviceId: String!
+  "トークン"
   token: String!
 }
 
 type ShareItem {
   id: ID!
   itemId: String!
+  "日付"
   date: String!
+  "スケジュール"
   item: Item!
 }
 
 type Query {
+  "公開アイテムを取得する"
   ShareItem(id: ID!): ShareItem
+  "ユーザーを取得する"
   User: User
+  "カレンダーを期間で取得する"
   Calendars(startDate: String!, endDate: String!): [Calendar]
+  "カレンダーを取得する"
   Calendar(date: String!): Calendar
+  "スケジュール詳細を取得する"
   ItemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
 }
 
 input NewItem {
+  "タイトル"
   title: String!
+  "種類"
   kind: String!
 }
 
 input NewCalendar {
+  "日付"
   date: String!
+  "スケジュール"
   item: NewItem!
 }
 
 input NewItemDetail {
+  "日付"
   date: String!
+  "タイトル"
   title: String!
   itemId: String!
   kind: String!
@@ -81,6 +110,8 @@ input NewItemDetail {
 
 
 type Mutation {
+  "カレンダーを作成する"
   CreateCalendar(calendar: NewCalendar!): Calendar!
+  "スケジュール詳細を作成する"
   CreateItemDetail(itemDetail: NewItemDetail!): ItemDetail!
 }
