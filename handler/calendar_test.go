@@ -25,10 +25,9 @@ func TestCreateCalendar(t *testing.T) {
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
 
 	i := domain.CalendarRecord{
-		ID:     "sample-uuid-string",
-		ItemID: "test",
-		UID:    "test",
-		Date:   &date,
+		ID:   "sample-uuid-string",
+		UID:  "test",
+		Date: &date,
 	}
 
 	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i).Return(nil)
@@ -71,10 +70,9 @@ func TestUpdateCalendar(t *testing.T) {
 
 	mock := mock_domain.NewMockCalendarRepository(ctrl)
 	i := domain.CalendarRecord{
-		ID:     "test",
-		ItemID: "test",
-		UID:    "test",
-		Date:   &date,
+		ID:   "test",
+		UID:  "test",
+		Date: &date,
 	}
 
 	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
@@ -117,9 +115,8 @@ func TestDeleteCalendar(t *testing.T) {
 
 	mock := mock_domain.NewMockCalendarRepository(ctrl)
 	i := domain.CalendarRecord{
-		ID:     "test",
-		ItemID: "test",
-		UID:    "test",
+		ID:  "test",
+		UID: "test",
 	}
 
 	mock.EXPECT().Delete(gomock.Any(), gomock.Any(), i).Return(nil)

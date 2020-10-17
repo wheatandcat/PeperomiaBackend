@@ -92,18 +92,34 @@ func (mr *MockCalendarRepositoryMockRecorder) DeleteByUID(ctx, f, uid interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByUID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByUID), ctx, f, uid)
 }
 
-// DeleteByItemID mocks base method
-func (m *MockCalendarRepository) DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error {
+// FindBetweenDateAndUID mocks base method
+func (m *MockCalendarRepository) FindBetweenDateAndUID(ctx context.Context, f *firestore.Client, uid string, startDate, endDate *time.Time) ([]domain.CalendarRecord, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByItemID", ctx, f, itemID)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "FindBetweenDateAndUID", ctx, f, uid, startDate, endDate)
+	ret0, _ := ret[0].([]domain.CalendarRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// DeleteByItemID indicates an expected call of DeleteByItemID
-func (mr *MockCalendarRepositoryMockRecorder) DeleteByItemID(ctx, f, itemID interface{}) *gomock.Call {
+// FindBetweenDateAndUID indicates an expected call of FindBetweenDateAndUID
+func (mr *MockCalendarRepositoryMockRecorder) FindBetweenDateAndUID(ctx, f, uid, startDate, endDate interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByItemID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByItemID), ctx, f, itemID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindBetweenDateAndUID", reflect.TypeOf((*MockCalendarRepository)(nil).FindBetweenDateAndUID), ctx, f, uid, startDate, endDate)
+}
+
+// FindByDateAndUID mocks base method
+func (m *MockCalendarRepository) FindByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) (domain.CalendarRecord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByDateAndUID", ctx, f, uid, date)
+	ret0, _ := ret[0].(domain.CalendarRecord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByDateAndUID indicates an expected call of FindByDateAndUID
+func (mr *MockCalendarRepositoryMockRecorder) FindByDateAndUID(ctx, f, uid, date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByDateAndUID", reflect.TypeOf((*MockCalendarRepository)(nil).FindByDateAndUID), ctx, f, uid, date)
 }
 
 // FindByDate mocks base method
@@ -121,17 +137,17 @@ func (mr *MockCalendarRepositoryMockRecorder) FindByDate(ctx, f, date interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByDate", reflect.TypeOf((*MockCalendarRepository)(nil).FindByDate), ctx, f, date)
 }
 
-// FindByItemID mocks base method
-func (m *MockCalendarRepository) FindByItemID(ctx context.Context, f *firestore.Client, itemID string) (domain.CalendarRecord, error) {
+// FindByPublicAndID mocks base method
+func (m *MockCalendarRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.CalendarRecord, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByItemID", ctx, f, itemID)
+	ret := m.ctrl.Call(m, "FindByPublicAndID", ctx, f, id)
 	ret0, _ := ret[0].(domain.CalendarRecord)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByItemID indicates an expected call of FindByItemID
-func (mr *MockCalendarRepositoryMockRecorder) FindByItemID(ctx, f, itemID interface{}) *gomock.Call {
+// FindByPublicAndID indicates an expected call of FindByPublicAndID
+func (mr *MockCalendarRepositoryMockRecorder) FindByPublicAndID(ctx, f, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByItemID", reflect.TypeOf((*MockCalendarRepository)(nil).FindByItemID), ctx, f, itemID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPublicAndID", reflect.TypeOf((*MockCalendarRepository)(nil).FindByPublicAndID), ctx, f, id)
 }

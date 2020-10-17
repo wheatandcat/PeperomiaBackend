@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -28,7 +29,13 @@ func TestCreateItem(t *testing.T) {
 		Kind:  "test",
 	}
 
-	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i).Return(nil)
+	date, _ := time.Parse("2006-01-02", "2019-01-01")
+	key := domain.ItemKey{
+		UID:  "test",
+		Date: &date,
+	}
+
+	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i, key).Return(nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemRepository = mock
@@ -45,6 +52,7 @@ func TestCreateItem(t *testing.T) {
 					Title: "test",
 					Kind:  "test",
 				},
+				Date: &date,
 			},
 			statusCode: http.StatusCreated,
 		},
@@ -73,8 +81,14 @@ func TestUpdateItem(t *testing.T) {
 		Kind:  "test",
 	}
 
+	date, _ := time.Parse("2006-01-02", "2019-01-01")
+	key := domain.ItemKey{
+		UID:  "test",
+		Date: &date,
+	}
+
 	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
-	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
+	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i, key).Return(nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemRepository = mock
@@ -92,6 +106,7 @@ func TestUpdateItem(t *testing.T) {
 					Title: "test",
 					Kind:  "test",
 				},
+				Date: &date,
 			},
 			statusCode: http.StatusOK,
 		},
@@ -100,142 +115,6 @@ func TestUpdateItem(t *testing.T) {
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
 			res := Execute(h.UpdateItem, NewRequest(JsonEncode(td.request)))
-			assert.Equal(t, td.statusCode, res.Code)
-		})
-	}
-}
-
-func TestUpdateItemPublic(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	ctx := context.Background()
-
-	mock := mock_domain.NewMockItemRepository(ctrl)
-	i := domain.ItemRecord{
-		ID:     "test",
-		UID:    "test",
-		Title:  "test",
-		Kind:   "test",
-		Public: true,
-	}
-
-	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
-	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
-
-	h := NewTestHandler(ctx)
-	h.App.ItemRepository = mock
-
-	tests := []struct {
-		name       string
-		request    handler.UpdateItemPublicRequest
-		statusCode int
-	}{
-		{
-			name: "ok",
-			request: handler.UpdateItemPublicRequest{
-				ItemID: "test",
-			},
-			statusCode: http.StatusOK,
-		},
-	}
-
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			res := Execute(h.UpdateItemPublic, NewRequest(JsonEncode(td.request)))
-			assert.Equal(t, td.statusCode, res.Code)
-		})
-	}
-}
-
-func TestUpdateItemPrivate(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	ctx := context.Background()
-
-	mock := mock_domain.NewMockItemRepository(ctrl)
-	i := domain.ItemRecord{
-		ID:     "test",
-		UID:    "test",
-		Title:  "test",
-		Kind:   "test",
-		Public: false,
-	}
-
-	mock.EXPECT().FindByDoc(gomock.Any(), gomock.Any(), "test", "test").Return(i, nil)
-	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
-
-	h := NewTestHandler(ctx)
-	h.App.ItemRepository = mock
-
-	tests := []struct {
-		name       string
-		request    handler.UpdateItemPrivateRequest
-		statusCode int
-	}{
-		{
-			name: "ok",
-			request: handler.UpdateItemPrivateRequest{
-				ItemID: "test",
-			},
-			statusCode: http.StatusOK,
-		},
-	}
-
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			res := Execute(h.UpdateItemPrivate, NewRequest(JsonEncode(td.request)))
-			assert.Equal(t, td.statusCode, res.Code)
-		})
-	}
-}
-
-func TestDeleteItem(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	ctx := context.Background()
-
-	mock1 := mock_domain.NewMockItemRepository(ctrl)
-	i := domain.ItemRecord{
-		ID:  "test",
-		UID: "test",
-	}
-	mock2 := mock_domain.NewMockItemDetailRepository(ctrl)
-	mock3 := mock_domain.NewMockCalendarRepository(ctrl)
-
-	mock1.EXPECT().Delete(gomock.Any(), gomock.Any(), i).Return(nil)
-	mock2.EXPECT().DeleteByItemID(gomock.Any(), gomock.Any(), i.ID).Return(nil)
-	mock3.EXPECT().DeleteByItemID(gomock.Any(), gomock.Any(), i.ID).Return(nil)
-
-	h := NewTestHandler(ctx)
-	h.App.ItemRepository = mock1
-	h.App.ItemDetailRepository = mock2
-	h.App.CalendarRepository = mock3
-
-	tests := []struct {
-		name       string
-		request    handler.DeleteItemRequest
-		statusCode int
-	}{
-		{
-			name: "ok",
-			request: handler.DeleteItemRequest{
-				Item: handler.DeleteItem{
-					ID: "test",
-				},
-			},
-			statusCode: http.StatusOK,
-		},
-	}
-
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			res := Execute(h.DeleteItem, NewRequest(JsonEncode(td.request)))
 			assert.Equal(t, td.statusCode, res.Code)
 		})
 	}

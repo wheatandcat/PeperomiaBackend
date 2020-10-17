@@ -16,28 +16,52 @@ func NewItemDetailRepository() domain.ItemDetailRepository {
 	return &ItemDetailRepository{}
 }
 
-func getItemDetailDocID(uID string, itemID string, itemDetailID string) string {
-	doc := uID + "_" + itemID + "_" + itemDetailID
+// getItemDetailCollection アイテムのコレクションを取得する
+func getItemDetailCollection(f *firestore.Client, key domain.ItemDetailKey) *firestore.DocumentRef {
+	iDoc := getItemDocID(key.ItemID)
+	date := key.Date.Format("2006-01-02")
+
+	return f.Collection("version/1/users/" + key.UID + "/calendars/" + date + "/items/" + key.ItemID + "/itemDetails").Doc(iDoc)
+}
+
+func getItemDetailDocID(itemDetailID string) string {
+	doc := itemDetailID
 
 	return doc
 }
 
 // Create アイテム詳細を作成する
-func (re *ItemDetailRepository) Create(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord) error {
-	idDoc := getItemDetailDocID(i.UID, i.ItemID, i.ID)
-
-	_, err := f.Collection("itemDetails").Doc(idDoc).Set(ctx, i)
+func (re *ItemDetailRepository) Create(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) error {
+	_, err := getItemDetailCollection(f, key).Set(ctx, i)
 
 	return err
 }
 
 // Update アイテム詳細を更新する
-func (re *ItemDetailRepository) Update(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord) error {
-	idDoc := getItemDetailDocID(i.UID, i.ItemID, i.ID)
-
-	_, err := f.Collection("itemDetails").Doc(idDoc).Set(ctx, i)
+func (re *ItemDetailRepository) Update(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) error {
+	_, err := getItemDetailCollection(f, key).Set(ctx, i)
 
 	return err
+}
+
+// Delete アイテム詳細を削除する
+func (re *ItemDetailRepository) Delete(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) error {
+	_, err := getItemDetailCollection(f, key).Delete(ctx)
+
+	return err
+}
+
+// Get アイテム詳細を取得する
+func (re *ItemDetailRepository) Get(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) (domain.ItemDetailRecord, error) {
+	var idr domain.ItemDetailRecord
+
+	snap, err := getItemDetailCollection(f, key).Get(ctx)
+	if err != nil {
+		return idr, err
+	}
+
+	snap.DataTo(&idr)
+	return idr, nil
 }
 
 // FindByItemID ItemIDから取得する
@@ -58,44 +82,47 @@ func (re *ItemDetailRepository) FindByItemID(ctx context.Context, f *firestore.C
 	return ids, nil
 }
 
-// Delete アイテム詳細を削除する
-func (re *ItemDetailRepository) Delete(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord) error {
-	idDoc := getItemDetailDocID(i.UID, i.ItemID, i.ID)
+// GetItemDetailDocs DocumentからItemDetailsDocを取得する
+func GetItemDetailDocs(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*firestore.DocumentSnapshot, error) {
+	matchItems := doc.Ref.Collection("itemDetails").OrderBy("priority", firestore.Asc).Documents(ctx)
+	docs, err := matchItems.GetAll()
+	if err != nil {
+		return nil, err
+	}
 
-	_, err := f.Collection("itemDetails").Doc(idDoc).Delete(ctx)
-
-	return err
+	return docs, nil
 }
 
-// DeleteByUID ユーザーIDから削除する
-func (re *ItemDetailRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
-	matchItem := f.Collection("itemDetails").Where("uid", "==", uid).Documents(ctx)
-	docs, err := matchItem.GetAll()
+// GetItemDetailsByDocument DocumentからItemDetailsを取得する
+func GetItemDetailsByDocument(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*domain.ItemDetailRecord, error) {
+	docs, err := GetItemDetailDocs(ctx, doc)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []*domain.ItemDetailRecord
+	for _, did := range docs {
+		var id *domain.ItemDetailRecord
+		did.DataTo(&id)
+		items = append(items, id)
+	}
+
+	return items, nil
+}
+
+// DeleteItemDetailsDoc DocumentからItemDetailsDocを削除する
+func DeleteItemDetailsDoc(ctx context.Context, doc *firestore.DocumentSnapshot) error {
+	iddocs, err := GetItemDetailDocs(ctx, doc)
 	if err != nil {
 		return err
 	}
 
-	for _, doc := range docs {
-		if _, err := doc.Ref.Delete(ctx); err != nil {
+	for _, iddoc := range iddocs {
+		_, err := iddoc.Ref.Delete(ctx)
+		if err != nil {
 			return err
 		}
-	}
 
-	return nil
-}
-
-// DeleteByItemID ItemIDから削除する
-func (re *ItemDetailRepository) DeleteByItemID(ctx context.Context, f *firestore.Client, itemID string) error {
-	matchItem := f.Collection("itemDetails").Where("itemId", "==", itemID).Documents(ctx)
-	docs, err := matchItem.GetAll()
-	if err != nil {
-		return err
-	}
-
-	for _, doc := range docs {
-		if _, err := doc.Ref.Delete(ctx); err != nil {
-			return err
-		}
 	}
 
 	return nil

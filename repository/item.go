@@ -10,8 +10,7 @@ import (
 )
 
 // ItemRepository is repository for item
-type ItemRepository struct {
-}
+type ItemRepository struct{}
 
 // NewItemRepository is Create new ItemRepository
 func NewItemRepository() domain.ItemRepository {
@@ -19,44 +18,32 @@ func NewItemRepository() domain.ItemRepository {
 }
 
 // GetItemCollection アイテムのコレクションを取得する
-func GetItemCollection(f *firestore.Client, uID string, itemID string) *firestore.DocumentRef {
-	iDoc := getItemDocID(uID, itemID)
+func getItemCollection(f *firestore.Client, itemDetailID string, key domain.ItemKey) *firestore.DocumentRef {
+	iDoc := getItemDocID(itemDetailID)
+	date := key.Date.Format("2006-01-02")
 
-	return f.Collection("items").Doc(iDoc)
+	return f.Collection("version/1/users/" + key.UID + "/calendars/" + date + "/items").Doc(iDoc)
 }
 
-func getItemDocID(uID string, itemID string) string {
-	doc := uID + "_" + itemID
+func getItemDocID(itemID string) string {
+	doc := itemID
 
 	return doc
 }
 
 // Create アイテムを作成する
-func (re *ItemRepository) Create(ctx context.Context, f *firestore.Client, i domain.ItemRecord) error {
-	iDoc := getItemDocID(i.UID, i.ID)
+func (re *ItemRepository) Create(ctx context.Context, f *firestore.Client, i domain.ItemRecord, key domain.ItemKey) error {
 	i.CreatedAt = time.Now()
 	i.UpdatedAt = time.Now()
-
-	_, err := f.Collection("items").Doc(iDoc).Set(ctx, i)
+	_, err := getItemCollection(f, i.ID, key).Set(ctx, i)
 
 	return err
 }
 
 // Update アイテムを更新する
-func (re *ItemRepository) Update(ctx context.Context, f *firestore.Client, i domain.ItemRecord) error {
-	iDoc := getItemDocID(i.UID, i.ID)
+func (re *ItemRepository) Update(ctx context.Context, f *firestore.Client, i domain.ItemRecord, key domain.ItemKey) error {
 	i.UpdatedAt = time.Now()
-
-	_, err := f.Collection("items").Doc(iDoc).Set(ctx, i)
-
-	return err
-}
-
-// Delete アイテムを削除する
-func (re *ItemRepository) Delete(ctx context.Context, f *firestore.Client, i domain.ItemRecord) error {
-	iDoc := getItemDocID(i.UID, i.ID)
-
-	_, err := f.Collection("items").Doc(iDoc).Delete(ctx)
+	_, err := getItemCollection(f, i.ID, key).Set(ctx, i)
 
 	return err
 }
@@ -82,7 +69,7 @@ func (re *ItemRepository) FindByUID(ctx context.Context, f *firestore.Client, ui
 // FindByDoc ドキュメントから取得する
 func (re *ItemRepository) FindByDoc(ctx context.Context, f *firestore.Client, uid string, itemID string) (domain.ItemRecord, error) {
 	var ir domain.ItemRecord
-	iDoc := getItemDocID(uid, itemID)
+	iDoc := getItemDocID(itemID)
 
 	dsnap, err := f.Collection("items").Doc(iDoc).Get(ctx)
 	if err != nil {
@@ -93,32 +80,32 @@ func (re *ItemRepository) FindByDoc(ctx context.Context, f *firestore.Client, ui
 	return ir, nil
 }
 
-// FindByPublicAndID 公開中かつIDから取得する
-func (re *ItemRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.ItemRecord, error) {
-	var item domain.ItemRecord
-	matchItem := f.Collection("items").Where("id", "==", id).Where("public", "==", true).Limit(1).Documents(ctx)
-	docs, err := matchItem.GetAll()
+// GetItemDoc DocumentからItemDocを取得する
+func GetItemDoc(ctx context.Context, doc *firestore.DocumentSnapshot) (*firestore.DocumentSnapshot, error) {
+	matchItems := doc.Ref.Collection("items").Documents(ctx)
+	docs, err := matchItems.GetAll()
 	if err != nil {
-		return item, err
+		return nil, err
 	}
 
-	docs[0].DataTo(&item)
-
-	return item, nil
+	return docs[0], nil
 }
 
-// DeleteByUID ユーザーIDから削除する
-func (re *ItemRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
-	matchItem := f.Collection("items").Where("uid", "==", uid).Documents(ctx)
-	docs, err := matchItem.GetAll()
+// DeleteItemDoc DocumentからItemDocを削除する
+func DeleteItemDoc(ctx context.Context, doc *firestore.DocumentSnapshot) error {
+	idoc, err := GetItemDoc(ctx, doc)
 	if err != nil {
 		return err
 	}
 
-	for _, doc := range docs {
-		if _, err := doc.Ref.Delete(ctx); err != nil {
-			return err
-		}
+	err = DeleteItemDetailsDoc(ctx, idoc)
+	if err != nil {
+		return err
+	}
+
+	_, err = idoc.Ref.Delete(ctx)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -21,10 +21,11 @@ import (
 
 // Role 役割
 const (
-	RoleApp     = "app"
-	RoleAdmin   = "admin"
-	RoleCron    = "cron"
-	RoleGraphql = "graphql"
+	RoleApp        = "app"
+	RoleAdmin      = "admin"
+	RoleCron       = "cron"
+	RoleGraphql    = "graphql"
+	RoleAppGraphql = "app/graphql"
 )
 
 // Application is app interface

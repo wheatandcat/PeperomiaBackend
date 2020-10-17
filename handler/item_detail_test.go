@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -34,7 +35,14 @@ func TestCreateItemDetail(t *testing.T) {
 		Priority:    0,
 	}
 
-	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i).Return(nil)
+	date, _ := time.Parse("2006-01-02", "2019-01-01")
+	key := domain.ItemDetailKey{
+		UID:    "test",
+		Date:   &date,
+		ItemID: "test",
+	}
+
+	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i, key).Return(nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemDetailRepository = mock
@@ -57,6 +65,7 @@ func TestCreateItemDetail(t *testing.T) {
 					MoveMinutes: 0,
 					Priority:    0,
 				},
+				Date: &date,
 			},
 			statusCode: http.StatusCreated,
 		},
@@ -91,7 +100,14 @@ func TestUpdateItemDetail(t *testing.T) {
 		Priority:    0,
 	}
 
-	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i).Return(nil)
+	date, _ := time.Parse("2006-01-02", "2019-01-01")
+	key := domain.ItemDetailKey{
+		UID:    "test",
+		Date:   &date,
+		ItemID: "test",
+	}
+
+	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i, key).Return(nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemDetailRepository = mock
@@ -115,6 +131,7 @@ func TestUpdateItemDetail(t *testing.T) {
 					MoveMinutes: 0,
 					Priority:    0,
 				},
+				Date: &date,
 			},
 			statusCode: http.StatusOK,
 		},
@@ -142,7 +159,14 @@ func TestDeleteItemDetail(t *testing.T) {
 		UID:    "test",
 	}
 
-	mock.EXPECT().Delete(gomock.Any(), gomock.Any(), i).Return(nil)
+	date, _ := time.Parse("2006-01-02", "2019-01-01")
+	key := domain.ItemDetailKey{
+		UID:    "test",
+		Date:   &date,
+		ItemID: "test",
+	}
+
+	mock.EXPECT().Delete(gomock.Any(), gomock.Any(), i, key).Return(nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemDetailRepository = mock
@@ -159,6 +183,7 @@ func TestDeleteItemDetail(t *testing.T) {
 					ID:     "test",
 					ItemID: "test",
 				},
+				Date: &date,
 			},
 			statusCode: http.StatusOK,
 		},

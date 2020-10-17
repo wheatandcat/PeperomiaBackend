@@ -12,6 +12,7 @@ import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/wheatandcat/PeperomiaBackend/domain"
 	graph "github.com/wheatandcat/PeperomiaBackend/graph"
 	"github.com/wheatandcat/PeperomiaBackend/graph/generated"
 	"github.com/wheatandcat/PeperomiaBackend/handler"
@@ -29,6 +30,24 @@ func graphqlHandler(h *handler.Handler) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		gh.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func ginContextToContextMiddlewareByPublic() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("public", true)
+		ctx := context.WithValue(c.Request.Context(), domain.GinContextKey, c)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
+
+func ginContextToContextMiddlewareByAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("public", false)
+		ctx := context.WithValue(c.Request.Context(), domain.GinContextKey, c)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
 	}
 }
 
@@ -104,9 +123,6 @@ func main() {
 		app.POST("/CreateUser", h.CreateUser)
 		app.POST("/CreateItem", h.CreateItem)
 		app.POST("/UpdateItem", h.UpdateItem)
-		app.POST("/UpdateItemPublic", h.UpdateItemPublic)
-		app.POST("/UpdateItemPrivate", h.UpdateItemPrivate)
-		app.POST("/DeleteItem", h.DeleteItem)
 		app.POST("/CreateItemDetail", h.CreateItemDetail)
 		app.POST("/UpdateItemDetail", h.UpdateItemDetail)
 		app.POST("/DeleteItemDetail", h.DeleteItemDetail)
@@ -165,16 +181,25 @@ func main() {
 
 	gqr := r.Group("/graphql")
 	{
-		app.Use(func(ctx *gin.Context) {
-			ctx.Set("role", handler.RoleGraphql)
-			ctx.Next()
-		})
+		gqr.Use(ginContextToContextMiddlewareByPublic())
 
 		h, err := handler.NewHandler(ctx, f)
 		if err != nil {
 			panic(err)
 		}
 		gqr.POST("", graphqlHandler(h))
+	}
+
+	gqrApp := r.Group("/app/graphql")
+	{
+		gqrApp.Use(m.FirebaseAuthMiddleWare)
+		gqrApp.Use(ginContextToContextMiddlewareByAuth())
+
+		h, err := handler.NewHandler(ctx, f)
+		if err != nil {
+			panic(err)
+		}
+		gqrApp.POST("", graphqlHandler(h))
 	}
 
 	r.Run()

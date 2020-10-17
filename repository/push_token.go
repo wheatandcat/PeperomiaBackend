@@ -16,16 +16,24 @@ func NewPushTokenRepository() domain.PushTokenRepository {
 	return &PushTokenRepository{}
 }
 
-func getPushTokenDocID(uID string, DeviceID string, pushTokenID string) string {
-	doc := uID + "_" + DeviceID + "_" + pushTokenID
+func getPushTokenDocID(uID string, deviceID string) string {
+	doc := uID + "_" + deviceID
 	return doc
+}
+
+func pushTokenCollectionRef(f *firestore.Client, uid string) *firestore.CollectionRef {
+	return f.Collection("version/1/users/" + uid + "/expoPushTokens")
+}
+
+func pushTokenCollection(f *firestore.Client, uid string, deviceID string) *firestore.DocumentRef {
+	idDoc := getPushTokenDocID(uid, deviceID)
+
+	return pushTokenCollectionRef(f, uid).Doc(idDoc)
 }
 
 // Create カレンダーを作成する
 func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, p domain.PushTokenRecord) error {
-	idDoc := getPushTokenDocID(p.UID, p.DeviceID, p.Token)
-
-	_, err := f.Collection("expoPushTokens").Doc(idDoc).Set(ctx, p)
+	_, err := pushTokenCollection(f, p.UID, p.DeviceID).Set(ctx, p)
 
 	return err
 }
@@ -33,7 +41,7 @@ func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, 
 // FindByUID ユーザーIDから取得する
 func (re *PushTokenRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) ([]domain.PushTokenRecord, error) {
 	var items []domain.PushTokenRecord
-	matchItem := f.Collection("expoPushTokens").Where("uid", "==", uid).Documents(ctx)
+	matchItem := pushTokenCollectionRef(f, uid).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return items, err
@@ -51,7 +59,7 @@ func (re *PushTokenRepository) FindByUID(ctx context.Context, f *firestore.Clien
 // FindAll 全て取得する
 func (re *PushTokenRepository) FindAll(ctx context.Context, f *firestore.Client) ([]domain.PushTokenRecord, error) {
 	var items []domain.PushTokenRecord
-	matchItem := f.Collection("expoPushTokens").Documents(ctx)
+	matchItem := f.CollectionGroup("expoPushTokens").Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return items, err
@@ -61,6 +69,34 @@ func (re *PushTokenRepository) FindAll(ctx context.Context, f *firestore.Client)
 		var item domain.PushTokenRecord
 		doc.DataTo(&item)
 		items = append(items, item)
+	}
+
+	return items, nil
+}
+
+// GetPushTokenDocs DocumentからPushTokenDocsを取得する
+func GetPushTokenDocs(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*firestore.DocumentSnapshot, error) {
+	matchItems := doc.Ref.Collection("expoPushTokens").Documents(ctx)
+	docs, err := matchItems.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return docs, nil
+}
+
+// GetPushTokensByDocument DocumentからPushTokensを取得する
+func GetPushTokensByDocument(ctx context.Context, doc *firestore.DocumentSnapshot) ([]*domain.PushTokenRecord, error) {
+	docs, err := GetPushTokenDocs(ctx, doc)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []*domain.PushTokenRecord
+	for _, doc := range docs {
+		var r *domain.PushTokenRecord
+		doc.DataTo(&r)
+		items = append(items, r)
 	}
 
 	return items, nil

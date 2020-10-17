@@ -36,45 +36,31 @@ func (m *MockItemRepository) EXPECT() *MockItemRepositoryMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockItemRepository) Create(ctx context.Context, f *firestore.Client, i domain.ItemRecord) error {
+func (m *MockItemRepository) Create(ctx context.Context, f *firestore.Client, i domain.ItemRecord, key domain.ItemKey) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, f, i)
+	ret := m.ctrl.Call(m, "Create", ctx, f, i, key)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create
-func (mr *MockItemRepositoryMockRecorder) Create(ctx, f, i interface{}) *gomock.Call {
+func (mr *MockItemRepositoryMockRecorder) Create(ctx, f, i, key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockItemRepository)(nil).Create), ctx, f, i)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockItemRepository)(nil).Create), ctx, f, i, key)
 }
 
 // Update mocks base method
-func (m *MockItemRepository) Update(ctx context.Context, f *firestore.Client, i domain.ItemRecord) error {
+func (m *MockItemRepository) Update(ctx context.Context, f *firestore.Client, i domain.ItemRecord, key domain.ItemKey) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, f, i)
+	ret := m.ctrl.Call(m, "Update", ctx, f, i, key)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update
-func (mr *MockItemRepositoryMockRecorder) Update(ctx, f, i interface{}) *gomock.Call {
+func (mr *MockItemRepositoryMockRecorder) Update(ctx, f, i, key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockItemRepository)(nil).Update), ctx, f, i)
-}
-
-// Delete mocks base method
-func (m *MockItemRepository) Delete(ctx context.Context, f *firestore.Client, i domain.ItemRecord) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ctx, f, i)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Delete indicates an expected call of Delete
-func (mr *MockItemRepositoryMockRecorder) Delete(ctx, f, i interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockItemRepository)(nil).Delete), ctx, f, i)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockItemRepository)(nil).Update), ctx, f, i, key)
 }
 
 // FindByDoc mocks base method
@@ -105,33 +91,4 @@ func (m *MockItemRepository) FindByUID(ctx context.Context, f *firestore.Client,
 func (mr *MockItemRepositoryMockRecorder) FindByUID(ctx, f, uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUID", reflect.TypeOf((*MockItemRepository)(nil).FindByUID), ctx, f, uid)
-}
-
-// FindByPublicAndID mocks base method
-func (m *MockItemRepository) FindByPublicAndID(ctx context.Context, f *firestore.Client, id string) (domain.ItemRecord, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByPublicAndID", ctx, f, id)
-	ret0, _ := ret[0].(domain.ItemRecord)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByPublicAndID indicates an expected call of FindByPublicAndID
-func (mr *MockItemRepositoryMockRecorder) FindByPublicAndID(ctx, f, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPublicAndID", reflect.TypeOf((*MockItemRepository)(nil).FindByPublicAndID), ctx, f, id)
-}
-
-// DeleteByUID mocks base method
-func (m *MockItemRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByUID", ctx, f, uid)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteByUID indicates an expected call of DeleteByUID
-func (mr *MockItemRepositoryMockRecorder) DeleteByUID(ctx, f, uid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByUID", reflect.TypeOf((*MockItemRepository)(nil).DeleteByUID), ctx, f, uid)
 }
