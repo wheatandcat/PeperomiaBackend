@@ -33,8 +33,7 @@ $ sh mock_gen.sh
 ### 実行
 
 ```
-$ go test ./handler
-$ go test ./graph
+$ go test -race ./...
 ```
 
 

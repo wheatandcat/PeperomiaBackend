@@ -19,7 +19,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Test
-      run: go test -coverprofile=coverage.txt -covermode=atomic ./handler
+      run: go test -coverprofile=coverage.txt -covermode=atomic ./...
     - name: codecov
       run: bash <(curl -s https://codecov.io/bash)
       env:
