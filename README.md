@@ -18,7 +18,7 @@ $ go mod tidy
 ## ローカル実行
 
 ```
-$ dev_appserver.py app.yaml
+$ dev_appserver.py app.local.yaml
 ```
 
 ### GraphQL スキーマドキュメント

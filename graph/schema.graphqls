@@ -69,15 +69,15 @@ type ShareItem {
 
 type Query {
   "公開アイテムを取得する"
-  ShareItem(id: ID!): ShareItem
+  shareItem(id: ID!): ShareItem
   "ユーザーを取得する"
-  User: User
+  user: User
   "カレンダーを期間で取得する"
-  Calendars(startDate: String!, endDate: String!): [Calendar]
+  calendars(startDate: String!, endDate: String!): [Calendar]
   "カレンダーを取得する"
-  Calendar(date: String!): Calendar
+  calendar(date: String!): Calendar
   "スケジュール詳細を取得する"
-  ItemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
+  itemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
 }
 
 input NewItem {
@@ -111,7 +111,7 @@ input NewItemDetail {
 
 type Mutation {
   "カレンダーを作成する"
-  CreateCalendar(calendar: NewCalendar!): Calendar!
+  createCalendar(calendar: NewCalendar!): Calendar!
   "スケジュール詳細を作成する"
-  CreateItemDetail(itemDetail: NewItemDetail!): ItemDetail!
+  createItemDetail(itemDetail: NewItemDetail!): ItemDetail!
 }
