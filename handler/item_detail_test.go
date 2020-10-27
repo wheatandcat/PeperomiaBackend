@@ -23,16 +23,14 @@ func TestCreateItemDetail(t *testing.T) {
 
 	mock := mock_domain.NewMockItemDetailRepository(ctrl)
 	i := domain.ItemDetailRecord{
-		ID:          "sample-uuid-string",
-		ItemID:      "test",
-		UID:         "test",
-		Title:       "test",
-		Kind:        "test",
-		Memo:        "test",
-		Place:       "test",
-		URL:         "test",
-		MoveMinutes: 0,
-		Priority:    0,
+		ID:       "sample-uuid-string",
+		UID:      "test",
+		Title:    "test",
+		Kind:     "test",
+		Memo:     "test",
+		Place:    "test",
+		URL:      "test",
+		Priority: 0,
 	}
 
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
@@ -56,14 +54,13 @@ func TestCreateItemDetail(t *testing.T) {
 			name: "ok",
 			request: handler.CreateItemDetailRequest{
 				ItemDetail: handler.CreateItemDetail{
-					ItemID:      "test",
-					Title:       "test",
-					Kind:        "test",
-					Memo:        "test",
-					Place:       "test",
-					URL:         "test",
-					MoveMinutes: 0,
-					Priority:    0,
+					ItemID:   "test",
+					Title:    "test",
+					Kind:     "test",
+					Memo:     "test",
+					Place:    "test",
+					URL:      "test",
+					Priority: 0,
 				},
 				Date: &date,
 			},
@@ -88,16 +85,14 @@ func TestUpdateItemDetail(t *testing.T) {
 
 	mock := mock_domain.NewMockItemDetailRepository(ctrl)
 	i := domain.ItemDetailRecord{
-		ID:          "test",
-		ItemID:      "test",
-		UID:         "test",
-		Title:       "test",
-		Kind:        "test",
-		Memo:        "test",
-		URL:         "test",
-		Place:       "test",
-		MoveMinutes: 0,
-		Priority:    0,
+		ID:       "test",
+		UID:      "test",
+		Title:    "test",
+		Kind:     "test",
+		Memo:     "test",
+		URL:      "test",
+		Place:    "test",
+		Priority: 0,
 	}
 
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
@@ -121,15 +116,14 @@ func TestUpdateItemDetail(t *testing.T) {
 			name: "ok",
 			request: handler.UpdateItemDetailRequest{
 				ItemDetail: handler.UpdateItemDetail{
-					ID:          "test",
-					ItemID:      "test",
-					Title:       "test",
-					Kind:        "test",
-					Memo:        "test",
-					URL:         "test",
-					Place:       "test",
-					MoveMinutes: 0,
-					Priority:    0,
+					ID:       "test",
+					ItemID:   "test",
+					Title:    "test",
+					Kind:     "test",
+					Memo:     "test",
+					URL:      "test",
+					Place:    "test",
+					Priority: 0,
 				},
 				Date: &date,
 			},
@@ -154,9 +148,8 @@ func TestDeleteItemDetail(t *testing.T) {
 
 	mock := mock_domain.NewMockItemDetailRepository(ctrl)
 	i := domain.ItemDetailRecord{
-		ID:     "test",
-		ItemID: "test",
-		UID:    "test",
+		ID:  "test",
+		UID: "test",
 	}
 
 	date, _ := time.Parse("2006-01-02", "2019-01-01")

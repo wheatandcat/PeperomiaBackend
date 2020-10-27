@@ -34,12 +34,10 @@ type Item struct {
 type ItemDetail struct {
 	ID string `json:"id"`
 	// タイトル
-	Title  string `json:"title"`
-	ItemID string `json:"itemId"`
+	Title string `json:"title"`
 	// 種類
-	Kind        string `json:"kind"`
-	MoveMinutes int    `json:"moveMinutes"`
-	Place       string `json:"place"`
+	Kind  string `json:"kind"`
+	Place string `json:"place"`
 	// URL
 	URL string `json:"url"`
 	// メモ
@@ -59,21 +57,24 @@ type NewItem struct {
 	// タイトル
 	Title string `json:"title"`
 	// 種類
-	Kind string `json:"kind"`
+	Kind  string `json:"kind"`
+	Place string `json:"place"`
+	URL   string `json:"url"`
+	Memo  string `json:"memo"`
 }
 
 type NewItemDetail struct {
 	// 日付
-	Date string `json:"date"`
+	Date   string `json:"date"`
+	ItemID string `json:"itemId"`
 	// タイトル
-	Title       string `json:"title"`
-	ItemID      string `json:"itemId"`
-	Kind        string `json:"kind"`
-	MoveMinutes int    `json:"moveMinutes"`
-	Place       string `json:"place"`
-	URL         string `json:"url"`
-	Memo        string `json:"memo"`
-	Priority    int    `json:"priority"`
+	Title string `json:"title"`
+	// 種類
+	Kind     string `json:"kind"`
+	Place    string `json:"place"`
+	URL      string `json:"url"`
+	Memo     string `json:"memo"`
+	Priority int    `json:"priority"`
 }
 
 type ShareItem struct {

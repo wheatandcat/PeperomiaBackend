@@ -17,14 +17,13 @@ type CreateItemDetailRequest struct {
 
 // CreateItemDetail is CreateItemDetail request
 type CreateItemDetail struct {
-	ItemID      string `json:"itemID" binding:"required"`
-	Title       string `json:"title" binding:"required"`
-	Kind        string `json:"kind" binding:"required"`
-	Memo        string `json:"memo"`
-	URL         string `json:"url"`
-	Place       string `json:"place"`
-	MoveMinutes int    `json:"moveMinutes"`
-	Priority    int    `json:"priority"`
+	ItemID   string `json:"itemID" binding:"required"`
+	Title    string `json:"title" binding:"required"`
+	Kind     string `json:"kind" binding:"required"`
+	Memo     string `json:"memo"`
+	URL      string `json:"url"`
+	Place    string `json:"place"`
+	Priority int    `json:"priority"`
 }
 
 // UpdateItemDetailRequest is UpdateItemDetail request
@@ -35,15 +34,14 @@ type UpdateItemDetailRequest struct {
 
 // UpdateItemDetail is UpdateItemDetail request
 type UpdateItemDetail struct {
-	ID          string `json:"id" binding:"required"`
-	ItemID      string `json:"itemID" binding:"required"`
-	Title       string `json:"title" binding:"required"`
-	Kind        string `json:"kind" binding:"required"`
-	Memo        string `json:"memo"`
-	URL         string `json:"url"`
-	Place       string `json:"place"`
-	MoveMinutes int    `json:"moveMinutes"`
-	Priority    int    `json:"priority"`
+	ID       string `json:"id" binding:"required"`
+	ItemID   string `json:"itemID" binding:"required"`
+	Title    string `json:"title" binding:"required"`
+	Kind     string `json:"kind" binding:"required"`
+	Memo     string `json:"memo"`
+	URL      string `json:"url"`
+	Place    string `json:"place"`
+	Priority int    `json:"priority"`
 }
 
 // DeleteItemDetailRequest is DeleteItemDetail request
@@ -74,22 +72,20 @@ func (h *Handler) CreateItemDetail(gc *gin.Context) {
 	}
 
 	item := domain.ItemDetailRecord{
-		ID:          h.Client.UUID.Get(),
-		ItemID:      req.ItemDetail.ItemID,
-		Title:       req.ItemDetail.Title,
-		Kind:        req.ItemDetail.Kind,
-		UID:         uid,
-		Memo:        req.ItemDetail.Memo,
-		URL:         req.ItemDetail.URL,
-		Place:       req.ItemDetail.Place,
-		MoveMinutes: req.ItemDetail.MoveMinutes,
-		Priority:    req.ItemDetail.Priority,
+		ID:       h.Client.UUID.Get(),
+		Title:    req.ItemDetail.Title,
+		Kind:     req.ItemDetail.Kind,
+		UID:      uid,
+		Memo:     req.ItemDetail.Memo,
+		URL:      req.ItemDetail.URL,
+		Place:    req.ItemDetail.Place,
+		Priority: req.ItemDetail.Priority,
 	}
 
 	key := domain.ItemDetailKey{
 		UID:    uid,
 		Date:   req.Date,
-		ItemID: item.ItemID,
+		ItemID: req.ItemDetail.ItemID,
 	}
 
 	if err := h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, item, key); err != nil {
@@ -116,22 +112,20 @@ func (h *Handler) UpdateItemDetail(gc *gin.Context) {
 	}
 
 	item := domain.ItemDetailRecord{
-		ID:          req.ItemDetail.ID,
-		ItemID:      req.ItemDetail.ItemID,
-		Title:       req.ItemDetail.Title,
-		Kind:        req.ItemDetail.Kind,
-		UID:         uid,
-		Memo:        req.ItemDetail.Memo,
-		URL:         req.ItemDetail.URL,
-		Place:       req.ItemDetail.Place,
-		MoveMinutes: req.ItemDetail.MoveMinutes,
-		Priority:    req.ItemDetail.Priority,
+		ID:       req.ItemDetail.ID,
+		Title:    req.ItemDetail.Title,
+		Kind:     req.ItemDetail.Kind,
+		UID:      uid,
+		Memo:     req.ItemDetail.Memo,
+		URL:      req.ItemDetail.URL,
+		Place:    req.ItemDetail.Place,
+		Priority: req.ItemDetail.Priority,
 	}
 
 	key := domain.ItemDetailKey{
 		UID:    uid,
 		Date:   req.Date,
-		ItemID: item.ItemID,
+		ItemID: req.ItemDetail.ItemID,
 	}
 
 	if err := h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, item, key); err != nil {
@@ -158,15 +152,14 @@ func (h *Handler) DeleteItemDetail(gc *gin.Context) {
 	}
 
 	item := domain.ItemDetailRecord{
-		ID:     req.ItemDetail.ID,
-		ItemID: req.ItemDetail.ItemID,
-		UID:    uid,
+		ID:  req.ItemDetail.ID,
+		UID: uid,
 	}
 
 	key := domain.ItemDetailKey{
 		UID:    uid,
 		Date:   req.Date,
-		ItemID: item.ItemID,
+		ItemID: req.ItemDetail.ItemID,
 	}
 
 	if err := h.App.ItemDetailRepository.Delete(ctx, h.FirestoreClient, item, key); err != nil {

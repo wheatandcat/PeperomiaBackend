@@ -64,15 +64,13 @@ type ComplexityRoot struct {
 	}
 
 	ItemDetail struct {
-		ID          func(childComplexity int) int
-		ItemID      func(childComplexity int) int
-		Kind        func(childComplexity int) int
-		Memo        func(childComplexity int) int
-		MoveMinutes func(childComplexity int) int
-		Place       func(childComplexity int) int
-		Priority    func(childComplexity int) int
-		Title       func(childComplexity int) int
-		URL         func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Kind     func(childComplexity int) int
+		Memo     func(childComplexity int) int
+		Place    func(childComplexity int) int
+		Priority func(childComplexity int) int
+		Title    func(childComplexity int) int
+		URL      func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -221,13 +219,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ItemDetail.ID(childComplexity), true
 
-	case "ItemDetail.itemId":
-		if e.complexity.ItemDetail.ItemID == nil {
-			break
-		}
-
-		return e.complexity.ItemDetail.ItemID(childComplexity), true
-
 	case "ItemDetail.kind":
 		if e.complexity.ItemDetail.Kind == nil {
 			break
@@ -241,13 +232,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ItemDetail.Memo(childComplexity), true
-
-	case "ItemDetail.moveMinutes":
-		if e.complexity.ItemDetail.MoveMinutes == nil {
-			break
-		}
-
-		return e.complexity.ItemDetail.MoveMinutes(childComplexity), true
 
 	case "ItemDetail.place":
 		if e.complexity.ItemDetail.Place == nil {
@@ -514,10 +498,8 @@ type ItemDetail {
   id: ID!
   "タイトル"
   title: String!
-  itemId: String!
   "種類"
   kind: String!
-  moveMinutes: Int!
   place: String!
   "URL"
   url: String!
@@ -563,6 +545,9 @@ input NewItem {
   title: String!
   "種類"
   kind: String!
+  place: String!
+  url: String!
+  memo: String!
 }
 
 input NewCalendar {
@@ -575,11 +560,11 @@ input NewCalendar {
 input NewItemDetail {
   "日付"
   date: String!
+  itemId: String!
   "タイトル"
   title: String!
-  itemId: String!
+  "種類"
   kind: String!
-  moveMinutes: Int!
   place: String!
   url: String!
   memo: String!
@@ -1231,40 +1216,6 @@ func (ec *executionContext) _ItemDetail_title(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ItemDetail_itemId(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "ItemDetail",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ItemID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _ItemDetail_kind(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1297,40 +1248,6 @@ func (ec *executionContext) _ItemDetail_kind(ctx context.Context, field graphql.
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ItemDetail_moveMinutes(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "ItemDetail",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.MoveMinutes, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ItemDetail_place(ctx context.Context, field graphql.CollectedField, obj *model.ItemDetail) (ret graphql.Marshaler) {
@@ -3169,6 +3086,24 @@ func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
+		case "place":
+			var err error
+			it.Place, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "url":
+			var err error
+			it.URL, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "memo":
+			var err error
+			it.Memo, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -3187,27 +3122,21 @@ func (ec *executionContext) unmarshalInputNewItemDetail(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-		case "title":
-			var err error
-			it.Title, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "itemId":
 			var err error
 			it.ItemID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "kind":
+		case "title":
 			var err error
-			it.Kind, err = ec.unmarshalNString2string(ctx, v)
+			it.Title, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "moveMinutes":
+		case "kind":
 			var err error
-			it.MoveMinutes, err = ec.unmarshalNInt2int(ctx, v)
+			it.Kind, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3393,18 +3322,8 @@ func (ec *executionContext) _ItemDetail(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "itemId":
-			out.Values[i] = ec._ItemDetail_itemId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "kind":
 			out.Values[i] = ec._ItemDetail_kind(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "moveMinutes":
-			out.Values[i] = ec._ItemDetail_moveMinutes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
