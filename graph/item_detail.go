@@ -20,16 +20,14 @@ func (g *Graph) CreateItemDetail(ctx context.Context, itemDetail model.NewItemDe
 	}
 
 	item := domain.ItemDetailRecord{
-		ID:          h.Client.UUID.Get(),
-		UID:         uid,
-		ItemID:      itemDetail.ItemID,
-		Title:       itemDetail.Title,
-		Kind:        itemDetail.Kind,
-		MoveMinutes: itemDetail.MoveMinutes,
-		Place:       itemDetail.Place,
-		URL:         itemDetail.URL,
-		Memo:        itemDetail.Memo,
-		Priority:    itemDetail.Priority,
+		ID:       h.Client.UUID.Get(),
+		UID:      uid,
+		Title:    itemDetail.Title,
+		Kind:     itemDetail.Kind,
+		Place:    itemDetail.Place,
+		URL:      itemDetail.URL,
+		Memo:     itemDetail.Memo,
+		Priority: itemDetail.Priority,
 	}
 
 	itemKey := domain.ItemDetailKey{

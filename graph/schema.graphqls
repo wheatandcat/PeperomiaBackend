@@ -36,10 +36,8 @@ type ItemDetail {
   id: ID!
   "タイトル"
   title: String!
-  itemId: String!
   "種類"
   kind: String!
-  moveMinutes: Int!
   place: String!
   "URL"
   url: String!
@@ -85,6 +83,9 @@ input NewItem {
   title: String!
   "種類"
   kind: String!
+  place: String!
+  url: String!
+  memo: String!
 }
 
 input NewCalendar {
@@ -97,11 +98,11 @@ input NewCalendar {
 input NewItemDetail {
   "日付"
   date: String!
+  itemId: String!
   "タイトル"
   title: String!
-  itemId: String!
+  "種類"
   kind: String!
-  moveMinutes: Int!
   place: String!
   url: String!
   memo: String!

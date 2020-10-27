@@ -29,6 +29,7 @@ func (g *Graph) CreateCalendar(ctx context.Context, calendar model.NewCalendar) 
 	if err != nil {
 		return nil, err
 	}
+
 	item := domain.ItemRecord{
 		ID:    h.Client.UUID.Get(),
 		UID:   uid,
@@ -44,7 +45,31 @@ func (g *Graph) CreateCalendar(ctx context.Context, calendar model.NewCalendar) 
 	if err != nil {
 		return nil, err
 	}
+
+	itemDetail := domain.ItemDetailRecord{
+		ID:       h.Client.UUID.Get(),
+		UID:      uid,
+		Title:    calendar.Item.Title,
+		Kind:     calendar.Item.Kind,
+		Place:    calendar.Item.Place,
+		URL:      calendar.Item.URL,
+		Memo:     calendar.Item.Memo,
+		Priority: 1,
+	}
+
+	itemDetailKey := domain.ItemDetailKey{
+		UID:    uid,
+		Date:   &date,
+		ItemID: item.ID,
+	}
+
+	err = h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, itemDetail, itemDetailKey)
+	if err != nil {
+		return nil, err
+	}
+
 	cr.Item = &item
+	cr.Item.ItemDetails = append(cr.Item.ItemDetails, &itemDetail)
 
 	result := cr.ToModel()
 

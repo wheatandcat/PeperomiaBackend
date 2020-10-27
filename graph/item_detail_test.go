@@ -28,16 +28,14 @@ func TestCreateItemDetail(t *testing.T) {
 	date, _ := time.ParseInLocation("2006-01-02", "2019-01-01", loc)
 
 	idr := domain.ItemDetailRecord{
-		ID:          "sample-uuid-string",
-		UID:         "test",
-		ItemID:      "ItemID",
-		Title:       "Title",
-		Kind:        "Kind",
-		MoveMinutes: 0,
-		Place:       "Place",
-		URL:         "URL",
-		Memo:        "Memo",
-		Priority:    1,
+		ID:       "sample-uuid-string",
+		UID:      "test",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
 	}
 	itemKey := domain.ItemDetailKey{
 		UID:    "test",
@@ -53,15 +51,14 @@ func TestCreateItemDetail(t *testing.T) {
 	g := graph.NewGraph(&h, "test")
 
 	nid := model.NewItemDetail{
-		Date:        "2019-01-01T00:00:00",
-		ItemID:      "ItemID",
-		Title:       "Title",
-		Kind:        "Kind",
-		MoveMinutes: 0,
-		Place:       "Place",
-		URL:         "URL",
-		Memo:        "Memo",
-		Priority:    1,
+		Date:     "2019-01-01T00:00:00",
+		ItemID:   "ItemID",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
 	}
 
 	tests := []struct {
@@ -73,15 +70,13 @@ func TestCreateItemDetail(t *testing.T) {
 			name:  "アイテム詳細を作成",
 			param: nid,
 			result: &model.ItemDetail{
-				ID:          "sample-uuid-string",
-				ItemID:      "ItemID",
-				Title:       "Title",
-				Kind:        "Kind",
-				MoveMinutes: 0,
-				Place:       "Place",
-				URL:         "URL",
-				Memo:        "Memo",
-				Priority:    1,
+				ID:       "sample-uuid-string",
+				Title:    "Title",
+				Kind:     "Kind",
+				Place:    "Place",
+				URL:      "URL",
+				Memo:     "Memo",
+				Priority: 1,
 			},
 		},
 	}
@@ -123,16 +118,14 @@ func TestGetItemDetail(t *testing.T) {
 	}
 
 	idr := domain.ItemDetailRecord{
-		ID:          "itemDetailID",
-		UID:         "test",
-		ItemID:      "ItemID",
-		Title:       "Title",
-		Kind:        "Kind",
-		MoveMinutes: 0,
-		Place:       "Place",
-		URL:         "URL",
-		Memo:        "Memo",
-		Priority:    1,
+		ID:       "itemDetailID",
+		UID:      "test",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
 	}
 
 	mock1.EXPECT().Get(gomock.Any(), gomock.Any(), tidr, itemKey).Return(idr, nil)
@@ -143,15 +136,13 @@ func TestGetItemDetail(t *testing.T) {
 	g := graph.NewGraph(&h, "test")
 
 	mid := &model.ItemDetail{
-		ID:          "itemDetailID",
-		ItemID:      "ItemID",
-		Title:       "Title",
-		Kind:        "Kind",
-		MoveMinutes: 0,
-		Place:       "Place",
-		URL:         "URL",
-		Memo:        "Memo",
-		Priority:    1,
+		ID:       "itemDetailID",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
 	}
 
 	type paramType struct {

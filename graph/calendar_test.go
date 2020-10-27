@@ -50,15 +50,38 @@ func TestCreateCalendar(t *testing.T) {
 
 	mock2.EXPECT().Create(gomock.Any(), gomock.Any(), i, key).Return(nil)
 
+	mock3 := mock_domain.NewMockItemDetailRepository(ctrl)
+	idr := domain.ItemDetailRecord{
+		ID:       "sample-uuid-string",
+		UID:      "test",
+		Title:    "test",
+		Kind:     "test",
+		Memo:     "test",
+		URL:      "test",
+		Place:    "test",
+		Priority: 1,
+	}
+	itemKey := domain.ItemDetailKey{
+		UID:    "test",
+		Date:   &date,
+		ItemID: "sample-uuid-string",
+	}
+
+	mock3.EXPECT().Create(gomock.Any(), gomock.Any(), idr, itemKey).Return(nil)
+
 	h := NewTestHandler(ctx)
 	h.App.CalendarRepository = mock1
 	h.App.ItemRepository = mock2
+	h.App.ItemDetailRepository = mock3
 
 	g := graph.NewGraph(&h, "test")
 
 	item := model.NewItem{
 		Title: "test",
 		Kind:  "test",
+		Memo:  "test",
+		URL:   "test",
+		Place: "test",
 	}
 	cm := model.NewCalendar{
 		Date: "2019-01-01T00:00:00",
@@ -76,7 +99,18 @@ func TestCreateCalendar(t *testing.T) {
 			result: &model.Calendar{
 				ID:   "sample-uuid-string",
 				Date: "2019-01-01 00:00:00",
-				Item: &model.Item{ID: "sample-uuid-string", Title: "test", Kind: "test"},
+				Item: &model.Item{ID: "sample-uuid-string", Title: "test", Kind: "test", ItemDetails: []*model.ItemDetail{
+					{
+						ID:       "sample-uuid-string",
+						Title:    "test",
+						Kind:     "test",
+						Memo:     "test",
+						URL:      "test",
+						Place:    "test",
+						Priority: 1,
+					},
+				},
+				},
 			},
 		},
 	}
