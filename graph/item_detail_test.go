@@ -179,3 +179,99 @@ func TestGetItemDetail(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateItemDetail(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockItemDetailRepository(ctrl)
+	mock2 := mock_domain.NewMockItemRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	date, _ := time.ParseInLocation("2006-01-02", "2019-01-01", loc)
+
+	idr := domain.ItemDetailRecord{
+		ID:       "sample-uuid-string",
+		UID:      "test",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
+	}
+	idrKey := domain.ItemDetailKey{
+		UID:    "test",
+		Date:   &date,
+		ItemID: "ItemID",
+	}
+
+	mock1.EXPECT().Update(gomock.Any(), gomock.Any(), idr, idrKey).Return(nil)
+
+	item := domain.ItemRecord{
+		ID:    "ItemID",
+		UID:   "test",
+		Title: "Title",
+		Kind:  "Kind",
+	}
+	itemKey := domain.ItemKey{
+		UID:  "test",
+		Date: &date,
+	}
+
+	mock2.EXPECT().Update(gomock.Any(), gomock.Any(), item, itemKey).Return(nil)
+
+	h := NewTestHandler(ctx)
+	h.App.ItemDetailRepository = mock1
+	h.App.ItemRepository = mock2
+
+	g := graph.NewGraph(&h, "test")
+
+	nid := model.UpdateItemDetail{
+		ID:       "sample-uuid-string",
+		Date:     "2019-01-01T00:00:00",
+		ItemID:   "ItemID",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
+	}
+
+	tests := []struct {
+		name   string
+		param  model.UpdateItemDetail
+		result *model.ItemDetail
+	}{
+		{
+			name:  "アイテム詳細を更新",
+			param: nid,
+			result: &model.ItemDetail{
+				ID:       "sample-uuid-string",
+				Title:    "Title",
+				Kind:     "Kind",
+				Place:    "Place",
+				URL:      "URL",
+				Memo:     "Memo",
+				Priority: 1,
+			},
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.UpdateItemDetail(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+
+}

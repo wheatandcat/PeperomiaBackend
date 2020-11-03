@@ -13,9 +13,11 @@
     * [ShareItem](#shareitem)
     * [User](#user)
   * [Inputs](#inputs)
+    * [DeleteCalendar](#deletecalendar)
     * [NewCalendar](#newcalendar)
     * [NewItem](#newitem)
     * [NewItemDetail](#newitemdetail)
+    * [UpdateItemDetail](#updateitemdetail)
   * [Scalars](#scalars)
     * [Boolean](#boolean)
     * [Float](#float)
@@ -37,7 +39,7 @@
 </thead>
 <tbody>
 <tr>
-<td colspan="2" valign="top"><strong>ShareItem</strong></td>
+<td colspan="2" valign="top"><strong>shareItem</strong></td>
 <td valign="top"><a href="#shareitem">ShareItem</a></td>
 <td>
 
@@ -51,7 +53,7 @@
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>User</strong></td>
+<td colspan="2" valign="top"><strong>user</strong></td>
 <td valign="top"><a href="#user">User</a></td>
 <td>
 
@@ -60,7 +62,7 @@
 </td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>Calendars</strong></td>
+<td colspan="2" valign="top"><strong>calendars</strong></td>
 <td valign="top">[<a href="#calendar">Calendar</a>]</td>
 <td>
 
@@ -79,7 +81,7 @@
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>Calendar</strong></td>
+<td colspan="2" valign="top"><strong>calendar</strong></td>
 <td valign="top"><a href="#calendar">Calendar</a></td>
 <td>
 
@@ -93,7 +95,7 @@
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>ItemDetail</strong></td>
+<td colspan="2" valign="top"><strong>itemDetail</strong></td>
 <td valign="top"><a href="#itemdetail">ItemDetail</a></td>
 <td>
 
@@ -131,7 +133,7 @@
 </thead>
 <tbody>
 <tr>
-<td colspan="2" valign="top"><strong>CreateCalendar</strong></td>
+<td colspan="2" valign="top"><strong>createCalendar</strong></td>
 <td valign="top"><a href="#calendar">Calendar</a>!</td>
 <td>
 
@@ -145,7 +147,35 @@
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>CreateItemDetail</strong></td>
+<td colspan="2" valign="top"><strong>deleteCalendar</strong></td>
+<td valign="top"><a href="#calendar">Calendar</a>!</td>
+<td>
+
+カレンダーを削除する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">calendar</td>
+<td valign="top"><a href="#deletecalendar">DeleteCalendar</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateItemDetail</strong></td>
+<td valign="top"><a href="#itemdetail">ItemDetail</a>!</td>
+<td>
+
+アイテム詳細を更新する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">itemDetail</td>
+<td valign="top"><a href="#updateitemdetail">UpdateItemDetail</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>createItemDetail</strong></td>
 <td valign="top"><a href="#itemdetail">ItemDetail</a>!</td>
 <td>
 
@@ -327,11 +357,6 @@ true: パブリック、false: プライベート
 </td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>itemId</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
-<td></td>
-</tr>
-<tr>
 <td colspan="2" valign="top"><strong>kind</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
 <td>
@@ -339,11 +364,6 @@ true: パブリック、false: プライベート
 種類
 
 </td>
-</tr>
-<tr>
-<td colspan="2" valign="top"><strong>moveMinutes</strong></td>
-<td valign="top"><a href="#int">Int</a>!</td>
-<td></td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>place</strong></td>
@@ -472,6 +492,29 @@ PUSH通知設定
 
 ## Inputs
 
+### DeleteCalendar
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+日付
+
+</td>
+</tr>
+</tbody>
+</table>
+
 ### NewCalendar
 
 <table>
@@ -533,6 +576,21 @@ PUSH通知設定
 
 </td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>place</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>url</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>memo</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -557,6 +615,11 @@ PUSH通知設定
 </td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>itemId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>title</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
 <td>
@@ -566,19 +629,84 @@ PUSH通知設定
 </td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>kind</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+種類
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>place</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>url</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>memo</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>priority</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### UpdateItemDetail
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+日付
+
+</td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>itemId</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>kind</strong></td>
+<td colspan="2" valign="top"><strong>title</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
-<td></td>
+<td>
+
+タイトル
+
+</td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>moveMinutes</strong></td>
-<td valign="top"><a href="#int">Int</a>!</td>
-<td></td>
+<td colspan="2" valign="top"><strong>kind</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+種類
+
+</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>place</strong></td>

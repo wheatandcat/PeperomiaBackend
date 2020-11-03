@@ -92,6 +92,20 @@ func (mr *MockCalendarRepositoryMockRecorder) DeleteByUID(ctx, f, uid interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByUID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByUID), ctx, f, uid)
 }
 
+// DeleteByDateAndUID mocks base method
+func (m *MockCalendarRepository) DeleteByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteByDateAndUID", ctx, f, uid, date)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteByDateAndUID indicates an expected call of DeleteByDateAndUID
+func (mr *MockCalendarRepositoryMockRecorder) DeleteByDateAndUID(ctx, f, uid, date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByDateAndUID", reflect.TypeOf((*MockCalendarRepository)(nil).DeleteByDateAndUID), ctx, f, uid, date)
+}
+
 // FindBetweenDateAndUID mocks base method
 func (m *MockCalendarRepository) FindBetweenDateAndUID(ctx context.Context, f *firestore.Client, uid string, startDate, endDate *time.Time) ([]domain.CalendarRecord, error) {
 	m.ctrl.T.Helper()

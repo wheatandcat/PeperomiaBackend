@@ -163,6 +163,29 @@ func (re *CalendarRepository) Delete(ctx context.Context, f *firestore.Client, i
 	return err
 }
 
+// DeleteByDateAndUID カレンダーを削除する
+func (re *CalendarRepository) DeleteByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) error {
+	cr := domain.CalendarRecord{
+		UID:  uid,
+		Date: date,
+	}
+
+	doc, err := calendarCollection(f, cr).Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := DeleteItemDoc(ctx, doc); err != nil {
+		return err
+	}
+
+	if _, err := doc.Ref.Delete(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // DeleteByUID ユーザーIDから削除する
 func (re *CalendarRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
 	matchItem := f.Collection("version/1/" + uid + "/calendars").Documents(ctx)

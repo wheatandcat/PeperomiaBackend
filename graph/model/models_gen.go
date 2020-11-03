@@ -12,6 +12,11 @@ type Calendar struct {
 	Item *Item `json:"item"`
 }
 
+type DeleteCalendar struct {
+	// 日付
+	Date string `json:"date"`
+}
+
 type ExpoPushToken struct {
 	ID  string `json:"id"`
 	UID string `json:"uid"`
@@ -84,6 +89,21 @@ type ShareItem struct {
 	Date string `json:"date"`
 	// スケジュール
 	Item *Item `json:"item"`
+}
+
+type UpdateItemDetail struct {
+	ID string `json:"id"`
+	// 日付
+	Date   string `json:"date"`
+	ItemID string `json:"itemId"`
+	// タイトル
+	Title string `json:"title"`
+	// 種類
+	Kind     string `json:"kind"`
+	Place    string `json:"place"`
+	URL      string `json:"url"`
+	Memo     string `json:"memo"`
+	Priority int    `json:"priority"`
 }
 
 type User struct {
