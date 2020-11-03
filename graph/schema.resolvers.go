@@ -27,6 +27,38 @@ func (r *mutationResolver) CreateCalendar(ctx context.Context, calendar model.Ne
 	return result, nil
 }
 
+func (r *mutationResolver) DeleteCalendar(ctx context.Context, calendar model.DeleteCalendar) (*model.Calendar, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.DeleteCalendar(ctx, calendar.Date)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *mutationResolver) UpdateItemDetail(ctx context.Context, itemDetail model.UpdateItemDetail) (*model.ItemDetail, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.UpdateItemDetail(ctx, itemDetail)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *mutationResolver) CreateItemDetail(ctx context.Context, itemDetail model.NewItemDetail) (*model.ItemDetail, error) {
 	uid, err := GetSelfUID(ctx)
 	if err != nil {

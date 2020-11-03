@@ -23,6 +23,7 @@ type CalendarRepository interface {
 	Update(ctx context.Context, f *firestore.Client, i CalendarRecord) error
 	Delete(ctx context.Context, f *firestore.Client, i CalendarRecord) error
 	DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error
+	DeleteByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) error
 	FindBetweenDateAndUID(ctx context.Context, f *firestore.Client, uid string, startDate *time.Time, endDate *time.Time) ([]CalendarRecord, error)
 	FindByDateAndUID(ctx context.Context, f *firestore.Client, uid string, date *time.Time) (CalendarRecord, error)
 	FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]CalendarRecord, error)

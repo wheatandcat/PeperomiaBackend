@@ -124,3 +124,24 @@ func (g *Graph) GetCalendar(ctx context.Context, date string) (*model.Calendar, 
 
 	return item, nil
 }
+
+// DeleteCalendar カレンダーを削除する
+func (g *Graph) DeleteCalendar(ctx context.Context, date string) (*model.Calendar, error) {
+	h := g.Handler
+	uid := g.UID
+	loc := GetLoadLocation()
+
+	d, err := time.ParseInLocation("2006-01-02T15:04:05", date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	err = h.App.CalendarRepository.DeleteByDateAndUID(ctx, h.FirestoreClient, uid, &d)
+	if err != nil {
+		return nil, err
+	}
+
+	item := &model.Calendar{}
+
+	return item, nil
+}

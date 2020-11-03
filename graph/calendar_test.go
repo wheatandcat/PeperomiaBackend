@@ -258,3 +258,55 @@ func TestGetCalendar(t *testing.T) {
 		})
 	}
 }
+
+func TestDeleteCalendar(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockCalendarRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	date, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-01T00:00:00", loc)
+
+	mock1.EXPECT().DeleteByDateAndUID(gomock.Any(), gomock.Any(), "test", &date).Return(nil)
+
+	h := NewTestHandler(ctx)
+	h.App.CalendarRepository = mock1
+
+	g := graph.NewGraph(&h, "test")
+
+	cm := &model.Calendar{}
+
+	type paramType struct {
+		date string
+	}
+
+	tests := []struct {
+		name   string
+		param  paramType
+		result *model.Calendar
+	}{
+		{
+			name: "カレンダーを削除",
+			param: paramType{
+				date: "2019-01-01T00:00:00",
+			},
+			result: cm,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.DeleteCalendar(ctx, td.param.date)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}

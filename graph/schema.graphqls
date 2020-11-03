@@ -110,9 +110,34 @@ input NewItemDetail {
 }
 
 
+input UpdateItemDetail {
+  id: String!
+  "日付"
+  date: String!
+  itemId: String!
+  "タイトル"
+  title: String!
+  "種類"
+  kind: String!
+  place: String!
+  url: String!
+  memo: String!
+  priority: Int!
+}
+
+
+input DeleteCalendar {
+  "日付"
+  date: String!
+}
+
 type Mutation {
   "カレンダーを作成する"
   createCalendar(calendar: NewCalendar!): Calendar!
+  "カレンダーを削除する"
+  deleteCalendar(calendar: DeleteCalendar!): Calendar!
+  "アイテム詳細を更新する"
+  updateItemDetail(itemDetail: UpdateItemDetail!): ItemDetail!
   "スケジュール詳細を作成する"
   createItemDetail(itemDetail: NewItemDetail!): ItemDetail!
 }
