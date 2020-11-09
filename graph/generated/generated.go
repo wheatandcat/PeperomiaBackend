@@ -347,7 +347,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ItemDetail(childComplexity, args["date"].(string), args["itemId"].(string), args["itemDetailID"].(string)), true
+		return e.complexity.Query.ItemDetail(childComplexity, args["date"].(string), args["itemId"].(string), args["itemDetailId"].(string)), true
 
 	case "Query.shareItem":
 		if e.complexity.Query.ShareItem == nil {
@@ -565,7 +565,7 @@ type Query {
   "カレンダーを取得する"
   calendar(date: String!): Calendar
   "スケジュール詳細を取得する"
-  itemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
+  itemDetail(date: String!, itemId: String!, itemDetailId: String!): ItemDetail
 }
 
 input NewItem {
@@ -757,20 +757,20 @@ func (ec *executionContext) field_Query_itemDetail_args(ctx context.Context, raw
 	args["date"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["itemId"]; ok {
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["itemId"] = arg1
 	var arg2 string
-	if tmp, ok := rawArgs["itemDetailID"]; ok {
-		arg2, err = ec.unmarshalNID2string(ctx, tmp)
+	if tmp, ok := rawArgs["itemDetailId"]; ok {
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["itemDetailID"] = arg2
+	args["itemDetailId"] = arg2
 	return args, nil
 }
 
@@ -1800,7 +1800,7 @@ func (ec *executionContext) _Query_itemDetail(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ItemDetail(rctx, args["date"].(string), args["itemId"].(string), args["itemDetailID"].(string))
+		return ec.resolvers.Query().ItemDetail(rctx, args["date"].(string), args["itemId"].(string), args["itemDetailId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
