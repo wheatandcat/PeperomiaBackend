@@ -75,7 +75,7 @@ type Query {
   "カレンダーを取得する"
   calendar(date: String!): Calendar
   "スケジュール詳細を取得する"
-  itemDetail(date: String!, itemId: ID!, itemDetailID: ID!): ItemDetail
+  itemDetail(date: String!, itemId: String!, itemDetailId: String!): ItemDetail
 }
 
 input NewItem {
