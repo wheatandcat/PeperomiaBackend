@@ -83,9 +83,10 @@ func (h *Handler) CreateItemDetail(gc *gin.Context) {
 	}
 
 	key := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   req.Date,
-		ItemID: req.ItemDetail.ItemID,
+		UID:          uid,
+		Date:         req.Date,
+		ItemID:       req.ItemDetail.ItemID,
+		ItemDetailID: item.ID,
 	}
 
 	if err := h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, item, key); err != nil {
@@ -123,9 +124,10 @@ func (h *Handler) UpdateItemDetail(gc *gin.Context) {
 	}
 
 	key := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   req.Date,
-		ItemID: req.ItemDetail.ItemID,
+		UID:          uid,
+		Date:         req.Date,
+		ItemID:       req.ItemDetail.ItemID,
+		ItemDetailID: item.ID,
 	}
 
 	if err := h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, item, key); err != nil {
@@ -157,12 +159,13 @@ func (h *Handler) DeleteItemDetail(gc *gin.Context) {
 	}
 
 	key := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   req.Date,
-		ItemID: req.ItemDetail.ItemID,
+		UID:          uid,
+		Date:         req.Date,
+		ItemID:       req.ItemDetail.ItemID,
+		ItemDetailID: item.ID,
 	}
 
-	if err := h.App.ItemDetailRepository.Delete(ctx, h.FirestoreClient, item, key); err != nil {
+	if err := h.App.ItemDetailRepository.Delete(ctx, h.FirestoreClient, key); err != nil {
 		NewErrorResponse(err).Render(gc)
 		return
 	}

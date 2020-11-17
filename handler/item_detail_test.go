@@ -35,9 +35,10 @@ func TestCreateItemDetail(t *testing.T) {
 
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
 	key := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "test",
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "test",
+		ItemDetailID: i.ID,
 	}
 
 	mock.EXPECT().Create(gomock.Any(), gomock.Any(), i, key).Return(nil)
@@ -97,9 +98,10 @@ func TestUpdateItemDetail(t *testing.T) {
 
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
 	key := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "test",
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "test",
+		ItemDetailID: i.ID,
 	}
 
 	mock.EXPECT().Update(gomock.Any(), gomock.Any(), i, key).Return(nil)
@@ -154,12 +156,13 @@ func TestDeleteItemDetail(t *testing.T) {
 
 	date, _ := time.Parse("2006-01-02", "2019-01-01")
 	key := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "test",
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "test",
+		ItemDetailID: i.ID,
 	}
 
-	mock.EXPECT().Delete(gomock.Any(), gomock.Any(), i, key).Return(nil)
+	mock.EXPECT().Delete(gomock.Any(), gomock.Any(), key).Return(nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemDetailRepository = mock

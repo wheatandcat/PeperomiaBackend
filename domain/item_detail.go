@@ -22,17 +22,18 @@ type ItemDetailRecord struct {
 
 // ItemDetailKey is item_detail key
 type ItemDetailKey struct {
-	UID    string
-	Date   *time.Time
-	ItemID string
+	UID          string
+	Date         *time.Time
+	ItemID       string
+	ItemDetailID string
 }
 
 // ItemDetailRepository is repository interface
 type ItemDetailRepository interface {
 	Create(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
 	Update(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
-	Delete(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) error
-	Get(ctx context.Context, f *firestore.Client, i ItemDetailRecord, key ItemDetailKey) (ItemDetailRecord, error)
+	Delete(ctx context.Context, f *firestore.Client, key ItemDetailKey) error
+	Get(ctx context.Context, f *firestore.Client, key ItemDetailKey) (ItemDetailRecord, error)
 	FindByItemID(ctx context.Context, f *firestore.Client, itemID string) ([]ItemDetailRecord, error)
 }
 

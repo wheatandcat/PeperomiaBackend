@@ -17,6 +17,13 @@ type DeleteCalendar struct {
 	Date string `json:"date"`
 }
 
+type DeleteItemDetail struct {
+	ID string `json:"id"`
+	// 日付
+	Date   string `json:"date"`
+	ItemID string `json:"itemId"`
+}
+
 type ExpoPushToken struct {
 	ID  string `json:"id"`
 	UID string `json:"uid"`
@@ -104,6 +111,13 @@ type UpdateItemDetail struct {
 	URL      string `json:"url"`
 	Memo     string `json:"memo"`
 	Priority int    `json:"priority"`
+}
+
+type UpdateMainItemDetail struct {
+	ID string `json:"id"`
+	// 日付
+	Date   string `json:"date"`
+	ItemID string `json:"itemId"`
 }
 
 type User struct {

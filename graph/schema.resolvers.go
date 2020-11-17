@@ -75,6 +75,38 @@ func (r *mutationResolver) CreateItemDetail(ctx context.Context, itemDetail mode
 	return result, nil
 }
 
+func (r *mutationResolver) DeleteItemDetail(ctx context.Context, itemDetail model.DeleteItemDetail) (*model.ItemDetail, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.DeleteItemDetail(ctx, itemDetail)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *mutationResolver) UpdateMainItemDetail(ctx context.Context, itemDetail model.UpdateMainItemDetail) (*model.ItemDetail, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.UpdateMainItem(ctx, itemDetail)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareItem, error) {
 	item := &model.ShareItem{}
 
@@ -169,10 +201,4 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
 const location = "Asia/Tokyo"

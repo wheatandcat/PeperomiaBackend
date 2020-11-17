@@ -18,7 +18,7 @@ func NewItemDetailRepository() domain.ItemDetailRepository {
 
 // getItemDetailCollection アイテムのコレクションを取得する
 func getItemDetailCollection(f *firestore.Client, key domain.ItemDetailKey) *firestore.DocumentRef {
-	iDoc := getItemDocID(key.ItemID)
+	iDoc := getItemDocID(key.ItemDetailID)
 	date := key.Date.Format("2006-01-02")
 
 	return f.Collection("version/1/users/" + key.UID + "/calendars/" + date + "/items/" + key.ItemID + "/itemDetails").Doc(iDoc)
@@ -45,14 +45,14 @@ func (re *ItemDetailRepository) Update(ctx context.Context, f *firestore.Client,
 }
 
 // Delete アイテム詳細を削除する
-func (re *ItemDetailRepository) Delete(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) error {
+func (re *ItemDetailRepository) Delete(ctx context.Context, f *firestore.Client, key domain.ItemDetailKey) error {
 	_, err := getItemDetailCollection(f, key).Delete(ctx)
 
 	return err
 }
 
 // Get アイテム詳細を取得する
-func (re *ItemDetailRepository) Get(ctx context.Context, f *firestore.Client, i domain.ItemDetailRecord, key domain.ItemDetailKey) (domain.ItemDetailRecord, error) {
+func (re *ItemDetailRepository) Get(ctx context.Context, f *firestore.Client, key domain.ItemDetailKey) (domain.ItemDetailRecord, error) {
 	var idr domain.ItemDetailRecord
 
 	snap, err := getItemDetailCollection(f, key).Get(ctx)
