@@ -62,9 +62,10 @@ func TestCreateCalendar(t *testing.T) {
 		Priority: 1,
 	}
 	itemKey := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "sample-uuid-string",
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "sample-uuid-string",
+		ItemDetailID: idr.ID,
 	}
 
 	mock3.EXPECT().Create(gomock.Any(), gomock.Any(), idr, itemKey).Return(nil)

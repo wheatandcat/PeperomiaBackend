@@ -58,9 +58,10 @@ func (g *Graph) CreateCalendar(ctx context.Context, calendar model.NewCalendar) 
 	}
 
 	itemDetailKey := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   &date,
-		ItemID: item.ID,
+		UID:          uid,
+		Date:         &date,
+		ItemID:       item.ID,
+		ItemDetailID: itemDetail.ID,
 	}
 
 	err = h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, itemDetail, itemDetailKey)
@@ -72,6 +73,83 @@ func (g *Graph) CreateCalendar(ctx context.Context, calendar model.NewCalendar) 
 	cr.Item.ItemDetails = append(cr.Item.ItemDetails, &itemDetail)
 
 	result := cr.ToModel()
+
+	return result, nil
+}
+
+// UpdateMainItem メインアイテムに更新する
+func (g *Graph) UpdateMainItem(ctx context.Context, umi model.UpdateMainItemDetail) (*model.ItemDetail, error) {
+	h := g.Handler
+	uid := g.UID
+	loc := GetLoadLocation()
+
+	d, err := time.ParseInLocation("2006-01-02T15:04:05", umi.Date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	cr, err := h.App.CalendarRepository.FindByDateAndUID(ctx, h.FirestoreClient, uid, &d)
+	if err != nil {
+		return nil, err
+	}
+
+	idrKey := domain.ItemDetailKey{
+		UID:          uid,
+		Date:         &d,
+		ItemID:       umi.ItemID,
+		ItemDetailID: umi.ID,
+	}
+
+	idr, err := h.App.ItemDetailRepository.Get(ctx, h.FirestoreClient, idrKey)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, itemDetail := range cr.Item.ItemDetails {
+		if itemDetail.Priority == 1 {
+			// メインのアイテムのPriorityを更新
+			itemDetail.Priority = idr.Priority
+
+			idrKey1 := domain.ItemDetailKey{
+				UID:          uid,
+				Date:         &d,
+				ItemID:       umi.ItemID,
+				ItemDetailID: itemDetail.ID,
+			}
+			if err = h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, *itemDetail, idrKey1); err != nil {
+				return nil, err
+			}
+		}
+		if itemDetail.Priority == idr.Priority {
+			// 選択したアイテムをメインに更新
+			itemDetail.Priority = 1
+
+			idrKey1 := domain.ItemDetailKey{
+				UID:          uid,
+				Date:         &d,
+				ItemID:       umi.ItemID,
+				ItemDetailID: itemDetail.ID,
+			}
+			if err = h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, *itemDetail, idrKey1); err != nil {
+				return nil, err
+			}
+		}
+
+	}
+
+	item := *cr.Item
+	item.Title = idr.Title
+	item.Kind = idr.Kind
+	itemKey := domain.ItemKey{
+		UID:  uid,
+		Date: &d,
+	}
+	if err = h.App.ItemRepository.Update(ctx, h.FirestoreClient, item, itemKey); err != nil {
+		return nil, err
+	}
+
+	idr.Priority = 1
+	result := idr.ToModel()
 
 	return result, nil
 }
@@ -141,7 +219,7 @@ func (g *Graph) DeleteCalendar(ctx context.Context, date string) (*model.Calenda
 		return nil, err
 	}
 
-	item := &model.Calendar{}
+	result := &model.Calendar{}
 
-	return item, nil
+	return result, nil
 }

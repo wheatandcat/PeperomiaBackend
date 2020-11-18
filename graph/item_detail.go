@@ -31,9 +31,10 @@ func (g *Graph) CreateItemDetail(ctx context.Context, itemDetail model.NewItemDe
 	}
 
 	itemKey := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   &date,
-		ItemID: itemDetail.ItemID,
+		UID:          uid,
+		Date:         &date,
+		ItemID:       itemDetail.ItemID,
+		ItemDetailID: item.ID,
 	}
 
 	err = h.App.ItemDetailRepository.Create(ctx, h.FirestoreClient, item, itemKey)
@@ -69,9 +70,10 @@ func (g *Graph) UpdateItemDetail(ctx context.Context, itemDetail model.UpdateIte
 	}
 
 	idrKey := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   &date,
-		ItemID: itemDetail.ItemID,
+		UID:          uid,
+		Date:         &date,
+		ItemID:       itemDetail.ItemID,
+		ItemDetailID: idr.ID,
 	}
 
 	if err = h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, idr, idrKey); err != nil {
@@ -101,6 +103,33 @@ func (g *Graph) UpdateItemDetail(ctx context.Context, itemDetail model.UpdateIte
 	return result, nil
 }
 
+// DeleteItemDetail アイテム詳細を削除
+func (g *Graph) DeleteItemDetail(ctx context.Context, itemDetail model.DeleteItemDetail) (*model.ItemDetail, error) {
+	h := g.Handler
+	uid := g.UID
+	loc := GetLoadLocation()
+
+	date, err := time.ParseInLocation("2006-01-02T15:04:05", itemDetail.Date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	idrKey := domain.ItemDetailKey{
+		UID:          uid,
+		Date:         &date,
+		ItemID:       itemDetail.ItemID,
+		ItemDetailID: itemDetail.ID,
+	}
+
+	if err = h.App.ItemDetailRepository.Delete(ctx, h.FirestoreClient, idrKey); err != nil {
+		return nil, err
+	}
+
+	result := &model.ItemDetail{}
+
+	return result, nil
+}
+
 // GetItemDetail アイテム詳細を取得する
 func (g *Graph) GetItemDetail(ctx context.Context, date string, itemID string, itemDetailID string) (*model.ItemDetail, error) {
 	h := g.Handler
@@ -112,17 +141,14 @@ func (g *Graph) GetItemDetail(ctx context.Context, date string, itemID string, i
 		return nil, err
 	}
 
-	idr := domain.ItemDetailRecord{
-		ID: itemDetailID,
-	}
-
 	itemKey := domain.ItemDetailKey{
-		UID:    uid,
-		Date:   &d,
-		ItemID: itemID,
+		UID:          uid,
+		Date:         &d,
+		ItemID:       itemID,
+		ItemDetailID: itemDetailID,
 	}
 
-	item, err := h.App.ItemDetailRepository.Get(ctx, h.FirestoreClient, idr, itemKey)
+	item, err := h.App.ItemDetailRepository.Get(ctx, h.FirestoreClient, itemKey)
 	if err != nil {
 		return nil, err
 	}

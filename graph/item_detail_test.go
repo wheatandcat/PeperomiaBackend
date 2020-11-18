@@ -38,9 +38,10 @@ func TestCreateItemDetail(t *testing.T) {
 		Priority: 1,
 	}
 	itemKey := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "ItemID",
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "ItemID",
+		ItemDetailID: idr.ID,
 	}
 
 	mock1.EXPECT().Create(gomock.Any(), gomock.Any(), idr, itemKey).Return(nil)
@@ -107,16 +108,6 @@ func TestGetItemDetail(t *testing.T) {
 
 	date, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-01T00:00:00", loc)
 
-	tidr := domain.ItemDetailRecord{
-		ID: "itemDetailID",
-	}
-
-	itemKey := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "ItemID",
-	}
-
 	idr := domain.ItemDetailRecord{
 		ID:       "itemDetailID",
 		UID:      "test",
@@ -128,7 +119,14 @@ func TestGetItemDetail(t *testing.T) {
 		Priority: 1,
 	}
 
-	mock1.EXPECT().Get(gomock.Any(), gomock.Any(), tidr, itemKey).Return(idr, nil)
+	itemKey := domain.ItemDetailKey{
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "ItemID",
+		ItemDetailID: idr.ID,
+	}
+
+	mock1.EXPECT().Get(gomock.Any(), gomock.Any(), itemKey).Return(idr, nil)
 
 	h := NewTestHandler(ctx)
 	h.App.ItemDetailRepository = mock1
@@ -204,9 +202,10 @@ func TestUpdateItemDetail(t *testing.T) {
 		Priority: 1,
 	}
 	idrKey := domain.ItemDetailKey{
-		UID:    "test",
-		Date:   &date,
-		ItemID: "ItemID",
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "ItemID",
+		ItemDetailID: idr.ID,
 	}
 
 	mock1.EXPECT().Update(gomock.Any(), gomock.Any(), idr, idrKey).Return(nil)
@@ -265,6 +264,82 @@ func TestUpdateItemDetail(t *testing.T) {
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
 			r, _ := g.UpdateItemDetail(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+
+}
+
+func TestDeleteItemDetail(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockItemDetailRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	date, _ := time.ParseInLocation("2006-01-02", "2019-01-01", loc)
+
+	idr := domain.ItemDetailRecord{
+		ID:       "sample-uuid-string",
+		UID:      "test",
+		Title:    "Title",
+		Kind:     "Kind",
+		Place:    "Place",
+		URL:      "URL",
+		Memo:     "Memo",
+		Priority: 1,
+	}
+	idrKey := domain.ItemDetailKey{
+		UID:          "test",
+		Date:         &date,
+		ItemID:       "ItemID",
+		ItemDetailID: idr.ID,
+	}
+
+	mock1.EXPECT().Delete(gomock.Any(), gomock.Any(), idrKey).Return(nil)
+
+	h := NewTestHandler(ctx)
+	h.App.ItemDetailRepository = mock1
+
+	g := graph.NewGraph(&h, "test")
+
+	nid := model.DeleteItemDetail{
+		ID:     "sample-uuid-string",
+		Date:   "2019-01-01T00:00:00",
+		ItemID: "ItemID",
+	}
+
+	tests := []struct {
+		name   string
+		param  model.DeleteItemDetail
+		result *model.ItemDetail
+	}{
+		{
+			name:  "アイテム詳細を削除",
+			param: nid,
+			result: &model.ItemDetail{
+				ID:       "",
+				Title:    "",
+				Kind:     "",
+				Place:    "",
+				URL:      "",
+				Memo:     "",
+				Priority: 0,
+			},
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.DeleteItemDetail(ctx, td.param)
 			diff := cmp.Diff(r, td.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
