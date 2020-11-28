@@ -65,6 +65,16 @@ type ShareItem {
   item: Item!
 }
 
+type SuggestionItem {
+  text: String!
+}
+
+
+type SuggestionTitle {
+  "タイトル候補"
+  list: [SuggestionItem!]
+}
+
 type Query {
   "公開アイテムを取得する"
   shareItem(id: ID!): ShareItem
@@ -76,6 +86,8 @@ type Query {
   calendar(date: String!): Calendar
   "スケジュール詳細を取得する"
   itemDetail(date: String!, itemId: String!, itemDetailId: String!): ItemDetail
+  "タイトルのサジェストを取得する"
+  suggestionTitle(text: String!): [String!]
 }
 
 input NewItem {

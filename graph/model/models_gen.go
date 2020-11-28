@@ -98,6 +98,15 @@ type ShareItem struct {
 	Item *Item `json:"item"`
 }
 
+type SuggestionItem struct {
+	Text string `json:"text"`
+}
+
+type SuggestionTitle struct {
+	// タイトル候補
+	List []*SuggestionItem `json:"list"`
+}
+
 type UpdateItemDetail struct {
 	ID string `json:"id"`
 	// 日付
