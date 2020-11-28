@@ -192,6 +192,26 @@ func (r *queryResolver) ItemDetail(ctx context.Context, date string, itemID stri
 	return result, nil
 }
 
+func (r *queryResolver) SuggestionTitle(ctx context.Context, text string) ([]string, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if text == "" {
+		return nil, nil
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.GetSuggestionText(ctx, text)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -201,4 +221,10 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
 const location = "Asia/Tokyo"

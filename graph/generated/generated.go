@@ -83,11 +83,12 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Calendar   func(childComplexity int, date string) int
-		Calendars  func(childComplexity int, startDate string, endDate string) int
-		ItemDetail func(childComplexity int, date string, itemID string, itemDetailID string) int
-		ShareItem  func(childComplexity int, id string) int
-		User       func(childComplexity int) int
+		Calendar        func(childComplexity int, date string) int
+		Calendars       func(childComplexity int, startDate string, endDate string) int
+		ItemDetail      func(childComplexity int, date string, itemID string, itemDetailID string) int
+		ShareItem       func(childComplexity int, id string) int
+		SuggestionTitle func(childComplexity int, text string) int
+		User            func(childComplexity int) int
 	}
 
 	ShareItem struct {
@@ -95,6 +96,14 @@ type ComplexityRoot struct {
 		ID     func(childComplexity int) int
 		Item   func(childComplexity int) int
 		ItemID func(childComplexity int) int
+	}
+
+	SuggestionItem struct {
+		Text func(childComplexity int) int
+	}
+
+	SuggestionTitle struct {
+		List func(childComplexity int) int
 	}
 
 	User struct {
@@ -119,6 +128,7 @@ type QueryResolver interface {
 	Calendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error)
 	Calendar(ctx context.Context, date string) (*model.Calendar, error)
 	ItemDetail(ctx context.Context, date string, itemID string, itemDetailID string) (*model.ItemDetail, error)
+	SuggestionTitle(ctx context.Context, text string) ([]string, error)
 }
 
 type executableSchema struct {
@@ -389,6 +399,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ShareItem(childComplexity, args["id"].(string)), true
 
+	case "Query.suggestionTitle":
+		if e.complexity.Query.SuggestionTitle == nil {
+			break
+		}
+
+		args, err := ec.field_Query_suggestionTitle_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SuggestionTitle(childComplexity, args["text"].(string)), true
+
 	case "Query.user":
 		if e.complexity.Query.User == nil {
 			break
@@ -423,6 +445,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ShareItem.ItemID(childComplexity), true
+
+	case "SuggestionItem.text":
+		if e.complexity.SuggestionItem.Text == nil {
+			break
+		}
+
+		return e.complexity.SuggestionItem.Text(childComplexity), true
+
+	case "SuggestionTitle.list":
+		if e.complexity.SuggestionTitle.List == nil {
+			break
+		}
+
+		return e.complexity.SuggestionTitle.List(childComplexity), true
 
 	case "User.expoPushTokens":
 		if e.complexity.User.ExpoPushTokens == nil {
@@ -583,6 +619,16 @@ type ShareItem {
   item: Item!
 }
 
+type SuggestionItem {
+  text: String!
+}
+
+
+type SuggestionTitle {
+  "タイトル候補"
+  list: [SuggestionItem!]
+}
+
 type Query {
   "公開アイテムを取得する"
   shareItem(id: ID!): ShareItem
@@ -594,6 +640,8 @@ type Query {
   calendar(date: String!): Calendar
   "スケジュール詳細を取得する"
   itemDetail(date: String!, itemId: String!, itemDetailId: String!): ItemDetail
+  "タイトルのサジェストを取得する"
+  suggestionTitle(text: String!): [String!]
 }
 
 input NewItem {
@@ -859,6 +907,20 @@ func (ec *executionContext) field_Query_shareItem_args(ctx context.Context, rawA
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_suggestionTitle_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["text"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["text"] = arg0
 	return args, nil
 }
 
@@ -1970,6 +2032,44 @@ func (ec *executionContext) _Query_itemDetail(ctx context.Context, field graphql
 	return ec.marshalOItemDetail2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐItemDetail(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_suggestionTitle(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_suggestionTitle_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().SuggestionTitle(rctx, args["text"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2173,6 +2273,71 @@ func (ec *executionContext) _ShareItem_item(ctx context.Context, field graphql.C
 	res := resTmp.(*model.Item)
 	fc.Result = res
 	return ec.marshalNItem2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _SuggestionItem_text(ctx context.Context, field graphql.CollectedField, obj *model.SuggestionItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "SuggestionItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Text, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _SuggestionTitle_list(ctx context.Context, field graphql.CollectedField, obj *model.SuggestionTitle) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "SuggestionTitle",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.List, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.SuggestionItem)
+	fc.Result = res
+	return ec.marshalOSuggestionItem2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSuggestionItemᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
@@ -3947,6 +4112,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_itemDetail(ctx, field)
 				return res
 			})
+		case "suggestionTitle":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_suggestionTitle(ctx, field)
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -3993,6 +4169,57 @@ func (ec *executionContext) _ShareItem(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var suggestionItemImplementors = []string{"SuggestionItem"}
+
+func (ec *executionContext) _SuggestionItem(ctx context.Context, sel ast.SelectionSet, obj *model.SuggestionItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, suggestionItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SuggestionItem")
+		case "text":
+			out.Values[i] = ec._SuggestionItem_text(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var suggestionTitleImplementors = []string{"SuggestionTitle"}
+
+func (ec *executionContext) _SuggestionTitle(ctx context.Context, sel ast.SelectionSet, obj *model.SuggestionTitle) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, suggestionTitleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SuggestionTitle")
+		case "list":
+			out.Values[i] = ec._SuggestionTitle_list(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4412,6 +4639,20 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNSuggestionItem2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSuggestionItem(ctx context.Context, sel ast.SelectionSet, v model.SuggestionItem) graphql.Marshaler {
+	return ec._SuggestionItem(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSuggestionItem2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSuggestionItem(ctx context.Context, sel ast.SelectionSet, v *model.SuggestionItem) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._SuggestionItem(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNUpdateItemDetail2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐUpdateItemDetail(ctx context.Context, v interface{}) (model.UpdateItemDetail, error) {
@@ -4843,6 +5084,38 @@ func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.S
 	return graphql.MarshalString(v)
 }
 
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
 	if v == nil {
 		return nil, nil
@@ -4856,6 +5129,46 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return ec.marshalOString2string(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOSuggestionItem2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSuggestionItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SuggestionItem) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSuggestionItem2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSuggestionItem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOUser2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {

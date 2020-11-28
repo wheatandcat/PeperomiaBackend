@@ -35,6 +35,7 @@ type Application struct {
 	CalendarRepository   domain.CalendarRepository
 	PushTokenRepository  domain.PushTokenRepository
 	UserRepository       domain.UserRepository
+	DictionaryRepository domain.DictionaryRepository
 }
 
 // Client is Client type
@@ -68,6 +69,7 @@ func newApplication() *Application {
 		CalendarRepository:   repository.NewCalendarRepository(),
 		PushTokenRepository:  repository.NewPushTokenRepository(),
 		UserRepository:       repository.NewUserRepository(),
+		DictionaryRepository: repository.NewDictionaryRepository(),
 	}
 }
 

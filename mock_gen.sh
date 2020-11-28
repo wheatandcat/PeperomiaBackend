@@ -5,3 +5,4 @@ mockgen -source domain/item_detail.go -destination domain/mocks/item_detail.go
 mockgen -source domain/calendar.go -destination domain/mocks/calendar.go
 mockgen -source domain/push_token.go -destination domain/mocks/push_token.go
 mockgen -source domain/user.go -destination domain/mocks/user.go
+mockgen -source domain/dictionary.go -destination domain/mocks/dictionary.go

@@ -11,13 +11,17 @@
     * [Item](#item)
     * [ItemDetail](#itemdetail)
     * [ShareItem](#shareitem)
+    * [SuggestionItem](#suggestionitem)
+    * [SuggestionTitle](#suggestiontitle)
     * [User](#user)
   * [Inputs](#inputs)
     * [DeleteCalendar](#deletecalendar)
+    * [DeleteItemDetail](#deleteitemdetail)
     * [NewCalendar](#newcalendar)
     * [NewItem](#newitem)
     * [NewItemDetail](#newitemdetail)
     * [UpdateItemDetail](#updateitemdetail)
+    * [UpdateMainItemDetail](#updatemainitemdetail)
   * [Scalars](#scalars)
     * [Boolean](#boolean)
     * [Float](#float)
@@ -110,12 +114,26 @@
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">itemId</td>
-<td valign="top"><a href="#id">ID</a>!</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 <tr>
-<td colspan="2" align="right" valign="top">itemDetailID</td>
-<td valign="top"><a href="#id">ID</a>!</td>
+<td colspan="2" align="right" valign="top">itemDetailId</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>suggestionTitle</strong></td>
+<td valign="top">[<a href="#string">String</a>!]</td>
+<td>
+
+タイトルのサジェストを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">text</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -186,6 +204,34 @@
 <tr>
 <td colspan="2" align="right" valign="top">itemDetail</td>
 <td valign="top"><a href="#newitemdetail">NewItemDetail</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>deleteItemDetail</strong></td>
+<td valign="top"><a href="#itemdetail">ItemDetail</a>!</td>
+<td>
+
+スケジュール詳細を削除する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">itemDetail</td>
+<td valign="top"><a href="#deleteitemdetail">DeleteItemDetail</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateMainItemDetail</strong></td>
+<td valign="top"><a href="#itemdetail">ItemDetail</a>!</td>
+<td>
+
+メインアイテムに更新する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">itemDetail</td>
+<td valign="top"><a href="#updatemainitemdetail">UpdateMainItemDetail</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -443,6 +489,50 @@ URL
 </tbody>
 </table>
 
+### SuggestionItem
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>text</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### SuggestionTitle
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>list</strong></td>
+<td valign="top">[<a href="#suggestionitem">SuggestionItem</a>!]</td>
+<td>
+
+タイトル候補
+
+</td>
+</tr>
+</tbody>
+</table>
+
 ### User
 
 <table>
@@ -511,6 +601,39 @@ PUSH通知設定
 日付
 
 </td>
+</tr>
+</tbody>
+</table>
+
+### DeleteItemDetail
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+日付
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>itemId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -673,7 +796,7 @@ PUSH通知設定
 <tbody>
 <tr>
 <td colspan="2" valign="top"><strong>id</strong></td>
-<td valign="top"><a href="#id">ID</a>!</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 <tr>
@@ -726,6 +849,39 @@ PUSH通知設定
 <tr>
 <td colspan="2" valign="top"><strong>priority</strong></td>
 <td valign="top"><a href="#int">Int</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### UpdateMainItemDetail
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+日付
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>itemId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
