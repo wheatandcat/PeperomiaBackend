@@ -20,6 +20,7 @@
     * [NewCalendar](#newcalendar)
     * [NewItem](#newitem)
     * [NewItemDetail](#newitemdetail)
+    * [UpdateCalendarPublic](#updatecalendarpublic)
     * [UpdateItemDetail](#updateitemdetail)
     * [UpdateMainItemDetail](#updatemainitemdetail)
   * [Scalars](#scalars)
@@ -232,6 +233,20 @@
 <tr>
 <td colspan="2" align="right" valign="top">itemDetail</td>
 <td valign="top"><a href="#updatemainitemdetail">UpdateMainItemDetail</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateCalendarPublic</strong></td>
+<td valign="top"><a href="#calendar">Calendar</a>!</td>
+<td>
+
+カレンダーの公開/非公開を更新する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">calendar</td>
+<td valign="top"><a href="#updatecalendarpublic">UpdateCalendarPublic</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -779,6 +794,34 @@ PUSH通知設定
 <td colspan="2" valign="top"><strong>priority</strong></td>
 <td valign="top"><a href="#int">Int</a>!</td>
 <td></td>
+</tr>
+</tbody>
+</table>
+
+### UpdateCalendarPublic
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>public</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td>
+
+true: パブリック、false: プライベート
+
+</td>
 </tr>
 </tbody>
 </table>

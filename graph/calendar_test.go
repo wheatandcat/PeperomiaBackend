@@ -129,6 +129,66 @@ func TestCreateCalendar(t *testing.T) {
 	}
 }
 
+func TestUpdateCalendarPublic(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.Background()
+
+	mock1 := mock_domain.NewMockCalendarRepository(ctrl)
+	loc := graph.GetLoadLocation()
+
+	date, _ := time.ParseInLocation("2006-01-02T15:04:05", "2019-01-01T00:00:00", loc)
+
+	cr := domain.CalendarRecord{
+		ID:     "uuid-string",
+		UID:    "test",
+		Date:   &date,
+		Public: true,
+	}
+
+	mock1.EXPECT().FindByDateAndUID(gomock.Any(), gomock.Any(), "test", &date).Return(cr, nil)
+	mock1.EXPECT().Update(gomock.Any(), gomock.Any(), cr).Return(nil)
+
+	h := NewTestHandler(ctx)
+	h.App.CalendarRepository = mock1
+
+	g := graph.NewGraph(&h, "test")
+
+	cm := &model.Calendar{
+		ID:   "uuid-string",
+		Date: "2019-01-01 00:00:00",
+	}
+
+	tests := []struct {
+		name   string
+		param  model.UpdateCalendarPublic
+		result *model.Calendar
+	}{
+		{
+			name: "カレンダーを公開に更新する",
+			param: model.UpdateCalendarPublic{
+				Date:   "2019-01-01T00:00:00",
+				Public: true,
+			},
+			result: cm,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.UpdateCalendarPublic(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}
+
 func TestGetCalendars(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

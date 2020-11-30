@@ -154,6 +154,33 @@ func (g *Graph) UpdateMainItem(ctx context.Context, umi model.UpdateMainItemDeta
 	return result, nil
 }
 
+// UpdateCalendarPublic カレンダーの公開/非公開を更新する
+func (g *Graph) UpdateCalendarPublic(ctx context.Context, ucp model.UpdateCalendarPublic) (*model.Calendar, error) {
+	h := g.Handler
+	uid := g.UID
+	loc := GetLoadLocation()
+
+	d, err := time.ParseInLocation("2006-01-02T15:04:05", ucp.Date, loc)
+	if err != nil {
+		return nil, err
+	}
+
+	cr, err := h.App.CalendarRepository.FindByDateAndUID(ctx, h.FirestoreClient, uid, &d)
+	if err != nil {
+		return nil, err
+	}
+
+	cr.Public = ucp.Public
+
+	if err := h.App.CalendarRepository.Update(ctx, h.FirestoreClient, cr); err != nil {
+		return nil, err
+	}
+
+	result := cr.ToModel()
+
+	return result, nil
+}
+
 // GetCalendars カレンダーリストを取得する
 func (g *Graph) GetCalendars(ctx context.Context, startDate string, endDate string) ([]*model.Calendar, error) {
 	h := g.Handler

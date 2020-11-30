@@ -107,6 +107,22 @@ func (r *mutationResolver) UpdateMainItemDetail(ctx context.Context, itemDetail 
 	return result, nil
 }
 
+func (r *mutationResolver) UpdateCalendarPublic(ctx context.Context, calendar model.UpdateCalendarPublic) (*model.Calendar, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	result, err := g.UpdateCalendarPublic(ctx, calendar)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareItem, error) {
 	item := &model.ShareItem{}
 
