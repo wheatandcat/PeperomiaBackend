@@ -107,6 +107,12 @@ type SuggestionTitle struct {
 	List []*SuggestionItem `json:"list"`
 }
 
+type UpdateCalendarPublic struct {
+	Date string `json:"date"`
+	// true: パブリック、false: プライベート
+	Public bool `json:"public"`
+}
+
 type UpdateItemDetail struct {
 	ID string `json:"id"`
 	// 日付

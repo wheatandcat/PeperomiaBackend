@@ -157,6 +157,12 @@ input UpdateMainItemDetail {
   itemId: String!
 }
 
+input UpdateCalendarPublic {
+  date: String!
+  "true: パブリック、false: プライベート"
+  public: Boolean!
+}
+
 type Mutation {
   "カレンダーを作成する"
   createCalendar(calendar: NewCalendar!): Calendar!
@@ -170,4 +176,6 @@ type Mutation {
   deleteItemDetail(itemDetail: DeleteItemDetail!): ItemDetail!
   "メインアイテムに更新する"
   updateMainItemDetail(itemDetail: UpdateMainItemDetail!): ItemDetail!
+  "カレンダーの公開/非公開を更新する"
+  updateCalendarPublic(calendar: UpdateCalendarPublic!): Calendar!
 }
