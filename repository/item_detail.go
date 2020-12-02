@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/PeperomiaBackend/domain"
@@ -18,8 +19,11 @@ func NewItemDetailRepository() domain.ItemDetailRepository {
 
 // getItemDetailCollection アイテムのコレクションを取得する
 func getItemDetailCollection(f *firestore.Client, key domain.ItemDetailKey) *firestore.DocumentRef {
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+
 	iDoc := getItemDocID(key.ItemDetailID)
-	date := key.Date.Format("2006-01-02")
+	date := key.Date.In(loc).Format("2006-01-02")
 
 	return f.Collection("version/1/users/" + key.UID + "/calendars/" + date + "/items/" + key.ItemID + "/itemDetails").Doc(iDoc)
 }

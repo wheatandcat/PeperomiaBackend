@@ -50,8 +50,9 @@ func (r *CalendarRecord) ToModel() *model.Calendar {
 	loc, _ := time.LoadLocation(location)
 
 	item := &model.Calendar{
-		ID:   r.ID,
-		Date: r.Date.In(loc).Format("2006-01-02 15:04:05"),
+		ID:     r.ID,
+		Date:   r.Date.In(loc).Format("2006-01-02 15:04:05"),
+		Public: r.Public,
 	}
 	if r.Item != nil {
 		item.Item = r.Item.ToModel()
