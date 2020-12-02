@@ -19,8 +19,11 @@ func NewItemRepository() domain.ItemRepository {
 
 // GetItemCollection アイテムのコレクションを取得する
 func getItemCollection(f *firestore.Client, itemDetailID string, key domain.ItemKey) *firestore.DocumentRef {
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+
 	iDoc := getItemDocID(itemDetailID)
-	date := key.Date.Format("2006-01-02")
+	date := key.Date.In(loc).Format("2006-01-02")
 
 	return f.Collection("version/1/users/" + key.UID + "/calendars/" + date + "/items").Doc(iDoc)
 }

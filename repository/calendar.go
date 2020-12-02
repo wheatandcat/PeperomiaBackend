@@ -18,7 +18,10 @@ func NewCalendarRepository() domain.CalendarRepository {
 }
 
 func getCalendarDocID(date *time.Time) string {
-	doc := date.Format("2006-01-02")
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+
+	doc := date.In(loc).Format("2006-01-02")
 	return doc
 }
 
