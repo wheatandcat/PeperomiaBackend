@@ -88,6 +88,7 @@ func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Clien
 	for _, doc := range docs {
 		var item domain.CalendarRecord
 		doc.DataTo(&item)
+
 		docItem, err := GetItemDoc(ctx, doc)
 		if err != nil {
 			return items, err
@@ -114,6 +115,7 @@ func (re *CalendarRepository) FindBetweenDateAndUID(ctx context.Context, f *fire
 	for _, doc := range docs {
 		var item domain.CalendarRecord
 		doc.DataTo(&item)
+
 		docItem, err := GetItemDoc(ctx, doc)
 		if err != nil {
 			return items, err
