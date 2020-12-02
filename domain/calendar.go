@@ -14,7 +14,7 @@ type CalendarRecord struct {
 	UID    string      `json:"uid" firestore:"uid"`
 	Public bool        `json:"public" firestore:"public"`
 	Date   *time.Time  `json:"date" firestore:"date" binding:"required"`
-	Item   *ItemRecord `json:"item" firestore:"omitempty"`
+	Item   *ItemRecord `json:"item" firestore:"item"`
 }
 
 // CalendarRepository is repository interface
