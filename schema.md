@@ -20,6 +20,10 @@
     * [NewCalendar](#newcalendar)
     * [NewItem](#newitem)
     * [NewItemDetail](#newitemdetail)
+    * [SyncCalendar](#synccalendar)
+    * [SyncCalendars](#synccalendars)
+    * [SyncItem](#syncitem)
+    * [SyncItemDetail](#syncitemdetail)
     * [UpdateCalendarPublic](#updatecalendarpublic)
     * [UpdateItemDetail](#updateitemdetail)
     * [UpdateMainItemDetail](#updatemainitemdetail)
@@ -247,6 +251,20 @@
 <tr>
 <td colspan="2" align="right" valign="top">calendar</td>
 <td valign="top"><a href="#updatecalendarpublic">UpdateCalendarPublic</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>syncCalendars</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td>
+
+カレンダーの情報を同期
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">calendars</td>
+<td valign="top"><a href="#synccalendars">SyncCalendars</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -755,6 +773,161 @@ PUSH通知設定
 <tr>
 <td colspan="2" valign="top"><strong>itemId</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>title</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+タイトル
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>kind</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+種類
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>place</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>url</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>memo</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>priority</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### SyncCalendar
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+日付
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>item</strong></td>
+<td valign="top"><a href="#syncitem">SyncItem</a>!</td>
+<td>
+
+スケジュール
+
+</td>
+</tr>
+</tbody>
+</table>
+
+### SyncCalendars
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>calendars</strong></td>
+<td valign="top">[<a href="#synccalendar">SyncCalendar</a>]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### SyncItem
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>title</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+タイトル
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>kind</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+種類
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>itemDetails</strong></td>
+<td valign="top">[<a href="#syncitemdetail">SyncItemDetail</a>]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### SyncItemDetail
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
 <td></td>
 </tr>
 <tr>
