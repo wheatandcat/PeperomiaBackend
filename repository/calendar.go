@@ -193,7 +193,8 @@ func (re *CalendarRepository) DeleteByDateAndUID(ctx context.Context, f *firesto
 
 // DeleteByUID ユーザーIDから削除する
 func (re *CalendarRepository) DeleteByUID(ctx context.Context, f *firestore.Client, uid string) error {
-	matchItem := f.Collection("version/1/" + uid + "/calendars").Documents(ctx)
+
+	matchItem := calendarCollectionRef(f, uid).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return err
