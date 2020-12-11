@@ -163,6 +163,39 @@ input UpdateCalendarPublic {
   public: Boolean!
 }
 
+input SyncCalendar {
+  id: ID!
+  "日付"
+  date: String!
+  "スケジュール"
+  item: SyncItem!
+}
+
+input SyncItem {
+  id: ID!
+  "タイトル"
+  title: String!
+  "種類"
+  kind: String!
+  itemDetails: [SyncItemDetail]
+}
+
+input SyncItemDetail {
+  id: ID!
+  "タイトル"
+  title: String!
+  "種類"
+  kind: String!
+  place: String!
+  url: String!
+  memo: String!
+  priority: Int!
+}
+
+input SyncCalendars {
+  calendars: [SyncCalendar]
+}
+
 type Mutation {
   "カレンダーを作成する"
   createCalendar(calendar: NewCalendar!): Calendar!
@@ -178,4 +211,6 @@ type Mutation {
   updateMainItemDetail(itemDetail: UpdateMainItemDetail!): ItemDetail!
   "カレンダーの公開/非公開を更新する"
   updateCalendarPublic(calendar: UpdateCalendarPublic!): Calendar!
+  "カレンダーの情報を同期"
+  syncCalendars(calendars: SyncCalendars!): Boolean!
 }

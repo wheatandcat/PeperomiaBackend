@@ -107,6 +107,39 @@ type SuggestionTitle struct {
 	List []*SuggestionItem `json:"list"`
 }
 
+type SyncCalendar struct {
+	ID string `json:"id"`
+	// 日付
+	Date string `json:"date"`
+	// スケジュール
+	Item *SyncItem `json:"item"`
+}
+
+type SyncCalendars struct {
+	Calendars []*SyncCalendar `json:"calendars"`
+}
+
+type SyncItem struct {
+	ID string `json:"id"`
+	// タイトル
+	Title string `json:"title"`
+	// 種類
+	Kind        string            `json:"kind"`
+	ItemDetails []*SyncItemDetail `json:"itemDetails"`
+}
+
+type SyncItemDetail struct {
+	ID string `json:"id"`
+	// タイトル
+	Title string `json:"title"`
+	// 種類
+	Kind     string `json:"kind"`
+	Place    string `json:"place"`
+	URL      string `json:"url"`
+	Memo     string `json:"memo"`
+	Priority int    `json:"priority"`
+}
+
 type UpdateCalendarPublic struct {
 	Date string `json:"date"`
 	// true: パブリック、false: プライベート

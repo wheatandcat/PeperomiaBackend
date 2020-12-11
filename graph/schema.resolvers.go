@@ -123,6 +123,21 @@ func (r *mutationResolver) UpdateCalendarPublic(ctx context.Context, calendar mo
 	return result, nil
 }
 
+func (r *mutationResolver) SyncCalendars(ctx context.Context, calendars model.SyncCalendars) (bool, error) {
+	uid, err := GetSelfUID(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	g := NewGraph(r.Handler, uid)
+
+	if _, err = g.SyncCalendar(ctx, calendars); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func (r *queryResolver) ShareItem(ctx context.Context, id string) (*model.ShareItem, error) {
 	item := &model.ShareItem{}
 

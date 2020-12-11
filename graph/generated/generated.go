@@ -78,6 +78,7 @@ type ComplexityRoot struct {
 		CreateItemDetail     func(childComplexity int, itemDetail model.NewItemDetail) int
 		DeleteCalendar       func(childComplexity int, calendar model.DeleteCalendar) int
 		DeleteItemDetail     func(childComplexity int, itemDetail model.DeleteItemDetail) int
+		SyncCalendars        func(childComplexity int, calendars model.SyncCalendars) int
 		UpdateCalendarPublic func(childComplexity int, calendar model.UpdateCalendarPublic) int
 		UpdateItemDetail     func(childComplexity int, itemDetail model.UpdateItemDetail) int
 		UpdateMainItemDetail func(childComplexity int, itemDetail model.UpdateMainItemDetail) int
@@ -123,6 +124,7 @@ type MutationResolver interface {
 	DeleteItemDetail(ctx context.Context, itemDetail model.DeleteItemDetail) (*model.ItemDetail, error)
 	UpdateMainItemDetail(ctx context.Context, itemDetail model.UpdateMainItemDetail) (*model.ItemDetail, error)
 	UpdateCalendarPublic(ctx context.Context, calendar model.UpdateCalendarPublic) (*model.Calendar, error)
+	SyncCalendars(ctx context.Context, calendars model.SyncCalendars) (bool, error)
 }
 type QueryResolver interface {
 	ShareItem(ctx context.Context, id string) (*model.ShareItem, error)
@@ -328,6 +330,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteItemDetail(childComplexity, args["itemDetail"].(model.DeleteItemDetail)), true
+
+	case "Mutation.syncCalendars":
+		if e.complexity.Mutation.SyncCalendars == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_syncCalendars_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SyncCalendars(childComplexity, args["calendars"].(model.SyncCalendars)), true
 
 	case "Mutation.updateCalendarPublic":
 		if e.complexity.Mutation.UpdateCalendarPublic == nil {
@@ -731,6 +745,39 @@ input UpdateCalendarPublic {
   public: Boolean!
 }
 
+input SyncCalendar {
+  id: ID!
+  "日付"
+  date: String!
+  "スケジュール"
+  item: SyncItem!
+}
+
+input SyncItem {
+  id: ID!
+  "タイトル"
+  title: String!
+  "種類"
+  kind: String!
+  itemDetails: [SyncItemDetail]
+}
+
+input SyncItemDetail {
+  id: ID!
+  "タイトル"
+  title: String!
+  "種類"
+  kind: String!
+  place: String!
+  url: String!
+  memo: String!
+  priority: Int!
+}
+
+input SyncCalendars {
+  calendars: [SyncCalendar]
+}
+
 type Mutation {
   "カレンダーを作成する"
   createCalendar(calendar: NewCalendar!): Calendar!
@@ -746,6 +793,8 @@ type Mutation {
   updateMainItemDetail(itemDetail: UpdateMainItemDetail!): ItemDetail!
   "カレンダーの公開/非公開を更新する"
   updateCalendarPublic(calendar: UpdateCalendarPublic!): Calendar!
+  "カレンダーの情報を同期"
+  syncCalendars(calendars: SyncCalendars!): Boolean!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -807,6 +856,20 @@ func (ec *executionContext) field_Mutation_deleteItemDetail_args(ctx context.Con
 		}
 	}
 	args["itemDetail"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_syncCalendars_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SyncCalendars
+	if tmp, ok := rawArgs["calendars"]; ok {
+		arg0, err = ec.unmarshalNSyncCalendars2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendars(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["calendars"] = arg0
 	return args, nil
 }
 
@@ -1924,6 +1987,47 @@ func (ec *executionContext) _Mutation_updateCalendarPublic(ctx context.Context, 
 	res := resTmp.(*model.Calendar)
 	fc.Result = res
 	return ec.marshalNCalendar2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐCalendar(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_syncCalendars(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_syncCalendars_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SyncCalendars(rctx, args["calendars"].(model.SyncCalendars))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_shareItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3779,6 +3883,144 @@ func (ec *executionContext) unmarshalInputNewItemDetail(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSyncCalendar(ctx context.Context, obj interface{}) (model.SyncCalendar, error) {
+	var it model.SyncCalendar
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "date":
+			var err error
+			it.Date, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "item":
+			var err error
+			it.Item, err = ec.unmarshalNSyncItem2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItem(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSyncCalendars(ctx context.Context, obj interface{}) (model.SyncCalendars, error) {
+	var it model.SyncCalendars
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "calendars":
+			var err error
+			it.Calendars, err = ec.unmarshalOSyncCalendar2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendar(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSyncItem(ctx context.Context, obj interface{}) (model.SyncItem, error) {
+	var it model.SyncItem
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "title":
+			var err error
+			it.Title, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kind":
+			var err error
+			it.Kind, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "itemDetails":
+			var err error
+			it.ItemDetails, err = ec.unmarshalOSyncItemDetail2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItemDetail(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSyncItemDetail(ctx context.Context, obj interface{}) (model.SyncItemDetail, error) {
+	var it model.SyncItemDetail
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "title":
+			var err error
+			it.Title, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kind":
+			var err error
+			it.Kind, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "place":
+			var err error
+			it.Place, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "url":
+			var err error
+			it.URL, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "memo":
+			var err error
+			it.Memo, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "priority":
+			var err error
+			it.Priority, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateCalendarPublic(ctx context.Context, obj interface{}) (model.UpdateCalendarPublic, error) {
 	var it model.UpdateCalendarPublic
 	var asMap = obj.(map[string]interface{})
@@ -4134,6 +4376,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateCalendarPublic":
 			out.Values[i] = ec._Mutation_updateCalendarPublic(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "syncCalendars":
+			out.Values[i] = ec._Mutation_syncCalendars(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4761,6 +5008,22 @@ func (ec *executionContext) marshalNSuggestionItem2ᚖgithubᚗcomᚋwheatandcat
 	return ec._SuggestionItem(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNSyncCalendars2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendars(ctx context.Context, v interface{}) (model.SyncCalendars, error) {
+	return ec.unmarshalInputSyncCalendars(ctx, v)
+}
+
+func (ec *executionContext) unmarshalNSyncItem2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItem(ctx context.Context, v interface{}) (model.SyncItem, error) {
+	return ec.unmarshalInputSyncItem(ctx, v)
+}
+
+func (ec *executionContext) unmarshalNSyncItem2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItem(ctx context.Context, v interface{}) (*model.SyncItem, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalNSyncItem2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItem(ctx, v)
+	return &res, err
+}
+
 func (ec *executionContext) unmarshalNUpdateCalendarPublic2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐUpdateCalendarPublic(ctx context.Context, v interface{}) (model.UpdateCalendarPublic, error) {
 	return ec.unmarshalInputUpdateCalendarPublic(ctx, v)
 }
@@ -5279,6 +5542,70 @@ func (ec *executionContext) marshalOSuggestionItem2ᚕᚖgithubᚗcomᚋwheatand
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalOSyncCalendar2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendar(ctx context.Context, v interface{}) (model.SyncCalendar, error) {
+	return ec.unmarshalInputSyncCalendar(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOSyncCalendar2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendar(ctx context.Context, v interface{}) ([]*model.SyncCalendar, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.SyncCalendar, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOSyncCalendar2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendar(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOSyncCalendar2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendar(ctx context.Context, v interface{}) (*model.SyncCalendar, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOSyncCalendar2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncCalendar(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOSyncItemDetail2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItemDetail(ctx context.Context, v interface{}) (model.SyncItemDetail, error) {
+	return ec.unmarshalInputSyncItemDetail(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOSyncItemDetail2ᚕᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItemDetail(ctx context.Context, v interface{}) ([]*model.SyncItemDetail, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.SyncItemDetail, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOSyncItemDetail2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItemDetail(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOSyncItemDetail2ᚖgithubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItemDetail(ctx context.Context, v interface{}) (*model.SyncItemDetail, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOSyncItemDetail2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐSyncItemDetail(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalOUser2githubᚗcomᚋwheatandcatᚋPeperomiaBackendᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {

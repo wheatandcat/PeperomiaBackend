@@ -157,8 +157,9 @@ func TestUpdateCalendarPublic(t *testing.T) {
 	g := graph.NewGraph(&h, "test")
 
 	cm := &model.Calendar{
-		ID:   "uuid-string",
-		Date: "2019-01-01 00:00:00",
+		ID:     "uuid-string",
+		Date:   "2019-01-01 00:00:00",
+		Public: true,
 	}
 
 	tests := []struct {
