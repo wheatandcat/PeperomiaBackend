@@ -93,12 +93,15 @@ func (h *Handler) SentPushNotifications(gc *gin.Context) {
 
 // SendCalendarPushNotifications カレンダーに設定されている
 func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
+	const location = "Asia/Tokyo"
+	loc, _ := time.LoadLocation(location)
+
 	ctx := context.Background()
 	dateQuery := gc.Query("date")
 	date := TimeNow()
 
 	if dateQuery != "" {
-		d, err := time.Parse("2006-01-02T15:04:05", dateQuery)
+		d, err := time.ParseInLocation("2006-01-02T15:04:05", dateQuery, loc)
 		if err != nil {
 			NewErrorResponse(err).Render(gc)
 			return
@@ -119,7 +122,7 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 		return
 	}
 
-	res := []string{}
+	res := []expopush.SendRequest{}
 
 	title := today.Format("2006年1月2日") + "の予定"
 
@@ -129,12 +132,12 @@ func (h *Handler) SendCalendarPushNotifications(gc *gin.Context) {
 				req := expopush.SendRequest{
 					Title: title,
 					Body:  c.Item.Title,
-					Data:  map[string]string{"urlScheme": "Schedule/" + c.Date.Format("2006-01-02")},
+					Data:  map[string]string{"urlScheme": "Calendar/" + c.Date.In(loc).Format("2006-01-02")},
 					Token: pt.Token,
 				}
 				err = h.Client.ExpoPush.Send(req)
 				if err == nil {
-					res = append(res, c.UID)
+					res = append(res, req)
 				}
 
 			}

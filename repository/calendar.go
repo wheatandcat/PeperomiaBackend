@@ -82,7 +82,7 @@ func (re *CalendarRepository) FindByPublicAndID(ctx context.Context, f *firestor
 func (re *CalendarRepository) FindByDate(ctx context.Context, f *firestore.Client, date *time.Time) ([]domain.CalendarRecord, error) {
 	var items []domain.CalendarRecord
 
-	matchItem := f.CollectionGroup("calendars").Where("date", "==", date).Documents(ctx)
+	matchItem := f.CollectionGroup("calendars").Where("date", "==", date).OrderBy("id", firestore.Asc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return items, err
