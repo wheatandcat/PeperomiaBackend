@@ -119,8 +119,7 @@ func (g *Graph) UpdateMainItem(ctx context.Context, umi model.UpdateMainItemDeta
 			if err = h.App.ItemDetailRepository.Update(ctx, h.FirestoreClient, *itemDetail, idrKey1); err != nil {
 				return nil, err
 			}
-		}
-		if itemDetail.Priority == idr.Priority {
+		} else if itemDetail.Priority == idr.Priority {
 			// 選択したアイテムをメインに更新
 			itemDetail.Priority = 1
 
